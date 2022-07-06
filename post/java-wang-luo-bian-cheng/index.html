@@ -1,0 +1,606 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>Java网络编程 | YBLOG</title>
+
+<link rel="shortcut icon" href="https://yeyuan1107.github.io/favicon.ico?v=1657077232781">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://yeyuan1107.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages//dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+    
+        <script src="https://cdn.jsdelivr.net/npm/mermaid@9.1.1/dist/mermaid.min.js"></script>
+        <script>mermaid.initialize({startOnLoad:true});</script> 
+    
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            YBLOG
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1657077232781"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    Java网络编程
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2021-11-27 ·
+                    </time>
+                    
+                        <a href="https://yeyuan1107.github.io/tag/wZpx5Scef/" class="post-tags">
+                            # Java
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <blockquote>
+<p>Java是Internet上的语言，它从语言级上提供了对网络应用程序的支持，程序员能够很容易开发常见的网络应用程序<br>
+Java提供的网络类库，可以实现无痛的网络连接，联网的底层细节被隐藏在Java的本机安装系统里，由JVM进行控制。并且Java实现了一个跨平台的网络库，程序员面对的是一个统一的网络编程环境</p>
+<p>网络编程的目的：直接或间接地通过网络协议与其他计算机实现数据交换，进行通讯。网络编程的主要问题：如何准确定位网络上一台或多台主机；定位主机上的特定的应用？找到主机后如何可靠高效地进行数据传输</p>
+</blockquote>
+<p><a name="rqNU7"></a></p>
+<h1 id="网络编程要素">网络编程要素</h1>
+<ol>
+<li>通信双方地址
+<ul>
+<li>IP
+<ul>
+<li>唯一的标识Internet上的计算机(通信实体)</li>
+<li>本地回环地址(hostAddress)：127.0.0.1 主机名(hostName)：localhost</li>
+<li>IP地址分类一：IPV4、IPV6</li>
+<li>IP地址分类二：公网地址和私有地址，192.168.0.0 - 192.168.255.255专门为组织机构内部使用</li>
+</ul>
+</li>
+<li>端口号
+<ul>
+<li>表示正在计算机上运行的进程</li>
+<li>不同进程有不同的端口号</li>
+<li>端口号为一个16位的整数0-65535</li>
+<li>端口分类：
+<ul>
+<li>公认端口(0-1023)，被预先定义的服务通信占用(如HTTP占用80，FTP占用21，Telnet占用23)</li>
+<li>注册端口(1024-49151)，分配给用户进程或应用程序(如Tomcat占用8080，MySQL占用3306，Oracle占用1521)</li>
+<li>动态/私有端口(49152-65535)</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>端口号与IP地址的组合得出一个网络套接字：Socket</li>
+</ul>
+</li>
+<li>一定的规则(即：网络通信协议)
+<ul>
+<li>OSI参考模型：模型过于理想化，未能在因特网上进行广泛推官</li>
+<li>TCP/IP参考模型(或TCP/IP协议)：实际上的国际标准</li>
+<li><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE.png#crop=0&amp;crop=0&amp;crop=1&amp;crop=1&amp;id=E5qnx&amp;originHeight=580&amp;originWidth=1355&amp;originalType=binary&amp;ratio=1&amp;rotation=0&amp;showTitle=false&amp;status=done&amp;style=none&amp;title=" alt="" loading="lazy"><br>
+<a name="mAIK3"></a></li>
+</ul>
+</li>
+</ol>
+<h2 id="inetaddress类">InetAddress类</h2>
+<ul>
+<li>Internet上的主机有两种方式表示地址：
+<ul>
+<li>域名：www.yblog.com</li>
+<li>IP地址：202.108.35.210</li>
+</ul>
+</li>
+<li>InetAddress类主要表示IP地址，存在两个子类：Inet4Address、Inet6Address</li>
+<li>InetAddress类对象含有一个Internet主机地址的域名和IP地址</li>
+<li>域名容易记忆，当在连接网络时输入一个主机的域名后，域名服务器(DNS)负责将域名转化为IP地址，这样才能和主机建立连接</li>
+</ul>
+<p>InetAddress类没有提供公共的<strong>构造器</strong>，而是提供了如下几个静态方法来获取InetAddress实例</p>
+<ul>
+<li>public static InetAddress getLocalHost()</li>
+<li>public static InetAddress getByName(String host)</li>
+<li>host可以为ip地址也可以为域名</li>
+</ul>
+<p>InetAddress<strong>常用方法</strong></p>
+<ul>
+<li>public String getHostAddress()：返回IP地址字符串</li>
+<li>public String getHostName()：获取此IP地址的主机名</li>
+<li>public boolean isReachable(int timeout)：测试是否可以到达该地址<br>
+<a name="BGnpe"></a></li>
+</ul>
+<h3 id="tcp">TCP</h3>
+<ul>
+<li>使用 TCP 协议前，须先建立 TCP 连接，形成传输数据通道</li>
+<li>传输前，采用“ 三次握手 方式 ，点对点通信 是 可靠的</li>
+<li>TCP 协议进行通信的两个应用进程：客户端、 服务端。</li>
+<li>在连接中可进行大数据量的传输</li>
+<li>传输完毕，需释放已建立的连接，效率低</li>
+</ul>
+<p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B.png#crop=0&amp;crop=0&amp;crop=1&amp;crop=1&amp;id=XbS90&amp;originHeight=711&amp;originWidth=1389&amp;originalType=binary&amp;ratio=1&amp;rotation=0&amp;showTitle=false&amp;status=done&amp;style=none&amp;title=" alt="" loading="lazy"><br /><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/%E5%9B%9B%E6%AC%A1%E6%8C%A5%E6%89%8B.png#crop=0&amp;crop=0&amp;crop=1&amp;crop=1&amp;id=jQQDH&amp;originHeight=755&amp;originWidth=1484&amp;originalType=binary&amp;ratio=1&amp;rotation=0&amp;showTitle=false&amp;status=done&amp;style=none&amp;title=" alt="" loading="lazy"><br>
+<a name="jM9e6"></a></p>
+<h3 id="udp">UDP</h3>
+<ul>
+<li>将数据、源、目的封装成数据包，不需要建立连接</li>
+<li>每个数据报的大小限制在 64K 内</li>
+<li>发送不管对方是否准备好，接收方收到也不确认， 故是不可靠的</li>
+<li>可以广播发送</li>
+<li>发送数据结束时无需释放资源 ，开销小，速度快<br>
+<a name="v4Ucm"></a></li>
+</ul>
+<h2 id="socket类">Socket类</h2>
+<ul>
+<li>利用套接字(Socket) 开发网络应用程序早已被广泛的采用，以至于成为事实上的标准 。</li>
+<li>网络上具有唯一标识的 IP 地址和端口号组合在一起才能构成唯一能识别的标识符套接字 。</li>
+<li>通信的两端都要有Socket ，是两台机器间通信的端点 。</li>
+<li>网络通信其实就是 Socket 间的通信。</li>
+<li>Socket 允许程序把网络连接当成一个流， 数据在两个 Socket 间通过 IO 传输。</li>
+<li>一般主动发起通信的应用程序属客户端 ，等待通信请求的为服务端。</li>
+<li>Socket 分类：
+<ul>
+<li>流套接字（ stream socket ）：使用 TCP 提供可依赖的字节流服务</li>
+<li>数据报套接字（ datagram socket ）：使用 UDP 提供“尽力而为”的数据报服务</li>
+</ul>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Socket 类的常用构造器</td>
+<td></td>
+</tr>
+<tr>
+<td>public Socket(InetAddress address,int port)</td>
+<td>创建一个流套接字并将其连接到指定 IP 地址的指定端口号。</td>
+</tr>
+<tr>
+<td>public Socket(String host,int port)</td>
+<td>创建一个流套接字并将其连接到指定主机上的指定端口号。</td>
+</tr>
+<tr>
+<td>Socket 类的常用方法：</td>
+<td></td>
+</tr>
+<tr>
+<td>public InputStream getInputStream()</td>
+<td>返回此套接字的输入流。 可以用于接收网络消息</td>
+</tr>
+<tr>
+<td>public OutputStream getOutputStream()</td>
+<td>返回此套接字的输出流 。 可以用于发送网络消息</td>
+</tr>
+<tr>
+<td>public InetAddress getInetAddress()</td>
+<td>此套接字连接到的远程 IP 地址；如果套接字是未连接的 则返回 null。</td>
+</tr>
+<tr>
+<td>public InetAddress getLocalAddress()</td>
+<td>获取套接字绑定的本地地址 。 即本端的 IP 地址</td>
+</tr>
+<tr>
+<td>public int getPort()</td>
+<td>此套接字连接到的远程端口号；如果尚未连接套接字 则返回 0。</td>
+</tr>
+<tr>
+<td>public int getLocalPort()</td>
+<td>返回此套接字绑定到的本地端口 。 如果尚未绑定套接字则返回 1。 即本端的端口号。</td>
+</tr>
+<tr>
+<td>public void close()</td>
+<td>关闭此套接字。 套接字被关闭后便不可在以后的网络连接中使用即无法重新连接或重新绑定。 需要创建新的套接字对象。 关闭此套接字也将会关闭该套接字的 InputStream 和 OutputStream。</td>
+</tr>
+<tr>
+<td>public void shutdownInput()</td>
+<td>如果在套接字上调用 shutdownInput() 后从套接字输入流读取内容则流将返回 EOF 文件结束符。 即不能在从此套接字的输入流中接收任何数据。</td>
+</tr>
+<tr>
+<td>public void shutdownOutput()</td>
+<td>禁用此套接字的输出流 。 对于 TCP 套接字 任何以前写入的数据都将被发送并且后跟 TCP 的正常连接终止序列。 如果在套接字上调用 shutdownOutput() 后写入套接字输出流则该流将抛出 IOException。 即不能通过此套接字的输出流发送任何数据。</td>
+</tr>
+</tbody>
+</table>
+<p><a name="gJAeg"></a></p>
+<h1 id="tcp网络编程">TCP网络编程</h1>
+<p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/TCP%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B.png#crop=0&amp;crop=0&amp;crop=1&amp;crop=1&amp;id=FTMM3&amp;originHeight=548&amp;originWidth=1167&amp;originalType=binary&amp;ratio=1&amp;rotation=0&amp;showTitle=false&amp;status=done&amp;style=none&amp;title=" alt="" loading="lazy"><br>
+<a name="iTTeU"></a></p>
+<h2 id="客户端">客户端</h2>
+<ol>
+<li>创建 Socket 根据指定服务端的 IP 地址或端口号构造 Socket 类对象。若服务器端响应，则建立客户端到服务器的通信线路。若连接失败，会出现异常。
+<ul>
+<li>客户端程序可以使用 Socket 类创建对象创建的同时会自动向服务器方发起连接 。 Socket的构造器是
+<ul>
+<li>Socket(String host,int port)throws UnknownHostException,IOException ：向服务器(域名是host。端口号为 port) 发起 TCP 连接，若成功，则创建 Socket 对象，否则抛出异常。</li>
+<li>Socket(InetAddress address,int port)throws IOException 根据 InetAddress 对象所表示的IP 地址以及端口号 port 发起连接。</li>
+</ul>
+</li>
+<li>客户端建立 socketAtClient 对象的过程就是向服务器发出套接字连接请求</li>
+</ul>
+</li>
+<li>打开连接到 Socket 的输入出流： 使用 getInputStream方法获得输入流，使用getOutputStream 方法获得输出流，进行数据传输</li>
+<li>按照一定的协议对 Socket 进行读 写操作： 通过输入流读取服务器放入线路的信息（但不能读取自己放入线路的信息），通过输出流将信息写入线程。</li>
+<li>关闭 Socket 断开客户端到服务器的连接，释放线路</li>
+</ol>
+<pre><code class="language-java">Socket s = new Socket( &quot;192.168.40.165&quot;, 9999);
+OutputStream out = s.getOutputStream();
+out.write(&quot;hello&quot;.getBytes());
+s.close();
+</code></pre>
+<p><a name="jRDro"></a></p>
+<h2 id="服务器端">服务器端</h2>
+<ol>
+<li>调用 ServerSocket(int port) 创建一个服务器端套接字，并绑定到指定端口上 。用于监听客户端的请求。
+<ul>
+<li>ServerSocket 对象负责等待客户端请求建立套接字连接，类似邮局某个窗口中的业务员。也就是说， 服务器必须事先建立一个等待客户请求建立套接字连接的 ServerSocket 对象。</li>
+<li>所谓“接收”客户的套接字请求，就是 accept() 方法会返回一个 Socket 对象</li>
+</ul>
+</li>
+<li>调用 accept() 监听连接请求，如果客户端请求连接，则接受连接，返回通信套接字对象 。</li>
+<li>调用 该 Socket 类对象的 getOutputStream () 和 getInputStream 获取输出流和输入流，开始网络数据的发送和接收。</li>
+<li>关闭 ServerSocket 和 Socket 对象： 客户端访问结束，关闭通信套接字 。</li>
+</ol>
+<pre><code class="language-java">ServerSocket ss = new ServerSocket(9999);
+Socket s = ss.accept();
+InputStream in = s.getInputStream();
+byte[] buf = new byte[1024];
+int num = in.read(buf);
+String str = new String(buf,0,num);
+System.out.println(s.getInetAddress().toString()+&quot;:&quot;+str);
+s.close();
+ss.close();
+</code></pre>
+<p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/TCP%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B%E7%A4%BA%E4%BE%8B.png#crop=0&amp;crop=0&amp;crop=1&amp;crop=1&amp;id=HHgck&amp;originHeight=762&amp;originWidth=1525&amp;originalType=binary&amp;ratio=1&amp;rotation=0&amp;showTitle=false&amp;status=done&amp;style=none&amp;title=" alt="" loading="lazy"><br>
+<a name="TVK9a"></a></p>
+<h1 id="udp网络编程">UDP网络编程</h1>
+<ul>
+<li>类 DatagramSocket 和 DatagramPacket 实现了基于 UDP 协议网络程序。</li>
+<li>UDP 数据报通过数据报套接字 DatagramSocket 发送和接收， 系统不保证UDP 数据报一定能够安全送到目的地，也不能确定什么时候可以抵达。</li>
+<li>DatagramPacket 对象封装了 UDP 数据报，在数据报中包含了发送端的 IP地址和端口号以及接收端的 IP 地址和端口号。</li>
+<li>UDP 协议中每个数据报都给出了完整的地址信息，因此无须建立发送方和接收方的连接。 如同发快递包裹一样。<br>
+<a name="uQUPO"></a></li>
+</ul>
+<h2 id="datagramsocket常用方法">DatagramSocket常用方法</h2>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>public DatagramSocket(int port)</td>
+<td>创建数据报套接字并将其绑定到本地主机上的指定端口。 套接字将被绑定到通配符地址 IP 地址由内核来选择。</td>
+</tr>
+<tr>
+<td>public DatagramSocket(int port,InetAddress laddr)</td>
+<td>创建数据报套接字将其绑定到指定的本地地址。本地端口必须在 0 到 65535 之间(包括两者)。 如果 IP 地址为 0.0.0.0 套接字将被绑定到通配符地址 IP 地址由内核选择。</td>
+</tr>
+<tr>
+<td>public void close()</td>
+<td>关闭此数据报套接字。</td>
+</tr>
+<tr>
+<td>public void send(DatagramPacket p)</td>
+<td>从此套接字发送数据报包 。 DatagramPacket 包含的信息指示：将要发送的数据 、 其长度 、 远程主机的 IP 地址和远程主机的端口号。</td>
+</tr>
+<tr>
+<td>public void receive(DatagramPacket p)</td>
+<td>从此套接字接收数据报包。当此方法返回时, DatagramPacket的缓冲区填充了接收的数据。 数据报包也包含发送方的 IP 地址和发送方机器上的端口号 。 此方法在接收到数据报前一直阻塞。 数据报包对象的 length 字段包含所接收信息的长度 。 如果信息比包的长度长该信息将被截短。</td>
+</tr>
+<tr>
+<td>public InetAddress getLocalAddress()</td>
+<td>获取套接字绑定的本地地址。</td>
+</tr>
+<tr>
+<td>public int getLocalPort()</td>
+<td>返回此套接字绑定的本地主机上的端口号。</td>
+</tr>
+<tr>
+<td>public InetAddress getInetAddress()</td>
+<td>返回此套接字连接的地址。 如果套接字未连接 则返回 null。</td>
+</tr>
+<tr>
+<td>public int getPort()</td>
+<td>返回此套接字的端口 。 如果套接字未连接 则返回 -1</td>
+</tr>
+</tbody>
+</table>
+<p><a name="pAOvJ"></a></p>
+<h2 id="datagrampacket常用方法">DatagramPacket常用方法</h2>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>public DatagramPacket(byte[] buf,int length)</td>
+<td>构造 DatagramPacket 用来接收长度为 length 的数据包。 length参数必须小于等于 buf.length。</td>
+</tr>
+<tr>
+<td>public DatagramPacket(byte[] buf,int offset,int length,InetAddress address,int port)</td>
+<td>构造数据报包，用来将长度为 length 的包发送到指定主机上的指定端口号。 length参数必须小于等于 buf.length。</td>
+</tr>
+<tr>
+<td>public InetAddress getAddress()</td>
+<td>返回某台机器的 IP 地址此数据报将要发往该机器或者是从该机器接收到的。</td>
+</tr>
+<tr>
+<td>public int getPort()</td>
+<td>返回某台远程主机的端口号此数据报将要发往该主机或者是从该主机接收到的。</td>
+</tr>
+<tr>
+<td>public byte[] getData()</td>
+<td>返回数据缓冲区。接收到的或将要发送的数据从缓冲区中的偏移量 offset 处开始 持续 length 长度。</td>
+</tr>
+<tr>
+<td>public int getLength()</td>
+<td>返回将要发送或接收到的数据的长度。</td>
+</tr>
+</tbody>
+</table>
+<p><a name="kULuv"></a></p>
+<h2 id="udp网络通信流程">UDP网络通信流程</h2>
+<ol>
+<li>DatagramSocket 与 DatagramPacket</li>
+<li>建立发送端，接收端(发送端与接受端是两个独立的运行程序)</li>
+<li>建立数据包</li>
+<li>调用 Socket 的发送 、 接收方法</li>
+<li>关闭 Socket</li>
+</ol>
+<p>发送端</p>
+<pre><code class="language-java">DatagramSocket ds = null;
+try{
+	ds = new DatagramSocket();
+	byte[] by = &quot;hello,atguigu.com&quot;.getBytes();
+	DatagramPacket dp = new DatagramPacket( by, 0, by.length, InetAddress.getByName (&quot;127.0.0.1&quot;), 10000);
+	ds.send(dp);
+}catch (Exception e ){
+	e.printStackTrace();
+}finally{
+	if(ds != null){
+		ds.close();
+	}
+}
+</code></pre>
+<p>接收端</p>
+<pre><code class="language-java">DatagramSocket ds = null
+try{
+	ds = new DatagramSocket(10000);
+	byte[] by = new byte[1024];
+	DatagramPacket dp = new DatagramPacket(by , by.length);
+	ds.receive(dp);
+	String str = new String(dp.getData(), 0, dp.getLength());
+	System.out.println(str + &quot;----&quot; + dp.getAddress());
+}catch (Exception e ){
+	e.printStackTrace();
+}finally{
+	if(ds != null){
+		ds.close();
+	}
+}
+</code></pre>
+<p><a name="I4Oct"></a></p>
+<h1 id="url编程">URL编程</h1>
+<ul>
+<li>URL(Uniform Resource Locator)：统一资源定位符，它表示Internet上某一资源的地址</li>
+<li>它是一种具体的URI，即URL可以用来标识一个资源，而且还指明了如何locate这个资源</li>
+<li>通过URL我们可以访问Internet上的各种网络资源，比如最常见的www，ftp站点。浏览器通过解析给定的URL可以在网络上查找相应的文件或其他资源。</li>
+<li>URL组成</li>
+<li>&lt;传输协议&gt;://&lt;主机名&gt;:&lt;端口号&gt;/&lt;文件名&gt;#&lt;片段名&gt;?&lt;参数列表&gt;</li>
+<li>片段名：即锚点，例如看小说，直接定位到章节</li>
+<li>参数列表格式：参数名=参数值&amp;参数名=参数值...</li>
+<li>为了表示 URL， java.net 中实现了类 URL 。我们可以通过下面的构造器来初始化一个 URL 对象：
+<ul>
+<li>public URL (String spec )：通过 一个表示 URL 地址的字符串可以构造一个 URL 对象。例如 <code>URL url = new URL(&quot; http://www.atguigu.com/&quot;)</code>;</li>
+<li>public URL(URL context, String spec )：通过基 URL 和相对 URL 构造 一 个 URL 对象。例如 <code>URL downloadUrl = new URL(url , &quot;download.html&quot;)</code></li>
+<li>public URL(String protocol, String host, String file); 例如<code>new URL(&quot;http&quot;, &quot;www.atguigu.com &quot;, “download. html&quot;)</code></li>
+<li>public URL(String protocol, String host, int port, String file); 例如 : <code>URL gamelan = new URL (&quot;http&quot;, www.atguigu.com &quot;, 80, &quot;download.html&quot;);</code></li>
+</ul>
+</li>
+<li>URL 类的构造器都声明抛出非运行时异常，必须要对这一异常进行处理，通常是用 try-catch 语句进行捕获。<br>
+<a name="sJ6NJ"></a></li>
+</ul>
+<h2 id="常用方法">常用方法</h2>
+<p>一 个 URL 对象生成后，其属性是不能被改变的，但可以通过它给定的方法来获取这些属性：</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>public String getProtocol ( )</td>
+<td>获取该URL的协议名</td>
+</tr>
+<tr>
+<td>public String getHost ( )</td>
+<td>获取该URL的主机名</td>
+</tr>
+<tr>
+<td>public String getPort ( )</td>
+<td>获取该URL的端口号</td>
+</tr>
+<tr>
+<td>public String getPath ( )</td>
+<td>获取该URL的文件路径</td>
+</tr>
+<tr>
+<td><strong>public String getFile ( )</strong></td>
+<td>获取该URL的文件名</td>
+</tr>
+<tr>
+<td><strong>public String getQuery ( )</strong></td>
+<td>获取该URL的查询名</td>
+</tr>
+</tbody>
+</table>
+<p><a name="p6X4b"></a></p>
+<h2 id="针对http协议的url-connection类">针对HTTP协议的URL Connection类</h2>
+<ul>
+<li>URL的方法openStream()：能从网络上读取数据</li>
+<li>若希望输出数据，例如向服务器端的CGI（公共网关接口 Common GatewayInterface 的简称，是用户浏览器和服务器端的应用程序进行连接的接口）程序发送一些数据，则必须先与 URL 建立连接，然后才能对其进行读写，此时需要使用URLConnection 。</li>
+<li>URLConnection：表示到 URL 所引用的远程对象的连接。当与一个 URL 建立连接时，首先要在一个 URL 对象上通过方法 openConnection () 生成对应的 URLConnection对象。如果连接过程失败，将产生 IOException .</li>
+</ul>
+<pre><code class="language-java">URL netchinaren = new URL (&quot;http://www.atguigu.com/index.shtml&quot;);
+URLConnectonn u = netchinaren.openConnection ( );
+</code></pre>
+<ul>
+<li>通过 URLConnection 对象获取的输入流和输出流，即可以与现有的 CGI程序进行交互。
+<ul>
+<li>public Object getContent() throws IOException</li>
+<li>public int getContentLength()</li>
+<li>public String getContentType ()</li>
+<li>public long getDate ()</li>
+<li>public long getLastModified ()</li>
+<li>public InputStream getInputStream ( )throws IOException</li>
+<li>public OutputSteram getOutputStream ( )throws IOException</li>
+</ul>
+</li>
+</ul>
+<p>类 URL 和 URLConnection 提供了最高级网络应用。 URL 的网络资源的位置来同一表示Internet 上各种网络资源。通过 URL 对象可以创建当前应用程序和 URL 表示的网络资源之间的连接，这样当前程序就可以读取网络资源数据，或者把自己的数据传送到网络上去。<br>
+<a name="hadaQ"></a></p>
+<h2 id="uri-url-urn区别">URI、URL、URN区别</h2>
+<p>URI，是 uniform resource identifier，统一资源标识符用来唯一的标识一个资源。而 URL 是 uniform resource locator ，统一资源定位符 ，它是一种具体的URI ，即 URL 可以用来标识一个资源，而且还指明了如何 locate 这个资源。而 URN uniform resource name，统一资源命名，是通过名字来标识资源比如 <code>mailto:java-net@java.sun.com</code>。也就是说， URI 是以一种抽象的，高层次概念定义统一资源标识，而 URL 和 URN 则是具体的资源标识的方式。 URL和 URN 都是一种 URI 。在Java 的 URI 中，一个 URI 实例可以代表绝对的，也可以是相对的，只要它符合 URI 的语法规则。而 URL 类则不仅符合语义，还包含了定位该资源的信息，因此它不能是相对的。</p>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://yeyuan1107.github.io/post/javaio-liu/" class="post-title gt-a-link">
+                    JavaIO流
+                </a>
+            </div>
+        
+
+        
+
+        
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">温故而知新</div>
+    <div class="social-container">
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+    </div>
+    <div>
+        Theme <a href="https://github.com/imhanjie/gridea-theme-pure" target="_blank">Pure</a>, Powered by <a
+                href="https://gridea.dev" target="_blank">Gridea</a> | <a href="https://yeyuan1107.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+</div>
+
+<script>
+  hljs.highlightAll()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

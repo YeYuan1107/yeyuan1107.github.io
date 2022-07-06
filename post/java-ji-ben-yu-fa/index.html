@@ -1,0 +1,544 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>Java基本语法 | YBLOG</title>
+
+<link rel="shortcut icon" href="https://yeyuan1107.github.io/favicon.ico?v=1657077232781">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://yeyuan1107.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages//dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+    
+        <script src="https://cdn.jsdelivr.net/npm/mermaid@9.1.1/dist/mermaid.min.js"></script>
+        <script>mermaid.initialize({startOnLoad:true});</script> 
+    
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            YBLOG
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1657077232781"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    Java基本语法
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2021-10-19 ·
+                    </time>
+                    
+                        <a href="https://yeyuan1107.github.io/tag/wZpx5Scef/" class="post-tags">
+                            # Java
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <p><a name="wpzZT"></a></p>
+<h1 id="关键字">关键字</h1>
+<p>定义：被Java语言赋予了特殊含义，用作专门用途的字符串<br />特点：关键字中所有字母都为小写</p>
+<ol>
+<li>用于定义数据类型的关键字：class, interface, enum, byte, short, int, long, float, double, char, boolean, void</li>
+<li>用于定义流程控制的关键字：if, else, switch, case, default, while, do, for, break, continue, return</li>
+<li>用于定义访问权限修饰符的关键字：private, protected, public</li>
+<li>用于定义类，函数，变量修饰符的关键字：abstract, final, static, synchronized</li>
+<li>用于定义类与类之间关系的关键字：extends, implements</li>
+<li>用于定义建立实例及引用实例：new, this, super, instanceof</li>
+<li>用于异常处理的关键字：try, catch, finally, throws, throw, throws</li>
+<li>用于包的关键字：package, import</li>
+<li>其他修饰符关键字：native, strictfp, transient, volatile, assert</li>
+<li>用于定义数据类型值的字面值：true, false, null</li>
+<li>保留字：goto, const<br>
+<a name="zKUEE"></a></li>
+</ol>
+<h1 id="标识符">标识符</h1>
+<p>Java对各种变量、方法和类等要素命名时使用的字符序列称为标识符<br />凡事自己可以起名字的地方都叫标识符</p>
+<p>标识符规则</p>
+<blockquote>
+<p>由26个英文字母大小写，0-9，_或$组成<br />数字不可以开头<br />不可以使用关键字和保留字，但可以包含关键字和保留字<br />Java中严格区分大小写，长度无限制<br />标识符不能包含空格</p>
+</blockquote>
+<p>标识符规范</p>
+<blockquote>
+<p>包名：多单词组成时所有字母都小写：xxxyyyzzz<br />类名、接口名：多单词组成时，所有单词的首字母大写：XxxYyyZzz<br />变量名、方法名：多单词组成时，第一个单词首字母小写，第二个单词开始每个单词首字母大写：xxxYyyZzz<br />常量名：所有字幕都大写，多单词时每个单词用下划线链接：XXX_YYY_ZZZ</p>
+</blockquote>
+<p><a name="YbLz3"></a></p>
+<h1 id="变量的分类">变量的分类</h1>
+<ol>
+<li>变量的分类-按数据类型分类
+<ul>
+<li>基本数据类型
+<ul>
+<li>数值型
+<ul>
+<li>整数类型(byte, short, int, long)</li>
+<li>浮点类型(float, double)</li>
+</ul>
+</li>
+<li>字符型(char)</li>
+<li>布尔型(boolean)</li>
+</ul>
+</li>
+<li>引用数据类型
+<ul>
+<li>类(class)</li>
+<li>接口(interface)</li>
+<li>数组(*[])</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>变量的分类-按声明的位置
+<ul>
+<li>成员变量
+<ul>
+<li>实例变量(不以static修饰)</li>
+<li>类变量(以static修饰)</li>
+</ul>
+</li>
+<li>局部变量
+<ul>
+<li>形参(方法、构造器中定义的变量)</li>
+<li>方法局部变量(在方法内定义)</li>
+<li>代码块局部变量(在代码块内定义)</li>
+</ul>
+</li>
+<li>二者异同
+<ul>
+<li>同：都有生命周期</li>
+<li>异：局部变量除形参外，需显式初始化<br>
+<a name="v6KFi"></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<h1 id="基本数据类型转换">基本数据类型转换</h1>
+<p>byte, short, char -&gt; int -&gt; long -&gt; float -&gt; double</p>
+<ul>
+<li>有多种类型的数据混合运算时，系统首先自动将所有数据转换成容量最大的那种数据类型，然后再进行计算</li>
+<li>byte, shor, char间不会相互转换，他们三者在计算时首先转换为int类型</li>
+<li>boolean类型不能与其他数据类型计算</li>
+<li>当任何基本数据类型的值和字符串(String)进行连接运算时，基本数据类型的值自动转化为字符串类型<br>
+<a name="CFq0e"></a></li>
+</ul>
+<h1 id="运算符">运算符</h1>
+<p><a name="iUxcS"></a></p>
+<h2 id="算数运算符">算数运算符</h2>
+<table>
+<thead>
+<tr>
+<th>运算符</th>
+<th>运算</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>+</td>
+<td>正号</td>
+<td></td>
+</tr>
+<tr>
+<td>-</td>
+<td>负号</td>
+<td></td>
+</tr>
+<tr>
+<td>+</td>
+<td>加</td>
+<td>short, byte类型 + 常数转换为int型</td>
+</tr>
+<tr>
+<td>-</td>
+<td>减</td>
+<td></td>
+</tr>
+<tr>
+<td>*</td>
+<td>乘</td>
+<td></td>
+</tr>
+<tr>
+<td>/</td>
+<td>除</td>
+<td></td>
+</tr>
+<tr>
+<td>%</td>
+<td>取余</td>
+<td>余数符号取决于被模数</td>
+</tr>
+<tr>
+<td>++</td>
+<td>自增</td>
+<td>short, byte类型与+1不同，不会改变为int型</td>
+</tr>
+<tr>
+<td>--</td>
+<td>自减</td>
+<td>自增与自减不会改变原变量数据类型</td>
+</tr>
+<tr>
+<td>+</td>
+<td>连接</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="CaSRM"></a></p>
+<h2 id="赋值运算符">赋值运算符</h2>
+<table>
+<thead>
+<tr>
+<th>运算符</th>
+<th>运算</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>=</td>
+<td>赋值</td>
+<td>两侧数据不一致时，可以使用自动/强制类型转换</td>
+</tr>
+<tr>
+<td>+=, -=, *=, /=, %= 不会改变变量类型，不会自动类型转换</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="mlNaF"></a></p>
+<h2 id="比较运算符">比较运算符</h2>
+<table>
+<thead>
+<tr>
+<th>运算符</th>
+<th>运算</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>==</td>
+<td>相等于</td>
+<td>在除了数值类型变量间使用时，比较的是地址</td>
+</tr>
+<tr>
+<td>!=</td>
+<td>不等于</td>
+<td>在除了数值类型变量间使用时，比较的是地址</td>
+</tr>
+<tr>
+<td>&lt;</td>
+<td>小于</td>
+<td>只能在数值类型变量间使用</td>
+</tr>
+<tr>
+<td>&gt;</td>
+<td>大于</td>
+<td>只能在数值类型变量间使用</td>
+</tr>
+<tr>
+<td>&lt;=</td>
+<td>小于等于</td>
+<td>只能在数值类型变量间使用</td>
+</tr>
+<tr>
+<td>&gt;=</td>
+<td>大于等于</td>
+<td>只能在数值类型变量间使用</td>
+</tr>
+<tr>
+<td>instanceof</td>
+<td>检查是否是类的对象</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="JN9A6"></a></p>
+<h2 id="逻辑运算符">逻辑运算符</h2>
+<table>
+<thead>
+<tr>
+<th>运算符</th>
+<th>运算</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>&amp;</td>
+<td>逻辑与</td>
+</tr>
+<tr>
+<td>|</td>
+<td>逻辑或</td>
+</tr>
+<tr>
+<td>&amp;&amp;</td>
+<td>短路与</td>
+</tr>
+<tr>
+<td>||</td>
+<td>短路或</td>
+</tr>
+<tr>
+<td>!</td>
+<td>逻辑非</td>
+</tr>
+<tr>
+<td>^</td>
+<td>逻辑异或</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>短路与与短路或可以用来编写递归条件<br>
+开发过程中一般使用短路逻辑运算符</p>
+</blockquote>
+<p><a name="o0LWE"></a></p>
+<h2 id="br"><br /></h2>
+<p><a name="JDZ9l"></a></p>
+<h2 id="位运算符">位运算符</h2>
+<table>
+<thead>
+<tr>
+<th>运算符</th>
+<th>运算</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>&lt;&lt;</td>
+<td>左移</td>
+</tr>
+<tr>
+<td>&gt;&gt;</td>
+<td>右移</td>
+</tr>
+<tr>
+<td>&gt;&gt;&gt;</td>
+<td>无符号右移不管符号位，直接补0</td>
+</tr>
+<tr>
+<td>&amp;</td>
+<td>与运算</td>
+</tr>
+<tr>
+<td>^</td>
+<td>异或运算</td>
+</tr>
+<tr>
+<td>|</td>
+<td>或运算</td>
+</tr>
+<tr>
+<td>~</td>
+<td>取反运算</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-java">//交换变量值
+方式一：
+temp = num1; 
+num1 = num2; 
+num2 = temp;
+方式二：
+num1 = num1 + num2; 
+num2 = num1 - num2; 
+num1 = num1 - num2;
+方式三：
+num1 = num1 ^ num2; 
+num2 = num1 ^ num2; 
+num1 = num1 ^ num2;
+</code></pre>
+<p><a name="uuo7T"></a></p>
+<h2 id="三元运算符">三元运算符</h2>
+<p>条件表达式 ? 表达式1 : 表达式2<br />其中表达式1与表达式2为同种类型<br />三元运算符可以转化为if-else，但if-else不一定能转化为三元运算符<br />如果可以使用三元运算符，则优先使用三元运算符<br>
+<a name="vfyhm"></a></p>
+<h1 id="在控制台从键盘输入">在控制台从键盘输入</h1>
+<pre><code class="language-java">import java.util.Scanner;
+Scanner in = new scanner(System.in);
+xxx num = in.nextXxx();
+String类型用next()或nextLine();
+</code></pre>
+<p><a name="xG3AE"></a></p>
+<h1 id="java产生随机数">Java产生随机数</h1>
+<pre><code class="language-java">Math.random() =&gt; [0,1)
+求[a, b] =&gt; (int) (Math.random()\*(b-a+1)+a)
+</code></pre>
+<p><a name="Em72R"></a></p>
+<h1 id="流程结构">流程结构</h1>
+<ol>
+<li>顺序结构</li>
+<li>分支结构</li>
+<li>循环结构<br>
+<a name="QnPUM"></a></li>
+</ol>
+<h2 id="分支结构">分支结构</h2>
+<ol>
+<li>if语句
+<ul>
+<li>if</li>
+<li>if-else</li>
+<li>if-elseif-else</li>
+</ul>
+</li>
+<li>switch语句
+<ul>
+<li>语法格式<br />switch(表达式){<br />	case 1:<br />	case 2:<br />}</li>
+<li>表达式的值必须为 byte, short, char, int, 枚举, String</li>
+<li>case子句中的值必须为常量</li>
+</ul>
+</li>
+</ol>
+<blockquote>
+<p>优先使用switch，switch效率更高</p>
+</blockquote>
+<p><a name="bO3oK"></a></p>
+<h2 id="循环结构">循环结构</h2>
+<ol>
+<li>for</li>
+<li>while</li>
+<li>do-while</li>
+<li>break以及continue可以跳出到固定label, 且之后不能写执行语句</li>
+<li>label的声明为 label:{}</li>
+</ol>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://yeyuan1107.github.io/post/java-ji-chu-gai-shu/" class="post-title gt-a-link">
+                    Java基础概述
+                </a>
+            </div>
+        
+
+        
+
+        
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">温故而知新</div>
+    <div class="social-container">
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+    </div>
+    <div>
+        Theme <a href="https://github.com/imhanjie/gridea-theme-pure" target="_blank">Pure</a>, Powered by <a
+                href="https://gridea.dev" target="_blank">Gridea</a> | <a href="https://yeyuan1107.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+</div>
+
+<script>
+  hljs.highlightAll()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

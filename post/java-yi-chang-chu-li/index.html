@@ -1,0 +1,312 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>Java异常处理 | YBLOG</title>
+
+<link rel="shortcut icon" href="https://yeyuan1107.github.io/favicon.ico?v=1657077232781">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://yeyuan1107.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages//dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+    
+        <script src="https://cdn.jsdelivr.net/npm/mermaid@9.1.1/dist/mermaid.min.js"></script>
+        <script>mermaid.initialize({startOnLoad:true});</script> 
+    
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            YBLOG
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1657077232781"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    Java异常处理
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2021-11-05 ·
+                    </time>
+                    
+                        <a href="https://yeyuan1107.github.io/tag/wZpx5Scef/" class="post-tags">
+                            # Java
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <p><a name="eE7ZY"></a></p>
+<h1 id="简介">简介</h1>
+<p><strong>异常</strong>：在Java语言中，将程序执行时发生的不正常情况称为异常，开发中的语法错误和逻辑错误不是异常。<br>
+<a name="f7kgi"></a></p>
+<h2 id="异常事件的分类">异常事件的分类</h2>
+<ol>
+<li>Error：Java虚拟机无法解决的严重问题。例如：JVM系统内部错误、资源耗尽等严重情况。比如：StackOverflowError和OutofMemoryError(OOM堆溢出)。一般不变写针对性的代码进行处理。</li>
+<li>Exception：其他因变成错误或偶然的外在因素导致的一般性问题，可以使用针对性的代码进行处理。例如：空指针异常、试图读取不存在的文件、网络连接中断、数组角标越界等。<br>
+<a name="ltsK6"></a></li>
+</ol>
+<h2 id="异常事件的处理">异常事件的处理</h2>
+<ol>
+<li>遇到错误就终止程序的运行</li>
+<li>由程序员在编写程序时，就考虑到错误的检测、错误消息的提示、以及错误的处理。<br>
+<a name="g2GVZ"></a></li>
+</ol>
+<h2 id="exception分类">Exception分类</h2>
+<ol>
+<li>编译时异常(受检异常，除RuntimeException外的异常)
+<ul>
+<li>IOException
+<ul>
+<li>FileNotFoundException</li>
+</ul>
+</li>
+<li>ClassNotFoundException</li>
+</ul>
+</li>
+<li>运行时异常(非受检异常，RuntimeException)
+<ul>
+<li>NullPointerException(空指针异常)</li>
+<li>ArrayIndexOutOfBoundsException(角标越界)</li>
+<li>ClassCastException(类型转换异常)</li>
+<li>NumberFormatException</li>
+<li>InputMismatchException</li>
+<li>ArithmaticException(除零异常)<br>
+<a name="tgZtC"></a></li>
+</ul>
+</li>
+</ol>
+<h1 id="异常处理">异常处理</h1>
+<p>抓抛模型：</p>
+<ol>
+<li>抛：程序在正常执行的过程中，一旦出现异常，就会在异常代码处生成一个对应异常类的对象，并将此对象抛出，一旦抛出对象后，其后的代码就不再执行。</li>
+<li>抓：异常的处理方式：
+<ul>
+<li>try-catch-finally</li>
+<li>throws<br>
+<a name="OHD4Y"></a></li>
+</ul>
+</li>
+</ol>
+<h2 id="try-catch-finally">try-catch-finally</h2>
+<pre><code class="language-java">try{
+	代码块;
+}catch(Exception e){
+	异常的处理方法;
+}finally{
+	一定会执行的代码;
+}
+</code></pre>
+<p><a name="iLp1V"></a></p>
+<h3 id="使用">使用</h3>
+<ol>
+<li>finally是可选的，可以不写，不论在try代码块中是否发生了异常事件，catch语句是否执行，catch语句是否有异常，catch语句中是否有return，finally块中的语句都会被执行
+<ul>
+<li>数据库连接</li>
+<li>输入输出流</li>
+<li>网络编程中Socket等资源</li>
+<li>这些资源不会被JVM自动回收需要我们手动进行释放，此时资源的释放应当防在finally中</li>
+</ul>
+</li>
+<li>try将可能出现异常的代码包装起来，一旦出现异常就生成一个对应异常类的对象，根据该对象类型去catch中进行匹配</li>
+<li>一旦try的异常对象匹配某一个catch时，就进入catch中进行异常的处理，一旦处理完成，就跳出当前的try-catch结构(在没有写finally的情况)，继续执行其后的代码</li>
+<li>catch中的异常，如果没有子父类关系，则顺序没有关系，如果存在子父类关系，则子类应该声明在父类之上，否则报错</li>
+<li>常用异常处理方法
+<ul>
+<li>getMessage()返回String，异常信息</li>
+<li>printStackTrace()获取异常类名和异常信息，以及异常出现在程序中的位置，返回值为空，方法内自带输出</li>
+</ul>
+</li>
+<li><strong>try结构中声明的变量，在try结构外无法调用</strong></li>
+<li>try-catch-finally结构可以互相嵌套</li>
+</ol>
+<p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645714739330-2d552b6b-eac0-4546-a496-64f8ccda600b-20220312140749603-20220312151931704.png" alt="image.png" loading="lazy"><br>
+<a name="jNpZb"></a></p>
+<h3 id="体会">体会</h3>
+<ul>
+<li>在使用try-catch-finally处理编译时异常，使得程序在编译时不再报错，但运行时仍可能报错相当于我们讲一个编译时异常延迟到运行时出现了<br>
+<a name="HWjiv"></a></li>
+</ul>
+<h2 id="throws">throws</h2>
+<p>如果一个方法可能生成某种异常，但是并不能确定如何处理这种异常，则此方法应显示地声明抛出异常，表明该方法将不对这些异常进行处理，而由该方法的调用者负责处理。在方法声明中用throws语句可以声明抛出异常的列表，throws后面的异常类型可以是方法中产生的异常类型，也可以是它的父类。</p>
+<pre><code class="language-java">public void 方法名() throws FileNotFoundException, Exception{
+	方法体;
+}
+</code></pre>
+<p><a name="nnycH"></a></p>
+<h3 id="使用-2">使用</h3>
+<ol>
+<li>一旦方法体执行时，出现异常仍会在异常代码处生成一个异常对象，此对象满足throws后的异常类型时就被抛出，异常代码后续的代码不再执行。</li>
+<li>重写方法不能抛出比被重写方法范围更大的异常类型</li>
+<li>父类没有抛出异常子类也不能抛出异常</li>
+<li>执行的方法中，先后调用了另外的几个方法，这几个方法是递进关系执行的我们建议这几个方法使用throws的方式进行处理，最外层方法使用try-catch-finally处理<br>
+<a name="ZtvlX"></a></li>
+</ol>
+<h3 id="体会-2">体会</h3>
+<p>try-catch-finally真正的将异常处理掉了throws只是把异常抛给了方法的调用者，没有将异常真正处理掉</p>
+<p><a name="DlmWu"></a></p>
+<h1 id="手动抛出异常">手动抛出异常</h1>
+<p>Java异常类对象除在程序执行过程中出现异常时由系统自动生成并抛出，也可根据需要使用人工创建并抛出</p>
+<pre><code class="language-java">//1.生成异常类对象，然后通过throw语句实现抛出操作
+//2.可以抛出的异常必须是Throwable或其子类的实例
+throw new Exception(&quot;message&quot;);
+</code></pre>
+<p><a name="U0gjz"></a></p>
+<h2 id="用户自定义异常类">用户自定义异常类</h2>
+<ol>
+<li>一般用户定义异常类都是RuntimeException的子类</li>
+<li>自定义异常类通常需要编写几个重载的构造器</li>
+<li>自定义异常需要提供serialVersionUID</li>
+<li>自定义的异常通过throw抛出</li>
+<li>自定义异常类最重要的是异常类的名字，当异常出现时，可以根据名字判断异常类型</li>
+</ol>
+<pre><code class="language-java">//可以继承Exception或RuntimeException
+class MyException extends Exception{
+	//单独标识该类
+	static final long serialVersionUID = 32453426235L;
+	属性;
+	方法;
+}
+</code></pre>
+<p><a name="PbvLu"></a></p>
+<h1 id="throws与throw的区别">throws与throw的区别</h1>
+<ul>
+<li>throw：作用为生成异常对象，声明在方法体内</li>
+<li>throws：处理异常，声明在方法声明处</li>
+</ul>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://yeyuan1107.github.io/post/java-mian-xiang-dui-xiang/" class="post-title gt-a-link">
+                    Java面向对象
+                </a>
+            </div>
+        
+
+        
+
+        
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">温故而知新</div>
+    <div class="social-container">
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+    </div>
+    <div>
+        Theme <a href="https://github.com/imhanjie/gridea-theme-pure" target="_blank">Pure</a>, Powered by <a
+                href="https://gridea.dev" target="_blank">Gridea</a> | <a href="https://yeyuan1107.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+</div>
+
+<script>
+  hljs.highlightAll()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

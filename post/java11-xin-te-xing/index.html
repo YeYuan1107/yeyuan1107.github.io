@@ -1,0 +1,238 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>Java11新特性 | YBLOG</title>
+
+<link rel="shortcut icon" href="https://yeyuan1107.github.io/favicon.ico?v=1657077232781">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://yeyuan1107.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages//dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+    
+        <script src="https://cdn.jsdelivr.net/npm/mermaid@9.1.1/dist/mermaid.min.js"></script>
+        <script>mermaid.initialize({startOnLoad:true});</script> 
+    
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            YBLOG
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1657077232781"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    Java11新特性
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2021-12-05 ·
+                    </time>
+                    
+                        <a href="https://yeyuan1107.github.io/tag/wZpx5Scef/" class="post-tags">
+                            # Java
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <p><a name="Uhq1Z"></a></p>
+<h1 id="string新增方法">String新增方法</h1>
+<ol>
+<li>isBlank()：判断字符串是否为空白</li>
+<li>strip()：去除首尾空白</li>
+<li>stripTrailing()：去除尾部空格</li>
+<li>stripLoading()：去除首部空格</li>
+<li>repeat(int count)：复制字符串</li>
+<li>lines().count()：行数统计<br>
+<a name="PDR2I"></a></li>
+</ol>
+<h1 id="optional加强">Optional加强</h1>
+<p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/Optional%E5%A2%9E%E5%BC%BA.png#crop=0&amp;crop=0&amp;crop=1&amp;crop=1&amp;id=PZMGY&amp;originHeight=506&amp;originWidth=1407&amp;originalType=binary&amp;ratio=1&amp;rotation=0&amp;showTitle=false&amp;status=done&amp;style=none&amp;title=" alt="" loading="lazy"><br>
+<a name="fhRwc"></a></p>
+<h1 id="局部变量类型推断的升级">局部变量类型推断的升级</h1>
+<p>在var上添加注解的语法格式，在jdk10中是不能实现的。在JDK11中加入了这样的语法</p>
+<pre><code class="language-java">//错误的形式 : 必须要有类型 , 可以加上 var
+//Consumer&lt;String&gt; con1 = (@Deprecated t) --&gt;System.out.println(t.toUpperCase());
+//正确的形式
+//使用 var 的好处是在使用 lambda 表达式时给参数加上注解。
+Consumer&lt;String&gt; con2 = ( (@Deprecated var t) --&gt;System. out .println(t.UpperCase());
+</code></pre>
+<p><a name="wi6wy"></a></p>
+<h1 id="全新的http客户端api">全新的HTTP客户端API</h1>
+<p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/HttpClient-1-20220312153039410.png" alt="" loading="lazy"><br /><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/HttpClient-2-20220312153039447.png" alt="" loading="lazy"><br>
+<a name="RApG4"></a></p>
+<h1 id="更简化的编译运行程序">更简化的编译运行程序</h1>
+<p>JDK11之前javac xxx.javajava xxx<br />JDK11及之后java xxx.java</p>
+<blockquote>
+<p><strong>注意：</strong><br>
+执行源文件中的第一个类，第一个类必须包含主方法<br />并且不可以使用其他源文件中的自定义类，本文件中的自定义类是可以使用的</p>
+</blockquote>
+<p><a name="u7ptS"></a></p>
+<h1 id="废弃nashorn引擎">废弃Nashorn引擎</h1>
+<p>废除Nashorn javascript 引擎 在后续版本准备移除掉，有需要的可以考虑使用 GraalVM。<br>
+<a name="wmh0f"></a></p>
+<h1 id="zgc">ZGC</h1>
+<ul>
+<li>GC 是 java 主要优势之一 。 然而当 GC 停顿太长 就会开始影响应用的响应时间 。 消除或者减少 GC 停顿时长 java 将对更广泛的应用场景是一个更有吸引力的平台 。 此外 现代系统中可用内存不断增长用户和程序员希望 JVM 能够以高效的方式充分利用这些内存 并且无需长时间的 GC 暂停时间 。</li>
+<li>ZGC A Scalable Low Latency Garbage Collector(Experimental)，这应该是 JDK 11 最为瞩目的特性没有之一。 但是后面带了 Experimental，说明这还不建议用到生产环境。ZGC 是一个并发，基于 region，压缩型的垃圾收集器只有 root 扫描阶段会STW( stop the world )因此 GC 停顿时间不会随着堆的增长和存活对象的增长而变长<br>
+<a name="K6VZ1"></a></li>
+</ul>
+<h2 id="优势">优势：</h2>
+<ol>
+<li>GC 暂停时间不会超过 10 ms</li>
+<li>既能处理几百兆的小堆也能处理几个T的大堆</li>
+<li>和G1相比应用吞吐能力不会下降超过15%</li>
+<li>为未来的GC功能和利用 colord 指针以及 Load barriers 优化奠定基础</li>
+<li>初始只支持 64 位系统</li>
+</ol>
+<ul>
+<li>ZGC 的设计目标是：支持 TB 级内存容量暂停时间低 10 ms 对整个程序吞吐量的影响小于15%。 将来还可以扩展实现机制，以支持不少令人兴奋的功能，例如多层堆(即热对象置于 DRAM 和冷对象置于 NVMe 闪存或压缩堆)<br>
+<a name="jltPJ"></a></li>
+</ul>
+<h1 id="其他新特性">其他新特性</h1>
+<ul>
+<li>Unicode 10</li>
+<li>Deprecate the Pack200 Tools and API</li>
+<li>新的 Epsilon 垃圾收集器</li>
+<li>完全支持 Linux 容器(包括 Docker)</li>
+<li>支持 G1 上的并行完全垃圾收集</li>
+<li>最新的 HTTPS 安全协议 TLS 1.3</li>
+<li>Java Flight Recorder</li>
+</ul>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://yeyuan1107.github.io/post/java10-xin-te-xing/" class="post-title gt-a-link">
+                    Java10新特性
+                </a>
+            </div>
+        
+
+        
+
+        
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">温故而知新</div>
+    <div class="social-container">
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+    </div>
+    <div>
+        Theme <a href="https://github.com/imhanjie/gridea-theme-pure" target="_blank">Pure</a>, Powered by <a
+                href="https://gridea.dev" target="_blank">Gridea</a> | <a href="https://yeyuan1107.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+</div>
+
+<script>
+  hljs.highlightAll()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

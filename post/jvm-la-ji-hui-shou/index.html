@@ -1,0 +1,784 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>JVM垃圾回收 | YBLOG</title>
+
+<link rel="shortcut icon" href="https://yeyuan1107.github.io/favicon.ico?v=1657077232781">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://yeyuan1107.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages//dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+    
+        <script src="https://cdn.jsdelivr.net/npm/mermaid@9.1.1/dist/mermaid.min.js"></script>
+        <script>mermaid.initialize({startOnLoad:true});</script> 
+    
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            YBLOG
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1657077232781"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    JVM垃圾回收
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2022-02-22 ·
+                    </time>
+                    
+                        <a href="https://yeyuan1107.github.io/tag/hAPdG4Pk-/" class="post-tags">
+                            # JVM
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <p><a name="Dee1j"></a></p>
+<h1 id="如何判断对象可以回收">如何判断对象可以回收</h1>
+<p><a name="KDBNf"></a></p>
+<h2 id="引用计数法">引用计数法</h2>
+<p>只要一个对象被其他变量所引用，那么该对象的计数加一，否则减一。当该对象引用计数变为0，那么就说明没有变量引用，可以当作垃圾回收<br>
+<a name="GVYSe"></a></p>
+<h3 id="存在问题">存在问题</h3>
+<figure data-type="image" tabindex="1"><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645603195966-317f5292-8997-4090-a195-d02fb97e6015-20220312195236110.png" alt="image.png" loading="lazy"></figure>
+<ul>
+<li>循环引用造成内存泄漏</li>
+<li>当没有变量引用A对象，也没有变量引用B对象，但是A和B相互引用，引用计数器为1，无法对其进行垃圾回收，导致内存泄漏<br>
+<a name="LQ6se"></a></li>
+</ul>
+<h2 id="可达性分析算法">可达性分析算法</h2>
+<ul>
+<li>Java所使用的方法</li>
+<li>确定一系列根对象(肯定不能当作垃圾回收的对象)，垃圾回收前首先对堆中所有对象进行扫描，看看每一个对象是否被根对象直接或者间接的引用。如果没有被根对象直接或间接的引用，那么就可以当作垃圾回收</li>
+<li>扫描堆中的对象，看是否能够沿着GC Root对象为起点的引用链找到该对象，找不到，表示可以回收</li>
+<li>可以被作为GC Root的对象(工具Memory Analyzer 可视化Java堆分析工具)
+<ul>
+<li>System Class：系统类、核心类</li>
+<li>Native Stack：本地方法引用的一些对象</li>
+<li>Busy Monitor：加锁的对象</li>
+<li>Thread：活动线程中的对象<br>
+<a name="CkjCo"></a></li>
+</ul>
+</li>
+</ul>
+<h2 id="四种引用">四种引用</h2>
+<ol>
+<li>强引用
+<ol>
+<li>只有所有GC Roots 对象都不通过【强号1用1引1用该对象，该对象才能被垃圾回收</li>
+</ol>
+</li>
+<li>软引用 (SoftReference)
+<ol>
+<li>仅有软引用引用该对象时，在垃圾回收后，内存仍不足时会再次出发垃圾回收，回收软引用对象</li>
+<li>可以配合引用队列来释放软引用自身</li>
+</ol>
+</li>
+<li>弱引用 (WeakReference)
+<ol>
+<li>仅有弱引用引用该对象时，在垃圾回收时，无论内存是否充足，都会回收弱引用对象</li>
+<li>可以配合引用队列来释放弱引1用自身</li>
+</ol>
+</li>
+<li>虛引用 (PhantomReference)
+<ol>
+<li>必须配合引用队列使用，主要配合 ByteBuffer 使用，被引用对象回收时，会将虚引用入队，由<br />Reference Handler 线程调用虚引用相关方法释放直接内存</li>
+</ol>
+</li>
+<li>终结器引用 (FinalReference)
+<ol>
+<li>无需手动编码，但其内部配合引用队列使用，在垃圾回收时，终结器引1用入队（被引1用对象暂时没有<br />被回收），再由 Finalizer 线程通过终结器引1用找到被引1用对象并调用它的finalize 方法，第二次GC 时才能回收被引用对象</li>
+</ol>
+</li>
+</ol>
+<p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645604622637-56b774e8-e033-4af2-b34d-81ce05d26bab-20220312195236455.png" alt="image.png" loading="lazy"><br />实线表示强引用<br>
+<a name="cNooy"></a></p>
+<h3 id="强引用">强引用</h3>
+<ul>
+<li>日常引用基本都为强引用，比如：new一个对象，对象通过赋值给一个变量，那么该变量强引用这个对象</li>
+<li>只要沿着GC Root的引用链可以找到该对象，那么该对象就不会被回收</li>
+<li>GC Root对他的引用都断开时，当垃圾回收发生时，该对象被回收<br>
+<a name="labEX"></a></li>
+</ul>
+<h3 id="软-弱引用">软、弱引用</h3>
+<ul>
+<li>只要对象没有没有被直接的强引用所引用，当垃圾回收发生时，都有可能被回收</li>
+</ul>
+<figure data-type="image" tabindex="2"><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645606649699-466a5547-db23-4e24-ba9e-b444bfd7b86e-20220312195236779.png" alt="image.png" loading="lazy"></figure>
+<ul>
+<li>软引用：没有强引用引用他，发生垃圾回收且垃圾回收后内存不足，就会回收软引用引用的对象</li>
+<li>弱引用：没有强引用引用他，发生垃圾回收，不管内存是否充足，都会回收弱引用引用的对象</li>
+<li>软、弱引用的对象被回收后，软、弱引用就会被放入引用队列，如果想要释放软、弱引用，需要使用引用队列进行释放</li>
+<li>可以配合引用队列使用，也可以不配合引用队列使用<br>
+<a name="AIm45"></a></li>
+</ul>
+<h4 id="软引用的应用">软引用的应用</h4>
+<pre><code class="language-java">//byte[]使用强引用，可能造成OutOfMemoryError
+//list 强引用--&gt; byte[]
+List&lt;byte[]&gt; list;
+
+//list 强引用--&gt; SoftReference 软引用--&gt; byte[]
+//不会造成OutOfMemoryError，当内存不足时byte[]会被垃圾回收
+List&lt;SoftReference&lt;byte[]&gt;&gt; list
+</code></pre>
+<p><a name="ThDRd"></a></p>
+<h4 id="软引用引用队列">软引用引用队列</h4>
+<pre><code class="language-java">ReferenceQueue&lt;byte[]&gt; queue
+//希望在byte[]被清理时，对应的SoftReference&lt;byte[]&gt;也被清理
+List&lt;SoftReference&lt;byte[]&gt;&gt; list
+//软引用对象关联了软引用队列，当软引用所关联的byte[]被回收时，软引用会加入到queue中去
+SoftReference&lt;byte[]&gt; ref = new SoftReference&lt;&gt;(new byte[], queue);
+//从队列中获取无用的软引用对象，并移除
+Referecne&lt;? extends byte[]&gt; poll = queue.poll();
+while(poll != null){
+    //移除列表中的软引用对象
+    list.remove(poll);
+    poll = queue.poll();
+}
+</code></pre>
+<p><a name="IGTJN"></a></p>
+<h4 id="弱引用的应用">弱引用的应用</h4>
+<pre><code class="language-java">//byte[]使用强引用，可能造成OutOfMemoryError
+//list 强引用--&gt; byte[]
+List&lt;byte[]&gt; list;
+
+//list 强引用--&gt; WeakReference 弱引用--&gt; byte[]
+//不会造成OutOfMemoryError，byte[]没有被强引用时，会被垃圾回收
+//在垃圾回收时会进行垃圾回收
+//弱引用的引用队列与软引用类似
+List&lt;WeakReference&lt;byte[]&gt;&gt; list
+</code></pre>
+<p><a name="NSHeJ"></a></p>
+<h3 id="虚引用">虚引用</h3>
+<ol>
+<li>当ByteBuffer对象创建，会产生一个Cleaner的虚引用对象，ByteBuffer会产生一块直接内存，并把直接内存地址传递给虚引用对象</li>
+</ol>
+<figure data-type="image" tabindex="3"><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645605803852-3bc4837a-4519-4c8f-83d5-4794b885e43e-20220312195237090.png" alt="image.png" loading="lazy"></figure>
+<ol start="2">
+<li>当ByteBuffer没有被强引用，ByteBuffer可以被垃圾回收掉</li>
+</ol>
+<figure data-type="image" tabindex="4"><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645605918244-b702c4b9-14bc-4ecc-879d-7840d277686d-20220312195237416.png" alt="image.png" loading="lazy"></figure>
+<ol start="3">
+<li>ByteBuffer被垃圾回收后，虚引用对象Cleaner进入到引用队列。</li>
+<li>ReferenceHandler会定时查看引用队列是否有虚引用对象Cleaner，如果有就调用其中的clean方法，从而释放直接内存</li>
+</ol>
+<figure data-type="image" tabindex="5"><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645606114585-c64711bb-e14d-433c-ba62-9551d5bc4dd1-20220312195237744.png" alt="image.png" loading="lazy"></figure>
+<ul>
+<li>与软、弱引用不同，虚引用必须配合引用队列使用<br>
+<a name="Tcntl"></a></li>
+</ul>
+<h3 id="终结器引用">终结器引用</h3>
+<ol>
+<li>当一个对象没有被强引用，且重写了finalize()方法，JVM会创建终结器引用</li>
+</ol>
+<figure data-type="image" tabindex="6"><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645606418844-28eed4aa-ec58-48b1-9886-212b1dd29359-20220312195237873.png" alt="image.png" loading="lazy"></figure>
+<ol start="2">
+<li>当被垃圾回收时，将终结器引用放入队列</li>
+</ol>
+<figure data-type="image" tabindex="7"><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645606440872-e3eda565-e279-4c96-ba33-8cbd3b33019b-20220312195238154.png" alt="image.png" loading="lazy"></figure>
+<ol start="3">
+<li>再由一个优先级很低的线程FinalizeHandler的线程查看引用队列中是否有终结器引用，如果有就找到对象调用对象的finalize()方法，在下一次垃圾回收时，就把该对象占用的内存真正回收掉了<br>
+<a name="PI68T"></a></li>
+</ol>
+<h1 id="垃圾回收算法">垃圾回收算法</h1>
+<p>JVM会根据具体情况在下面三种方法中选择适当的垃圾回收算法来进行垃圾回收<br>
+<a name="BvQek"></a></p>
+<h2 id="标记清除算法mark-sweep">标记清除算法(Mark Sweep)</h2>
+<ol>
+<li>标记，将没有被GC Root引用的对象标记出来</li>
+</ol>
+<figure data-type="image" tabindex="8"><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645614249994-b3ca2518-99b8-4bb5-a74b-3395fb22246f-20220312195238191.png" alt="image.png" loading="lazy"></figure>
+<ol start="2">
+<li>清除，将标记的对象进行清除，将对应内存的开始和结束地址放入空闲地址列表即可</li>
+</ol>
+<p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645614336971-9345a045-21c1-4380-b001-dc111958a874-20220312195238907.png" alt="image.png" loading="lazy"><br>
+<a name="kHn3e"></a></p>
+<h3 id="优点">优点</h3>
+<p>速度快<br>
+<a name="QnOO4"></a></p>
+<h3 id="缺点">缺点</h3>
+<p>会造成内存碎片<br>
+<a name="Z2EjA"></a></p>
+<h2 id="标记整理算法mark-compact">标记整理算法(Mark Compact)</h2>
+<ol>
+<li>标记，将没有被GC Root引用的对象标记出来</li>
+</ol>
+<figure data-type="image" tabindex="9"><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645614514893-91de49b5-c9c8-4849-ac6a-dfd654563c2a-20220312195238966.png" alt="image.png" loading="lazy"></figure>
+<ol start="2">
+<li>整理，将标记的对象进行清除，同时进行整理</li>
+</ol>
+<p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645614584722-79908789-bffb-46f3-965f-112d57eb6b5d-20220312195239019.png" alt="image.png" loading="lazy"><br>
+<a name="AWOOl"></a></p>
+<h3 id="优点-2">优点</h3>
+<p>解决内存碎片的问题<br>
+<a name="I7DzR"></a></p>
+<h3 id="缺点-2">缺点</h3>
+<p>由于整理涉及到对象的移动，导致效率较低<br>
+<a name="NESOw"></a></p>
+<h2 id="复制算法copy">复制算法(Copy)</h2>
+<ol>
+<li>将内存区域划分为大小相等的两块区域，一块为FROM另一块为TO</li>
+<li>标记，将没有被GC Root引用的对象标记出来</li>
+</ol>
+<figure data-type="image" tabindex="10"><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645614944342-0e6ea7d4-650e-40fc-8f5c-ceb16d98183f-20220312195239068.png" alt="image.png" loading="lazy"></figure>
+<ol start="3">
+<li>把FROM中存活的对象复制(复制过程中也会进行整理)到TO中，然后清除FROM中的对象</li>
+</ol>
+<figure data-type="image" tabindex="11"><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645615121705-e0866db1-3d26-4356-a562-cce9979e69b3-20220312195239360.png" alt="image.png" loading="lazy"></figure>
+<ol start="4">
+<li>TO变为FROM，FROM变TO</li>
+</ol>
+<p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645615197185-3b1414e9-4d30-4f85-9ab3-eee572d91525-20220312195239427.png" alt="image.png" loading="lazy"><br>
+<a name="iFMBG"></a></p>
+<h3 id="优点-3">优点</h3>
+<p>不会产生内存碎片<br>
+<a name="gx36P"></a></p>
+<h3 id="缺点-3">缺点</h3>
+<p>占用双倍的内存空间<br>
+<a name="XGUe7"></a></p>
+<h1 id="分代回收">分代回收</h1>
+<figure data-type="image" tabindex="12"><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645615499390-3d20ec05-fb67-4115-b640-21a13ea7e9f9-20220312195239483.png" alt="image.png" loading="lazy"></figure>
+<ul>
+<li>新生代垃圾回收更为频繁，回收一次耗时较少</li>
+<li>老年代垃圾回收频率较低，回收一次耗时较多</li>
+</ul>
+<ol>
+<li>新创建的对象，存放在伊甸园当中</li>
+<li>当继续创建对象时发现伊甸园内的内存空间不足，就会触发一次垃圾回收(Minor GC)
+<ol>
+<li>Minor GC根据可达性分析算法，对对象进行标记</li>
+<li>使用复制算法把存活的对象复制到幸存区TO中，同时将这些对象的寿命+1</li>
+<li>幸存区FROM变为TO，TO变成FROM</li>
+</ol>
+</li>
+<li>继续向伊甸园存放对象，当伊甸园再次内存空间不足时，再次触发第二次垃圾回收(Minor GC)
+<ol>
+<li>Minor GC根据可达性分析算法，对伊甸园中和幸存区中对象进行标记</li>
+<li>使用复制算法把存活的对象复制到幸存区TO中，同时将这些对象的寿命+1
+<ol>
+<li>当幸存区对象中的寿命达到了阈值(最大寿命为15)，将其晋升到老年代中</li>
+</ol>
+</li>
+<li>幸存区FROM变为TO，TO变成FROM</li>
+<li>Minor GC会引发stop the world(在垃圾回收时，暂停其他的用户线程，等垃圾回收动作结束，其他的用户线程才可以继续进行)</li>
+</ol>
+</li>
+<li>当老年代空间不足，先尝试触发Minor GC，如果之后空间仍不足，触发一次Full GC(Full GC同样会触发stop the world，且时间更长，采用的是标记整理或标记清除算法)
+<ol>
+<li>当老年代空间足够，新生代空间一定不足的情况下，大对象直接晋升到老年代</li>
+</ol>
+</li>
+<li>如果仍旧分配失败，触发OutOfMemoryError
+<ol>
+<li>一个线程的OutOfMemoryError不会导致整个进程结束<br>
+<a name="Trz34"></a></li>
+</ol>
+</li>
+</ol>
+<h2 id="相关vm参数">相关VM参数</h2>
+<table>
+<thead>
+<tr>
+<th>含义</th>
+<th>参数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>堆初始大小</td>
+<td>-Xms</td>
+</tr>
+<tr>
+<td>堆最大大小</td>
+<td>-Xmx或-XX:MaxHeapSize=size</td>
+</tr>
+<tr>
+<td>新生代大小</td>
+<td>-Xmn或(-XX:NewSize=size+ -XX:MaxNewSize=size)</td>
+</tr>
+<tr>
+<td>幸存区比例(动态)</td>
+<td>-XX:InitialSurvivorRatio=ratio和-XX:+UseAdaptiveSizePolicy</td>
+</tr>
+<tr>
+<td>幸存区比例</td>
+<td>-XX:SurvivorRatio=ratio</td>
+</tr>
+<tr>
+<td>晋升阈值</td>
+<td>-XX:MaxTenuringThreshold=threshold</td>
+</tr>
+<tr>
+<td>晋升详情</td>
+<td>-XX:+PrintTenuringDistribution</td>
+</tr>
+<tr>
+<td>GC详情</td>
+<td>-XX:+PrintGCDetails -verbose:gc</td>
+</tr>
+<tr>
+<td>FullGC前MinorGC</td>
+<td>-XX:+ScavengeBeforeFullGC</td>
+</tr>
+</tbody>
+</table>
+<p><a name="ry4E1"></a></p>
+<h2 id="分代垃圾回收详情">分代垃圾回收详情</h2>
+<ol>
+<li>初始情况</li>
+</ol>
+<figure data-type="image" tabindex="13"><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645672461032-8452a2f1-0f4b-46cb-a573-630ab6c1e7bb-20220312195239790.png" alt="image.png" loading="lazy"></figure>
+<ol start="2">
+<li>执行后情况</li>
+</ol>
+<p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645672435742-05da2772-9f32-4a00-8d82-004f0e8acf3a-20220312195240083.png" alt="image.png" loading="lazy"><br /><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645672510315-4c6b0fb4-6052-47fe-a49b-71d608e05b48-20220312195240427.png" alt="image.png" loading="lazy"></p>
+<ol start="3">
+<li>触发第二次GC</li>
+</ol>
+<p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645673297389-f9f77314-6614-4d08-8d5c-2f6d531f725e-20220312195241234.png" alt="image.png" loading="lazy"><br>
+<a name="u03OF"></a></p>
+<h1 id="垃圾回收器">垃圾回收器</h1>
+<p><a name="ET8h1"></a></p>
+<h2 id="串行的垃圾回收器">串行的垃圾回收器</h2>
+<ul>
+<li>单线程(其他线程都暂停)</li>
+<li>堆内存较小时，适合个人电脑</li>
+</ul>
+<p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645685403294-22290a4b-316b-43ef-a214-dd1f1691903e-20220312195241322.png" alt="image.png" loading="lazy"><br />Serial：工作在新生代，采用的是复制算法<br />SerialOld：工作在老年代，采用的是标记整理算法<br>
+<a name="r2P99"></a></p>
+<h2 id="吞吐量优先的垃圾回收器">吞吐量优先的垃圾回收器</h2>
+<ul>
+<li>多线程</li>
+<li>堆内存较大的场景，需要多核cpu来支持</li>
+<li>让单位时间内，stop the world的时间最短，降低垃圾回收时间在工作时间的占比</li>
+</ul>
+<p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645685722473-d75e6551-6e3c-48d6-a754-acd786439173-20220312195241655.png" alt="image.png" loading="lazy"><br />并行的，多个垃圾回收器并行运行，但是垃圾回收期间不允许用户线程继续运行<br />UseParallelGC：作用在新生代，使用复制算法<br />UseParallelOldGC：作用在老年代，使用标记整理算法<br />ParallelGCThreads：控制ParallelGC线程数<br />UseAdaptiveSizePolicy：采用自适应的大小调整策略，调整新生代大小(动态调整伊甸园和幸存区比例，以及晋升阈值)<br />GCTimeRatio ：调整垃圾回收与总时间的占比(1/(1+ratio))(ratio默认为99)垃圾回收时间占总时间的最大比例，一般修改为19<br />MaxGCPauseMillis：默认值为200ms，单次垃圾回收暂停最大时间，与GCTimeRatio成反比需要折中(当堆变大，单词回收时间变长，当堆变小，垃圾回收占比增加，减少吞吐量)</p>
+<p><a name="XMz8F"></a></p>
+<h2 id="响应时间优先的垃圾回收器">响应时间优先的垃圾回收器</h2>
+<ul>
+<li>多线程</li>
+<li>堆内存较大的场景，需要多核cpu来支持</li>
+<li>让单次的stop the world的时间尽可能的短，降低每次垃圾回收所需要的时间</li>
+</ul>
+<p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645756703388-0ef82847-33ee-402b-b29e-d6de5b6ded3c-20220312195242020.png" alt="image.png" loading="lazy"><br /><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645778356967-b6ffad86-4926-4aff-8312-e8ffb0054ff8-20220312195242421.png" alt="image.png" loading="lazy"><br />使用标记清除算法的垃圾回收器，且为并发的，用户线程与垃圾回收线程并发进行<br />UseConMarkSweepGC：工作在老年代，使用标记清除算法，如果出现并发失败的问题使用SerialOld来进行补救，使用标记整理的方法<br />UseParNewGC：工作在新生代的垃圾回收器：复制算法<br />ParallelGCThreads：并行的垃圾回收线程数<br />ConGCThreads：并发的垃圾回收线程数，一般为ParallelGCThreads的四分之一<br />CMSInitiatingOccupancyFraction：内存占比到多少百分比时来进行垃圾回收<br />CMSScavengeBeforeRemark：在重新标记前对新生代进行一次垃圾回收，减少重新标记时垃圾回收器扫描的数量，减少时间</p>
+<ol>
+<li>老年代发生了内存不足，线程到达安全点暂停</li>
+<li>CMS(ConcMarkSweepGC)进行初始标记，依然需要stop the world</li>
+<li>用户线程可以回复运行，垃圾回收线程并发标记</li>
+<li>并发标记后，stop the world 重新标记(线程中的资源可能发生改变)</li>
+<li>用户线程恢复运行，垃圾回收器进行并发的清理</li>
+<li>运行过程中可能产生新的垃圾，成为浮动垃圾，需要在下次垃圾回收时进行回收</li>
+<li>需要预留空间保留浮动垃圾来保证用户线程的运行</li>
+<li>碎片太多时，无法继续存放对象，进行一次SerialGC<br>
+<a name="KF0BV"></a></li>
+</ol>
+<h2 id="g1garbage-one">G1(garbage one)</h2>
+<p><a name="faPGe"></a></p>
+<h3 id="定义">定义</h3>
+<p>Garbage First<br />JDK9默认，废弃了CMS垃圾回收器<br>
+<a name="fB32P"></a></p>
+<h3 id="适用场景">适用场景</h3>
+<ul>
+<li>同时注重吞吐量和低延迟，默认的暂停目标为200ms</li>
+<li>超大堆内存，会将堆划分为多个大小相等的Region</li>
+<li>整体上是标记+整理算法，两个区域之间是复制算法<br>
+<a name="kJcmM"></a></li>
+</ul>
+<h3 id="相关jvm参数">相关JVM参数</h3>
+<p>-XX：+UseG1GC：JDK9以后默认开启，无需显式启用<br />-XX：G1HeapRegionSize=size：设定Region大小<br />-XX：MaxGCPauseMillis=time：设定暂停目标</p>
+<p><a name="D2p5U"></a></p>
+<h3 id="g1垃圾回收阶段">G1垃圾回收阶段</h3>
+<figure data-type="image" tabindex="14"><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645758891985-f7372bfc-c0ac-46ea-b3e9-18b333c31042-20220312195242727.png" alt="image.png" loading="lazy"></figure>
+<ol>
+<li>新生代的垃圾收集</li>
+<li>老年代内存超过阈值，在新生代垃圾回收的同时进行并发的标记</li>
+<li>混合收集：对新生代和老年代都进行垃圾收集<br>
+<a name="GtQOD"></a></li>
+</ol>
+<h3 id="youngcollection">YoungCollection</h3>
+<ul>
+<li>会STW</li>
+</ul>
+<p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645759075130-53932929-d02f-4752-aa31-7f6841210f0b-20220312195243029.png" alt="image.png" loading="lazy"><br />每个方格代表一个Region(该Region可以为伊甸园或幸存区或老年代)，空白表示为空闲区域，E代表伊甸园区域，S代表幸存区，O代表老年代<br /><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645759217710-9c726b97-87eb-4040-9189-5f05a88bb190-20220312195243103.png" alt="image.png" loading="lazy"><br />当伊甸园将要被占满触发新生代的垃圾回收(YoungCollection也会STW)，通过复制算法放入幸存区<br /><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645759347346-c12fbed2-184b-473b-acb7-df48fb78b5fb-20220312195243172.png" alt="image.png" loading="lazy"><br />幸存区的对象较多，或年龄超过阈值，再次触发新生代的垃圾回收，一部分对象进入到老年代，另一部分被垃圾回收或者拷贝到另一个幸存区</p>
+<p><a name="NvKHq"></a></p>
+<h3 id="youngcollection-concurrentmark">YoungCollection + ConcurrentMark</h3>
+<ul>
+<li>在YoungGC时会进行GCRoot的初始标记</li>
+<li>老年代占用堆空间比例达到阈值时，进行并发标记(不会STW)，比例由<code>-XX:InitiatingHeapOccupancyPersent=percent</code>确定默认为45%</li>
+</ul>
+<p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645759737735-56ebe5da-e2a7-4428-a6b9-aa807c61da04-20220312195243887.png" alt="image.png" loading="lazy"><br>
+<a name="wkh3j"></a></p>
+<h3 id="mixed-collection">Mixed Collection</h3>
+<p>会对E、S、O进行全面的垃圾回收</p>
+<ul>
+<li>最终标记(Remark)会STW，并发标记中可能漏掉的对象，浮动垃圾</li>
+<li>拷贝存活(Evacuation)会STW</li>
+<li>新生代：复制算法(黑色箭头)</li>
+<li>老年代：复制算法(红色箭头，G1根据最大暂停时间选择性地进行一个垃圾回收，所以不是所有老年代都进行垃圾回收，选择垃圾最多的老年代区域进行垃圾回收)</li>
+<li>-XX:MaxGCPauseMillis=ms</li>
+</ul>
+<p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645768341109-c20906fb-1d57-4b54-b551-052363331770-20220312195243963.png" alt="image.png" loading="lazy"><br>
+<a name="Jadtx"></a></p>
+<h3 id="fullgc">FullGC</h3>
+<ul>
+<li>SerialGC
+<ul>
+<li>新生代内存不足发生的垃圾收集 -Minor GC</li>
+<li>老年代内存不足发生的垃圾收集 -FullGC</li>
+</ul>
+</li>
+<li>ParallelGC
+<ul>
+<li>新生代内存不足发生的垃圾收集 -Minor GC</li>
+<li>老年代内存不足发生的垃圾收集 -FullGC</li>
+</ul>
+</li>
+<li>CMS
+<ul>
+<li>新生代内存不足发生的垃圾收集 -Minor GC</li>
+<li>老年代内存不足
+<ul>
+<li>并发收集阶段，不为FullGC</li>
+<li>并发失败，退化为串行垃圾收集，FullGC</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>G1
+<ul>
+<li>新生代内存不足发生的垃圾收集 -Minor GC</li>
+<li>老年代内存不足
+<ul>
+<li>当老年代内存占比超过阈值时，触发并发标记阶段及混合收集的阶段
+<ul>
+<li>如果回收速度高于线程垃圾产生速度时，为并发垃圾收集</li>
+<li>如果垃圾回收速度低于线程垃圾产生速度，并发收集失败，退化为多线程的垃圾收集-FullGC<br>
+<a name="LkYRq"></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="young-collection跨代引用">Young Collection跨代引用</h3>
+<ul>
+<li>新生代回收的跨代引用(老年代引用新生代)问题</li>
+</ul>
+<figure data-type="image" tabindex="15"><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645769997915-ad60690c-0fbc-4d0c-a9b8-5fac3e907641-20220312195244039.png" alt="image.png" loading="lazy"></figure>
+<ul>
+<li>把老年代分为再次戏分为card，如果card中的对象引用了新生代中的对象，那么该card被标记为脏card</li>
+</ul>
+<figure data-type="image" tabindex="16"><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645770208668-d8f55fad-847d-4aef-b505-5badfbb92038-20220312195244379.png" alt="image.png" loading="lazy"></figure>
+<ul>
+<li>新生代中由Remembered Set记录Incoming Reference(记录外部对他的引用)，记录都有哪些脏card</li>
+<li>在对新生代标记时，先根据Remembered Set找到对应脏card，再从脏card进行GCRoot</li>
+<li>在引用变更时通过post-write barrier + dirty card queue，来标记脏card(异步操作，先将指令放在队列中，之后由一个线程完成脏卡的更新操作)</li>
+<li>concurrent refinement threads更新Remembered Set<br>
+<a name="UIARk"></a></li>
+</ul>
+<h3 id="remark重新标记阶段需要对着书重新整理">Remark(重新标记阶段)(需要对着书重新整理)</h3>
+<ul>
+<li>pre-write barrier + satb_mark_queue</li>
+</ul>
+<figure data-type="image" tabindex="17"><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645770641393-cb09f5c6-852b-4004-ac69-ca1a3dd1f4d3-20220312195244431.png" alt="image.png" loading="lazy"></figure>
+<blockquote>
+<p>上图表示并发标记阶段时的对象处理状态，<br>
+黑色的指标记完成，且有对象引用的。<br>
+灰色表示正在标记处理的<br>
+白色表示还没有进行标记处理的</p>
+</blockquote>
+<p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645770970758-e0cbb02c-3920-464d-94c7-3b68bafc079e-20220312195244489.png" alt="image.png" loading="lazy"><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645771025992-f5a0b2e2-73a0-4205-bd2d-432523a34291-20220312195244772.png" alt="image.png" loading="lazy"></p>
+<ol>
+<li>B正在处理中，在处理后变为黑色</li>
+</ol>
+<figure data-type="image" tabindex="18"><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645771070059-f17553a0-9763-45c6-8653-b050f34b00c2-20220312195244810.png" alt="image.png" loading="lazy"></figure>
+<ol start="2">
+<li>如果A引用了C，但是A已经完成标记，不会再对A进行标记，所以无法对C进行标记</li>
+<li>但是C依然是被引用的，所以不能被垃圾回收掉</li>
+</ol>
+<p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645771297668-1bb2a57b-1a6c-4a81-8407-9e64d6bf37e9-20220312195244845.png" alt="image.png" loading="lazy"><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645771355493-66fd4e17-f307-447a-b4b6-2f1b3221f8ac-20220312195244905.png" alt="image.png" loading="lazy"></p>
+<ol start="4">
+<li>当对象的引用发生改变，触发写屏障代码，将该对象放入到一个队列中，并置为灰色。在进入到重新标记阶段时，对该队列中的对象重新进行一个检查<br>
+<a name="I1ekJ"></a></li>
+</ol>
+<h3 id="jdk8u20字符串去重">JDK8u20字符串去重</h3>
+<ul>
+<li>优点：节省大量内存</li>
+<li>缺点：略微多占用了CPU时间，新生代回收时间略微增加</li>
+</ul>
+<p>-XX:+UseStringDeduplication</p>
+<pre><code class="language-java">String s1 = new String(&quot;hello&quot;);//char[]{'h','e','l','l','o'}
+String s2 = new String(&quot;hello&quot;);//char[]{'h','e','l','l','o'}
+</code></pre>
+<ul>
+<li>将所有新分配的字符串放入一个队列</li>
+<li>当新生代回收时，G1并发检查是否有字符串重复</li>
+<li>如果它们值一样，让它们引用同一个char[]</li>
+<li>注意，与String.intern()不一样
+<ul>
+<li>String.intern()关注的是字符串对象</li>
+<li>而字符串去重关注的是char<a href="String%E5%AF%B9%E8%B1%A1%E5%86%85%E7%9A%84char%5B%5D%E6%95%B0%E7%BB%84%E5%BC%95%E7%94%A8%E6%94%B9%E5%8F%98%EF%BC%8CString%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%BC%95%E7%94%A8%E4%B8%8D%E5%8F%98"></a></li>
+<li>在JVM内部，使用了不同的字符串表<br>
+<a name="fLgOO"></a></li>
+</ul>
+</li>
+</ul>
+<h3 id="jdk8u40并发标记类卸载">JDK8u40并发标记类卸载</h3>
+<p>所有对象都经过并发标记后，就能知道哪些类不再被使用，当一个类加载器的所有类都不再使用，则卸载它所加载的所有类<br />-XX:+ClassUnloadingWithConcurrentMark默认启用<br>
+<a name="GTtk1"></a></p>
+<h3 id="jdk8u60回收巨型对象">JDK8u60回收巨型对象</h3>
+<figure data-type="image" tabindex="19"><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645773276792-ac88935c-20ea-45ae-aecd-5b0f787258fd-20220312195245215.png" alt="image.png" loading="lazy"></figure>
+<ul>
+<li>一个对象大于Region的一半时，称之为巨型对象</li>
+<li>G1不会对巨型对象进行拷贝</li>
+<li>回收时被优先考虑</li>
+<li>G1会跟踪老年代所有incoming引用，当巨型对象的incoming为0时，巨型对象可以在新生代垃圾回收时处理掉<br>
+<a name="rqruU"></a></li>
+</ul>
+<h3 id="jdk9并发标记起始时间的调整">JDK9并发标记起始时间的调整</h3>
+<ul>
+<li>并发标记必须在堆空间占满前完成，否则退化为FullGC</li>
+<li>JDK9之前需要使用<code>-XX:InitiatingHeapOccupancyPercent</code></li>
+<li>JDK9可以动态调整
+<ul>
+<li><code>-XX:InitiatingHeapOccupancyPercent</code>用来设置初始值</li>
+<li>进行数据采样并动态调整</li>
+<li>总会添加一个安全的存档空间<br>
+<a name="joAjF"></a></li>
+</ul>
+</li>
+</ul>
+<h1 id="垃圾回收调优">垃圾回收调优</h1>
+<p><a name="HjJ1t"></a></p>
+<h2 id="调优的领域">调优的领域</h2>
+<ul>
+<li>内存</li>
+<li>锁竞争</li>
+<li>cpu占用</li>
+<li>io<br>
+<a name="cu0gm"></a></li>
+</ul>
+<h2 id="确定调优目标">确定调优目标</h2>
+<ul>
+<li>低延迟还是高吞吐量，选择合适的回收站
+<ul>
+<li>科学计算适合高吞吐量</li>
+<li>web项目适合低延迟</li>
+</ul>
+</li>
+<li>选择合适的垃圾回收器
+<ul>
+<li>低延迟：CMS、G1、ZGC</li>
+<li>高吞吐量：ParallelGC</li>
+</ul>
+</li>
+<li>可以通过更换虚拟机来进行调优：例如，Zing虚拟机<br>
+<a name="rSxQG"></a></li>
+</ul>
+<h2 id="最快的gc是不发生gc">最快的GC是不发生GC</h2>
+<ul>
+<li>查看FullGC前后的内存占用，考虑如下的问题</li>
+<li>数据是不是太多
+<ul>
+<li>resultSet = statement.executeQuery(&quot;select * from 表&quot;)</li>
+</ul>
+</li>
+<li>数据表示是否太臃肿
+<ul>
+<li>对象图</li>
+<li>对象大小</li>
+</ul>
+</li>
+<li>是否存在内存泄漏
+<ul>
+<li>static Map map 一直向静态map中存放对象</li>
+<li>熟练使用软弱引用，使用缓存时，使用第三方的缓存实现<br>
+<a name="ww9gt"></a></li>
+</ul>
+</li>
+</ul>
+<h2 id="新生代调优">新生代调优</h2>
+<p><a name="z5bCA"></a></p>
+<h3 id="新生代特点">新生代特点</h3>
+<ul>
+<li>所有的new操作的内存分配非常廉价
+<ul>
+<li>TLAB thread-local allocation buffer
+<ul>
+<li>每个线程都会在伊甸园中被分配一块私有的区域</li>
+<li>当线程new一个对象时，如果TLAB有空间，那么优先在TLAB分配内存</li>
+<li>减少了线程分配内存时的冲突</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>死亡对象的回收代价是零</li>
+<li>大部分对象用过即死</li>
+<li>MinorGC的时间远远低于FullGC<br>
+<a name="kKa7V"></a></li>
+</ul>
+<h3 id="调优">调优</h3>
+<p>-Xmn(设置新生代的初始大小和最大大小)：Oracle建议新生代大小为整个堆大小的25%-50%，刚开始时随着新生代的容量增大，吞吐量逐渐升高，但是到达一定大小后，吞吐量随着新生代容量增大会减少(但是减少的程度较小)(新生代容量太大会导致老年代容量变少，容易触发FullGC，导致垃圾回收消耗时间变长)。建议设置为<code>并发量*(请求响应过程中产生对象)</code><br />幸存区：大小能保留<code>当前活跃对象+需要晋升对象</code> <br />幸存区晋升阈值：晋升阈值配置得当，让长时间存活对象尽快晋升<br />-XX:MaxTenuringThreshold=threshold：调整最大晋升阈值<br />-XX:+PrintTenuringDistribution：显示晋升详细信息<br>
+<a name="naN9Q"></a></p>
+<h2 id="老年代调优">老年代调优</h2>
+<p>以CMS为例</p>
+<ul>
+<li>CMS的老年代内存越大越好</li>
+<li>先尝试不做调优，如果没有FullGC那么已经很好了，否则先尝试调优新生代</li>
+<li>观察发生FullGC时老年代内存占用，将老年代内存预设调大1/4-1/3
+<ul>
+<li>-XX:CMSInitiatingOccupancyFraction=percent超过百分比进行CMS垃圾回收<br>
+<a name="i48zJ"></a></li>
+</ul>
+</li>
+</ul>
+<h2 id="调优案例">调优案例</h2>
+<p><a name="jS1vq"></a></p>
+<h3 id="1-fullgc和minorgc频繁且minorgc更频繁">1. FullGC和MinorGC频繁，且MinorGC更频繁</h3>
+<p>新生代空间小，且会造成生命周期短的对象进入到老年代从而引发FullGC<br />通过增大新生代空间，同时提高幸存区晋升阈值，让生命周期较短的对象留在新生代中<br>
+<a name="BRQdA"></a></p>
+<h3 id="2请求高峰期发生fullgc单词暂停时间特别长cms">2.请求高峰期发生FullGC，单词暂停时间特别长(CMS)</h3>
+<p>查看GC详情，发现重新标记耗时较多<br />在重新标记前进行一次新生代的垃圾回收<br />-XX:CMSScavengeBeforeRemark<br>
+<a name="OQZGJ"></a></p>
+<h3 id="3老年代充裕情况下发生fullgcjdk17-cms">3.老年代充裕情况下，发生FullGC(JDK1.7 CMS)</h3>
+<p>永久带空间不足</p>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://yeyuan1107.github.io/post/jvm-nei-cun-jie-gou/" class="post-title gt-a-link">
+                    JVM内存结构
+                </a>
+            </div>
+        
+
+        
+
+        
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">温故而知新</div>
+    <div class="social-container">
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+    </div>
+    <div>
+        Theme <a href="https://github.com/imhanjie/gridea-theme-pure" target="_blank">Pure</a>, Powered by <a
+                href="https://gridea.dev" target="_blank">Gridea</a> | <a href="https://yeyuan1107.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+</div>
+
+<script>
+  hljs.highlightAll()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,1021 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>JavaIO流 | YBLOG</title>
+
+<link rel="shortcut icon" href="https://yeyuan1107.github.io/favicon.ico?v=1657077232781">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://yeyuan1107.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages//dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+    
+        <script src="https://cdn.jsdelivr.net/npm/mermaid@9.1.1/dist/mermaid.min.js"></script>
+        <script>mermaid.initialize({startOnLoad:true});</script> 
+    
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            YBLOG
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1657077232781"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    JavaIO流
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2021-11-24 ·
+                    </time>
+                    
+                        <a href="https://yeyuan1107.github.io/tag/wZpx5Scef/" class="post-tags">
+                            # Java
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <p><a name="z7SAF"></a></p>
+<h1 id="file类的使用">File类的使用</h1>
+<p>java.io.File类：文件和文件目录路径的抽象表示形式，与平台无关。File类的一个对象，代表一个文件或一个文件目录(文件夹)，该类可以新建、删除、重命名文件和目录，但不能访问文件内容本身。如果需要访问文件内容本身，则需要使用输入/输出流想要在Java程序中表示一个真实存在的文件或目录，那么必须有一个File对象，但是Java程序中的一个File对象，可能没有一个真实存在的文件或目录File对象可以作为参数传递给流的构造器</p>
+<pre><code class="language-java">//创建一个File对象时，如果硬盘中有一个真实的文件或目录存在时，创建File对象时，各个属性会显示赋值。否则，出了指定的目录和路径之外，其他的属性都是取成员变量的默认值
+//以pathname为路径创建创建File对象，可以是绝对路径或相对路径，如果为相对路径则默认的当前路径在系统属性user.dir中存储
+//绝对路径：是一个固定的路径，从盘符开始
+//相对路径：是相对于某个位置开始，IDEA中如果为单元测试，相对路径为当前module下，否则为project下
+//分隔符：Windox和Dos用&quot;\&quot;,UNIX和URL用&quot;/&quot;,跨平台使用File.separator作为分隔符
+public File(String pathname)
+//windows和Dos
+File file1 = new File(&quot;d:\\atguigu\\info.txt&quot;);
+//通用
+File file2 = new File(&quot;d:&quot;+ File.separator + &quot;atguigu&quot;+ File.separator + &quot;info.txt&quot;);
+//UNIX和URL
+File file3 = new File(&quot;d:/atguigu/info.txt&quot;);
+//以parent为父路径，child为子路径创建FIle对象
+public File(String parent, String child)
+//根据一个父File对象和子文件路径创建File对象
+public File(File parent， String child)
+</code></pre>
+<p><a name="EcxtQ"></a></p>
+<h2 id="常用方法">常用方法</h2>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>File 类的获取功能</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>public String getAbsolutePath()</strong></td>
+<td>获取绝对路径</td>
+</tr>
+<tr>
+<td>public String getPath()</td>
+<td>获取路径</td>
+</tr>
+<tr>
+<td>public String getName()</td>
+<td>获取名称</td>
+</tr>
+<tr>
+<td><strong>public String getParent()</strong></td>
+<td>获取上层文件目录路径。 若无返回 null</td>
+</tr>
+<tr>
+<td>public long length()</td>
+<td>获取文件长度即：字节数。不能获取目录的长度。</td>
+</tr>
+<tr>
+<td>public long lastModified()</td>
+<td>获取最后一次的修改时间毫秒值</td>
+</tr>
+<tr>
+<td>public String[] list</td>
+<td>获取指定目录下的所有文件或者文件目录的名称数组</td>
+</tr>
+<tr>
+<td>public File[] listFiles</td>
+<td>获取指定目录下的所有文件或者文件目录的File数组</td>
+</tr>
+<tr>
+<td>File 类的重命名功能</td>
+<td></td>
+</tr>
+<tr>
+<td>public boolean renameTo(File dest)</td>
+<td>把文件重命名为指定的文件路径</td>
+</tr>
+<tr>
+<td>File 类的判断功能</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>public boolean isDirectory()</strong></td>
+<td>判断是否是文件目录</td>
+</tr>
+<tr>
+<td><strong>public boolean isFile()</strong></td>
+<td>判断是否是文件</td>
+</tr>
+<tr>
+<td><strong>public boolean exists()</strong></td>
+<td>判断是否存在</td>
+</tr>
+<tr>
+<td>public boolean canRead()</td>
+<td>判断是否可读</td>
+</tr>
+<tr>
+<td>public boolean canWrite()</td>
+<td>判断是否可写</td>
+</tr>
+<tr>
+<td>public boolean isHidden()</td>
+<td>判断是否隐藏</td>
+</tr>
+<tr>
+<td>File 类的创建功能</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>public boolean createNewFile()</strong></td>
+<td>创建文件。 若文件存在则不创建返回false</td>
+</tr>
+<tr>
+<td>public boolean mkdir()</td>
+<td>创建文件目录。 如果此文件目录存在就不创建了。如果此文件目录的上层目录不存在也不创建。</td>
+</tr>
+<tr>
+<td>public boolean mkdirs()</td>
+<td>创建文件目录。如果上层文件目录不存在一并创建</td>
+</tr>
+<tr>
+<td>注意事项：如果你创建文件或者文件目录没有写盘符路径那么默认在项目路径下。</td>
+<td></td>
+</tr>
+<tr>
+<td>File 类的删除功能</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>public boolean delete()</strong></td>
+<td>删除文件或者文件夹</td>
+</tr>
+<tr>
+<td>删除注意事项：Java中的删除不走回收站 。要删除一个文件目录请注意该文件目录内不能包含文件或者文件目录</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="YrdXm"></a></p>
+<h1 id="io流原理及流的分类">IO流原理及流的分类</h1>
+<ul>
+<li>I/O 是 Input/Output 的缩写， I/O 技术是非常实用的技术， 用于处理设备之间的数据传输 。 如读/写文件，网络通讯等。</li>
+<li>Java 程序中，对于数据的输入 输出操作 以 “流(stream)“ 的方式进行。</li>
+<li>java.io 包下提供了各种“流”类和接口，用以获取不同种类的数据，并通过标准的方法输入或输出数据。</li>
+<li>输入：读取外部数据(磁盘、光盘等存储设备的数据)到程序(内存)中</li>
+<li>输出：将程序(内存)数据输出到外部设备中(磁盘、光盘等存储设备中)<br>
+<a name="cKcRo"></a></li>
+</ul>
+<h2 id="流的分类">流的分类</h2>
+<ol>
+<li>按照操作数据单位不同氛围：字节流(8bit)，字符流(16bit)</li>
+<li>按数据流的流向不同氛围：输入流，输出流</li>
+<li>按流的角色不同分为：节点流(作用在文件上(文件流FileInputStream等))，处理流(作用在已有流的基础之上(缓冲流，转换流))</li>
+</ol>
+<p>Java的IO流共设计40多个类，实际上非常规则，都是从如下4个抽象基类派生的<br />由这四个类派生出来的子类名称都是以其父类名作为子类名后缀</p>
+<table>
+<thead>
+<tr>
+<th>抽象基类</th>
+<th>字节流</th>
+<th>字符流</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>输入流</td>
+<td>InputStream</td>
+<td>Reader</td>
+</tr>
+<tr>
+<td>输出流</td>
+<td>OutputStream</td>
+<td>Writer</td>
+</tr>
+</tbody>
+</table>
+<p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1646234267069-fa7d638e-2993-4160-83c1-9e7b813d1cf2-20220312141355177-20220312152446194.png" alt="image.png" loading="lazy"><br /><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1646234272028-ac8b824f-e894-430e-ab28-500fc9559510-20220312141355514-20220312152446576.png" alt="image.png" loading="lazy"><br>
+<a name="CGJ2P"></a></p>
+<h2 id="字符流">字符流</h2>
+<blockquote>
+<p>不能使用字符流来处理(图片，视频)数据</p>
+</blockquote>
+<p><a name="xFFxU"></a></p>
+<h3 id="reader">Reader</h3>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>int read()</td>
+<td>读取单个字符。作为整数读取的字符范围在0到65535之间(0x0000 - 0xffff)2个字节的 Unicode码如果已到达流的末尾则返回-1</td>
+</tr>
+<tr>
+<td>int read(char[] cbuf)</td>
+<td>将字符读入数组。如果已到达流的末尾则返回-1。否则返回本次读取的字符数。</td>
+</tr>
+<tr>
+<td>int read(char[] cbuf,int off,int len)</td>
+<td>将字符读入数组的某一部分。 存到数组cbuf中从off处开始存储最多读len个字符。如果已到达流的末尾则返回-1。 否则返回本次读取的字符数。</td>
+</tr>
+<tr>
+<td>public void close() throws IOException</td>
+<td>关闭此输入流并释放与该流关联的所有系统资源。</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-java">//1. File的实例化，读入文件一定要存在，否则报异常
+File file = new File(String pathname);
+//2. FileReader的实例化
+FileReader fileReader = new FileReader(File file);
+//3. 读入的操作
+fileReader.read();
+//4. 资源的关闭，应当放到finally中
+fileReader.close()
+</code></pre>
+<p><a name="ooD4r"></a></p>
+<h3 id="writer">Writer</h3>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>void write(int c)</td>
+<td>写入单个字符。要写入的字符包含在给定整数值的16个低位中，16高位被忽略。即写入0到65535之间的Unicode码。</td>
+</tr>
+<tr>
+<td>void write(char[] cbuf)</td>
+<td>写入字符数组。</td>
+</tr>
+<tr>
+<td>void write(char[] cbuf,int off,int len)</td>
+<td>写入字符数组的某一部分。从 off 开始写入len个字符</td>
+</tr>
+<tr>
+<td>void write(String str)</td>
+<td>写入字符串。</td>
+</tr>
+<tr>
+<td>void write(String str,int off,int len)</td>
+<td>写入字符串的某一部分。</td>
+</tr>
+<tr>
+<td>void flush()</td>
+<td>刷新该流的缓冲则立即将它们写入预期目标。</td>
+</tr>
+<tr>
+<td>public void close() throws IOException</td>
+<td>关闭此输出流并释放与该流关联的所有系统资源。</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-java">//1. File的实例化，输出操作，文件不一定要存在
+	//文件不存在，在输出过程中自动创建此文件
+	//文件存在根据FileWriter构造器的参数：
+		//false：覆盖原文件
+		//true：不会对原文件覆盖，而是在原文件追加内容
+File file = new File(String pathname);
+//2. FileReader的实例化
+FileWriter fileWriter = new FileWriter(File file);
+//3. 读入的操作
+fileWriter.write();
+//4. 资源的关闭，应当放到finally中
+fileWriter.close()
+</code></pre>
+<p><a name="MK5Cm"></a></p>
+<h2 id="字节流">字节流</h2>
+<blockquote>
+<p>文本文件(.txt, .java, .c, .cpp)用字符流<br>
+非文本文件(.jpg, .mp3, .mp4, .avi, .doc, .ppt)用字节流</p>
+</blockquote>
+<p><a name="OyrFM"></a></p>
+<h3 id="inputstream">InputStream</h3>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>int read()</td>
+<td>从输入流中读取数据的下一个字节。返回0到255范围内的int字节值。如果因为已经到达流末尾而没有可用的字节则返回值-1。</td>
+</tr>
+<tr>
+<td>int read(byte[] b)</td>
+<td>从此输入流中将最多b.length个字节的数据读入一个 byte 数组中。 如果因为已经到达流末尾而没有可用的字节 则返回值-1 。 否则以整数形式返回实际读取的字节数。</td>
+</tr>
+<tr>
+<td>int read(byte[] b, int off,int len)</td>
+<td>将输入流中最多len个数据字节读入byte数组。尝试读取len个字节但读取的字节也可能小于该值。以整数形式返回实际读取的字节数。如果因为流位于文件末尾而没有可用的字节则返回值-1。</td>
+</tr>
+<tr>
+<td>public void close() throws IOException</td>
+<td>关闭此输入流并释放与该流关联的所有系统资源。</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-java">//1. File的实例化，读入文件一定要存在，否则报异常
+File file = new File(String pathname);
+//2. FileInputStream的实例化
+FileInputStream fileInputStream = new FileInputStream(File file);
+//3. 读入的操作
+fileInputStream.read();
+//4. 资源的关闭，应当放到finally中
+fileInputStream.close()
+</code></pre>
+<p><a name="vID2G"></a></p>
+<h3 id="outputstream">OutputStream</h3>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>void write(int b)</td>
+<td>将指定的字节写入此输出流。write的常规协定：向输出流写入一个字节 。 要写入的字节是参数 b 的八个低位。 b的24个高位将被忽略。 即写入 0-255 范围的。</td>
+</tr>
+<tr>
+<td>void write(byte[] b)</td>
+<td>将b.length 个字节从指定的 byte 数组写入此输出流。 write(b) 的常规协定是：应该与调用 write(b, 0, b.length) 的效果完全相同</td>
+</tr>
+<tr>
+<td>void write(byte[] b,int off,int len)</td>
+<td>将指定byte 数组中从偏移量 off 开始的 len 个字节写入此输出流。</td>
+</tr>
+<tr>
+<td>public void flush()throws IOException</td>
+<td>刷新此输出流并强制写出所有缓冲的输出字节 调用此方法指示应将这些字节立即写入它们预期的目标。</td>
+</tr>
+<tr>
+<td>public void close() throws IOException</td>
+<td>关闭此输出流并释放与该流关联的所有系统资源。</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-java">//1. File的实例化，输出操作，文件不一定要存在
+	//文件不存在，在输出过程中自动创建此文件
+	//文件存在根据FileWriter构造器的参数：
+		//false：覆盖原文件
+		//true：不会对原文件覆盖，而是在原文件追加内容
+File file = new File(String pathname);
+//2. FileReader的实例化
+FileOutputStream fileOutputStream = new FileOutputStream(File file);
+//3. 读入的操作
+fileOutputStream.write();
+//4. 资源的关闭，应当放到finally中
+fileOutputStream.close()
+</code></pre>
+<p><a name="ODJXn"></a></p>
+<h2 id="节点流或文件流">节点流(或文件流)</h2>
+<p>读取示例</p>
+<pre><code class="language-java">FileReader fr = null
+try{
+	fr = new FileReader(new File(&quot;test.txt&quot;));
+	char[] buf = new char[1024];
+	int len;
+	while((len = fr.read(buf)) != 1) {
+		System.out.print(new String(buf, 0, len);
+	}
+}catch (IOException e){
+	System.out.println(&quot;read Exception :&quot;+ e.getMessage());
+}finally{
+	if(fr!= null){
+		try{
+			fr.close();
+		}catch (IOException e){
+			System.out.println(&quot;close Exception:&quot;+ e.getMessage());
+		}
+	}
+}
+</code></pre>
+<p>输出示例</p>
+<pre><code class="language-java">FileWriter fw = null;
+try{
+	fw = new FileWriter(new File(&quot;Test.txt&quot;));
+	fw.write(&quot;atguigu songhongkang&quot;);
+}catch (IOException e )
+	e.printStackTrace()
+}finally{
+	if(fw != null){
+		try{
+			fw.close();
+		}catch (IOException e){
+			e.printStackTrace();
+		}
+	}
+}
+</code></pre>
+<blockquote>
+<p>注意<br>
+定义文件路径时，注意：可以用&quot;/&quot;或者&quot;&quot;。<br>
+在写入一个文件时，如果使用构造器 FileOutputStream(file) ，则目录下有同名文件将被覆盖。如果使用构造器 FileOutputStream(file,true) ，则目录下的同名文件不会被覆盖在文件内容末尾追加内容。<br>
+在读取文件时，必须保证该文件已存在，否则报异常 。<br>
+字节流操作字节，比如：.mp3 , .avi , .rmvb, .mp4, .jpg, .doc, .ppt<br>
+字符流操作字符，只能操作普通文本文件。 最常见的文本文件：.txt, .java, .c, .cpp等语言的源代码。<br>
+尤其注意 .doc, .excel, .ppt这些不是文本文件。</p>
+</blockquote>
+<p><a name="hL9lI"></a></p>
+<h2 id="处理流">处理流</h2>
+<p><a name="gopKY"></a></p>
+<h3 id="缓冲流">缓冲流</h3>
+<ul>
+<li>为了提高数据读写的速度，JavaAPI提供了带缓冲功能的流泪，在使用这些流类时，会创建一个内部缓冲区数组，缺省使用8192个字节(8kb)的缓冲区。</li>
+<li>缓冲流要“套接”在相应的节点流之上，根据数据操作单位可以分为
+<ul>
+<li>BufferedInputStream 和 BufferedOutputStream</li>
+<li>BufferedReader 和 BufferedWriter</li>
+</ul>
+</li>
+</ul>
+<p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/%E7%BC%93%E5%86%B2%E6%B5%81.png#crop=0&amp;crop=0&amp;crop=1&amp;crop=1&amp;id=CurKM&amp;originHeight=769&amp;originWidth=1479&amp;originalType=binary&amp;ratio=1&amp;rotation=0&amp;showTitle=false&amp;status=done&amp;style=none&amp;title=" alt="" loading="lazy"><br />示例</p>
+<pre><code class="language-java">BufferedReader br = null
+BufferedWriter bw = null
+try{
+	//1. 选文件
+	//2. 创建缓冲流对象：它是处理流，是对节点流的包装
+	br = new BufferedReader( new FileReader(&quot;d:\\IOTest\\source.txt&quot;));
+	bw = new BufferedWriter( new FileWriter(&quot;d:\\IOTest\\dest.txt&quot;))
+	String str;
+	//2. 读写数据
+	//readLine()一次读取字符文本文件的一行字符,返回String，如果为null说明到了末尾
+	while((str = br.readLine()) != null ){
+		bw.write(str); // 一次写入一行字符串
+		bw.newLine(); // 写入行分隔符
+	}
+	bw.flush (); // 刷新缓冲区
+}catch (IOException e ){
+	e.printStackTrace();
+}finally{
+	//4. 关闭IO流对象
+	try{
+		if(bw != null){
+			bw.close (); //关闭过滤流时会自动关闭它所包装的底层节点流
+		}
+	}catch (IOException e){
+		e.printStackTrace();
+	}
+	try{
+		if(br != null){
+			br.close();
+		}
+	}catch (IOException e){
+		e.printStackTrace();
+	}
+}
+</code></pre>
+<p><a name="aOsqV"></a></p>
+<h3 id="转换流属于字符流">转换流(属于字符流)</h3>
+<ul>
+<li>转换流提供了再字节流和字符流之间的转换</li>
+<li>JavaAPI提供了两个转换流：
+<ul>
+<li>InputStreamReader：将InputStream转换为Reader</li>
+<li>OutputStreamWriter：将Writer转换为OutputStream</li>
+</ul>
+</li>
+<li>字节流中的数据都是字符时，转成字符流操作更高效</li>
+<li>很多时候我们使用转换流来处理文件乱码问题。实现编码和解码的功能
+<ul>
+<li>编码：字符串 -&gt; 字节数组</li>
+<li>解码：字节数组 -&gt; 字符串</li>
+</ul>
+</li>
+<li>转换流的编码应用
+<ul>
+<li>可以讲字符按照指定编码格式存储</li>
+<li>可以对文本数据按照指定编码格式来解读</li>
+<li>指定编码表的动作由构造器完成</li>
+</ul>
+</li>
+</ul>
+<p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/%E8%BD%AC%E6%8D%A2%E6%B5%81.png#crop=0&amp;crop=0&amp;crop=1&amp;crop=1&amp;id=LlRlX&amp;originHeight=746&amp;originWidth=1367&amp;originalType=binary&amp;ratio=1&amp;rotation=0&amp;showTitle=false&amp;status=done&amp;style=none&amp;title=" alt="" loading="lazy"><br>
+<a name="mYaQE"></a></p>
+<h4 id="inputstreamreader">InputStreamReader</h4>
+<ul>
+<li>实现将字节的输入流按照指定字符集转换为字符的输入流</li>
+<li>需要和InputStream“套接”</li>
+</ul>
+<p>构造器：</p>
+<ul>
+<li>public InputStreamReader(InputStream in)</li>
+<li>public InputStreamReader(InputStream in, String charsetName)<br>
+<a name="COzSi"></a></li>
+</ul>
+<h4 id="outputstreamwriter">OutputStreamWriter</h4>
+<ul>
+<li>实现将字符的输出流按照字符集转换为字节的输出流</li>
+<li>需要和OutputStream“套接”</li>
+</ul>
+<p>构造器：</p>
+<ul>
+<li>public OutputStreamWriter(OutputStream out)</li>
+<li>public OutputStreamWriter(OutputStream out, String charsetName)</li>
+</ul>
+<pre><code class="language-java">public void testMyInput() throws Exception {
+	FileInputStream fis = new FileInputStream(&quot;dbcp.txt&quot;);
+	FileOutputStream fos = new FileOutputStream(&quot;dbcp5.txt&quot;);
+	InputStreamReader isr = new InputStreamReader(fis,&quot;GBK&quot;);
+	OutputStreamWriter osw = new OutputStreamWriter(fos,&quot;GBK&quot;);
+	BufferedReader br = new BufferedReader(isr);
+	BufferedWriter bw = new BufferedWriter(osw);
+	String str = null
+	while((str = br.readLine())!= null){
+		bw.write(str);
+		bw.newLine();
+		bw.flush()
+	}
+	bw.close();
+	br.close();
+}
+</code></pre>
+<p><a name="zyGnr"></a></p>
+<h3 id="标准输入-输出流了解">标准输入、输出流(了解)</h3>
+<ul>
+<li>System.in 和 System.out 分别代表了系统标准的输入和输出设备</li>
+<li>默认输入设备是：键盘，输出设备是：显示器</li>
+<li>System.in 的类型是 InputStream</li>
+<li>System.out 的类型是 PrintStream，其是 OutputStream的子类FilterOutputStream的子类</li>
+<li>重定向：通过 System类的 setIn，setOut 方法对默认设备进行改变。
+<ul>
+<li>public static void setIn (InputStream in)</li>
+<li>public static void setOut (PrintStream out)</li>
+</ul>
+</li>
+</ul>
+<pre><code class="language-java">System.out.println(&quot;请输入信息(退出输入e或 exit):&quot;)
+//把标准输入流键盘输入这个字节流包装成字符流再包装成缓冲流
+BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+String s = null;
+try{
+	while((s = br .readLine()) != null ) {//读取用户输入的一行数据 --&gt; 阻塞程序
+		if((&quot; e&quot;. s ) || &quot; exit&quot;. s )){
+			System.out.println(&quot;安全退出&quot;);
+			break;
+		}
+		//将读取到的整行字符串转成大写输出
+		System.out .println (&quot;--&gt;:&quot;+ s.toUpperCase());
+		System.out.println(&quot;继续输入信息&quot;);
+	}
+}catch (IOException e){
+	e.printStackTrace();
+}finally{
+	try{
+		if(br != null){
+			br.close(); // 关闭过滤流时 会自动关闭它包装的底层节点流
+		}
+	}catch (IOException e){
+		e.printStackTrace();
+	}
+}
+</code></pre>
+<p><a name="M2LAH"></a></p>
+<h3 id="打印流了解">打印流(了解)</h3>
+<p>实现将基本数据类型的数据格式转化为字符串输出<br />打印流：</p>
+<ol>
+<li>PrintStream</li>
+<li>PrintWriter</li>
+</ol>
+<ul>
+<li>提供了一系列冲在的print()和println()方法，用于多种数据类型的输出</li>
+<li>PrintStream和PrintWriter的输出不会抛出IOException异常</li>
+<li>PrintStream和PrintWriter有自动flush功能</li>
+<li>PrintStream打印的所有字符都适用平台默认的字符编码转换为字节。在需要写入字符而不是写入字节的情况下，应该使用PrintWriter类</li>
+<li>System.out返回的是PrintStream的实例</li>
+</ul>
+<pre><code class="language-java">PrintStream ps = null;
+try{
+	FileOutputStream fos = new FileOutputStream(new File( &quot;d:\\IO\\text.txt&quot; ));
+	//创建打印输出流 设置为自动刷新模式写入换行符或字节&quot;\n&quot;时都会刷新输出缓冲区
+	ps = new PrintStream(fos,true)
+	if(ps != null) {// 把标准输出流 控制台输出 改成文件
+		System.setOut(ps);
+	}
+	for(int i = 0; i &lt;= 255; i ++) { // 输出 ASCII 字符
+		System.out.print((char) i);
+		if(i % 50 == 0) { // 每 50 个数据一行
+			System.out.println (); // 换行
+		}
+	}
+}catch (FileNotFoundException e ){
+	e.printStackTrace();
+}finally{
+	if(ps != null){
+		ps.close();
+	}
+}
+</code></pre>
+<p><a name="fHvz9"></a></p>
+<h3 id="数据流了解">数据流(了解)</h3>
+<ul>
+<li>为了方便地操作 Java 语言的 基本 数据类型和 String 的 数据，可以使用数据流。</li>
+<li>数据流有两个类：(用于读取和写出基本数据类型、 String 类的数据）
+<ul>
+<li>DataInputStream 和 DataOutputStream</li>
+<li>分别“套接”在 InputStream 和 OutputStream 子类的流上</li>
+</ul>
+</li>
+<li>DataInputStream 中的方法
+<ul>
+<li>boolean readBoolean()</li>
+<li>byte readByte()</li>
+<li>char readChar()</li>
+<li>float readFloat()</li>
+<li>double readDouble()</li>
+<li>short readShort()</li>
+<li>long readLong()</li>
+<li>int readInt()</li>
+<li>String readUTF()</li>
+<li>void readFully (byte[] b);</li>
+</ul>
+</li>
+<li>DataOutputStream 中的方法
+<ul>
+<li>将上述的方法的 read 改为相应的 write 即可。</li>
+</ul>
+</li>
+</ul>
+<pre><code class="language-java">DataOutputStream dos = null
+try{ // 创建连接到指定文件的数据输出流对象
+	dos = new DataOutputStream(new FileOutputStream(&quot;destData.dat&quot;));
+	dos.writeUTF(&quot;我爱北京天安门&quot;); // 写 UTF 字符串
+	dos.writeBoolean(false); // 写入布尔值
+	dos.writeLong(1234567890L ); // 写入长整数
+	System.out.println(&quot;写文件成功&quot;)
+}catch (IOException e ){
+	e.printStackTrace();
+}finally { // 关闭流对象
+	try{
+		if(dos != null){
+		//关闭过滤流时 会自动关闭它包装的底层节点流
+		dos.close()
+		}
+	}catch (IOException e ){
+		e.printStackTrace();
+	}
+}
+</code></pre>
+<pre><code class="language-java">DataInputStream dis = null
+try{
+	dis = new DataInputStream( new FileInputStream(&quot;destData.dat&quot;));
+	String info = dis.readUTF();
+	boolean flag = dis.readBoolean();
+	long time = dis.readLong();
+	System.out.println(info);
+	System.out.println(flag);
+	System.out.println(time);
+}catch (Exception e ){
+	e.printStackTrace();
+}finally{
+	if(dis != null){
+		try{
+			dis.close();
+		}catch (IOException e ){
+			e.printStackTrace();
+		}
+	}
+}
+</code></pre>
+<p><a name="kytbY"></a></p>
+<h3 id="对象流">对象流</h3>
+<ul>
+<li>ObjectInputStream和ObjectOutputStream</li>
+<li>用于存储和读取基本数据类型数据或对象的处理流。它的强大之处就是可以把Java的对象写入到数据源中，也能把对象从数据源中还原回来</li>
+<li>序列化：用ObjectOutputStream类保存基本数据类型或对象的机制</li>
+<li>反序列化：用ObjectInputStream类读取基本类型数据或对象的机制</li>
+<li>ObjectOutputStream和ObjectInputStream不能序列化static和transient修饰的成员变量<br>
+<a name="PYC0U"></a></li>
+</ul>
+<h4 id="对象的序列化">对象的序列化</h4>
+<ul>
+<li>对象序列化机制 允许把内存中的 Java 对象转换成平台无关的二进制流，从而允许把这种二进制流持久地保存在磁盘上，或通过网络将这种二进制流传输到另一个网络节点 。 当 其它程序获取了这种二进制流，就可以恢复成原来的 Java 对象</li>
+<li>序列化的好处在于可将任何实现了 Serializable 接口的对象转化为字节数据使其在保存和传输时可被还原</li>
+<li>序列化是 RMI (Remote Method Invoke 远程方法调用) 过程的参数和返回值都必须实现的机制，而 RMI 是 JavaEE 的基础。因此序列化机制是JavaEE 平台的基础</li>
+<li>如果需要让某个对象支持序列化机制，则必须让对象所属的类及其属性是可序列化的，为了让某个类是可序列化的，该类必须实现如下两个接口之一。否则，会抛出 NotSerializableException 异常：<strong>Serializable</strong>、Externalizable</li>
+<li>凡是实现 Serializable 接口的类都有一个表示序列化版本标识符的静态变量：
+<ul>
+<li>private static final long serialVersionUID;</li>
+<li>serialVersionUID 用来表明类的不同版本间的兼容性。简言之，其目的是以序列化对象进行版本控制，有关各版本反序列化时是否兼容。</li>
+<li>如果 类没有显示定义这个静态常量 ，它的值是 Java 运行时环境根据类的内部细节自动生成的 。 若类的实例变量做了修改 serialVersionUID 可能发生变化。 故建议，显式声明。</li>
+</ul>
+</li>
+<li>简单来说， Java 的序列化机制是通过在运行时判断类的 serialVersionUID 来验证版本一致性的。在进行反序列化时， JVM 会把传来的字节流中的serialVersionUID 与本地相应实体类的 serialVersionUID 进行比较，如果相同就认为是一致的，可以进行反序列化，否则就会出现序列化版本不一致的异常。 (InvalidCastException)</li>
+<li>若某个类实现了 Serializable 接口，该类的对象就是可序列化的：
+<ul>
+<li>创建一个 ObjectOutputStream</li>
+<li>调用 ObjectOutputStream 对象的 writeObject( 对象 ) 方法输出可序列化对象</li>
+<li>注意写出一次，操作 flush() 一次</li>
+</ul>
+</li>
+</ul>
+<pre><code class="language-java">ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream (&quot;data.txt&quot;));
+Person p = new Person( &quot;韩梅梅&quot;, 18, &quot;中华大街&quot;, new Pet());
+oos.writeObject(p);
+oos.flush();
+oos.close();
+</code></pre>
+<ul>
+<li>反序列化
+<ul>
+<li>创建一个 ObjectInputStream</li>
+<li>调用 readObject () 方法读取流中的对象</li>
+</ul>
+</li>
+<li>强调： 如果某个 类 的 属性 不是 基本数据类型或 String 类型，而是另一个引用类型，那么这个引用类型必须是可序列化的，否则拥有该类型的Field的类也不能序列化</li>
+</ul>
+<p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/%E5%BA%8F%E5%88%97%E8%AF%9D.png#crop=0&amp;crop=0&amp;crop=1&amp;crop=1&amp;id=nXtUE&amp;originHeight=696&amp;originWidth=1388&amp;originalType=binary&amp;ratio=1&amp;rotation=0&amp;showTitle=false&amp;status=done&amp;style=none&amp;title=" alt="" loading="lazy"><br>
+<a name="ev4dv"></a></p>
+<h2 id="随机文件存取">随机文件存取</h2>
+<ul>
+<li>RandomAccessFile声明在java.io包下，但直接继承与java.lang.Object类。并且它实现了DataInput 、 DataOutput这两个接口，也就意味着这个类既可以读也可以写</li>
+<li>RandomAccessFile类支持&quot;随机访问&quot;的方式，程序可以直接跳到文件的任意地方来读、写文件
+<ul>
+<li>支持只访问文件的部分内容</li>
+<li>可以向一存在的文件后追加内容</li>
+</ul>
+</li>
+<li>RandomAccessFile对象包含一个记录指针，用以标记当前读写处的位置。RandomAccessFile类对象可以自由移动记录指针
+<ul>
+<li>long getFilePointer()：获取文件记录指针的当前位置</li>
+<li>void seek(long pos)：将文件记录指针定位到pos位置</li>
+</ul>
+</li>
+<li>构造器
+<ul>
+<li>public RandomAccessFile(File file, String mode)</li>
+<li>public RandomAccessFile(String name, String mode)</li>
+</ul>
+</li>
+<li>创建RandomAccessfile类实例需要指定一个mode参数，该参数指定RandomAccessFile的访问模式
+<ul>
+<li>r：以只读方式打开</li>
+<li>rw：可以读取也可以写入</li>
+<li>rwd：可以读取和写入，同步文件内容的更新</li>
+<li>rws：可以读取和写入，同步文件内容和原数据的更新</li>
+</ul>
+</li>
+<li>如果模式为只读r。则不会创建文件，而是回去读取一个已经存在的文件，如果读取的文件不存在则会出现异常。如果模式为rw。如果文件不存在则会去创建文件，如果存在则不会创建。如果写入时，文件存在则将文件内容从指针位置覆盖，而不是将文件覆盖</li>
+</ul>
+<pre><code class="language-java">//读取文件内容
+RandomAccessFile raf = new RandomAccessFile(“test.txt”, rw);
+raf.seek(5)
+byte [] b = new byte[1024];
+int off = 0;
+int len = 5;
+raf.read(b, off, len)
+String str = new String(b, 0, len)
+System.out.println(str);
+raf.close();
+</code></pre>
+<pre><code class="language-java">//写入文件内容
+RandomAccessFile raf = new RandomAccessFile (&quot;test.txt&quot;, rw);
+raf.seek(5);
+//先读出来
+String temp = raf.readLine();
+raf.seek(5);
+raf.write(&quot;xyz&quot;.getBytes());
+raf.write(temp.getBytes);
+raf.close()
+</code></pre>
+<pre><code class="language-java">RandomAccessFile raf1 = new RandomAccessFile(&quot;hello.txt&quot;, &quot;rw&quot;);
+raf1.seek(5);
+//方式一：
+//StringBuilder info = new StringBuilder((int) file.length());
+//byte[] buffer = new byte[10];
+//int len;
+//while((len = raf1.read(buffer)) != -1){
+//info += new String(buffer,0,len);
+//info.append(new String(buffer,0,len));
+//}
+//方式二：
+ByteArrayOutputStream baos = new ByteArrayOutputStream();
+byte[] buffer = new byte[10];
+int len;
+while((len = raf1.read(buffer)) != -1){
+	baos.write(buffer, 0, len);
+}
+raf1.seek(5);
+raf1.write(&quot;xyz&quot;.getBytes());
+raf1.write(baos.toString().getBytes());
+baos.close();
+raf1.close();
+</code></pre>
+<p><a name="WzFE3"></a></p>
+<h2 id="流的应用小结">流的应用小结</h2>
+<ul>
+<li>流是用来处理数据的。</li>
+<li>处理数据时，一定要先明确数据源 ，与数据目的地
+<ul>
+<li>数据源可以是文件，可以是键盘。</li>
+<li>数据目的地可以是文件、显示器或者其他设备。</li>
+</ul>
+</li>
+<li>而流只是在帮助数据进行传输 并对传输的数据进行处理，比如过滤处理、转换处理等。<br>
+<a name="nu2EJ"></a></li>
+</ul>
+<h1 id="nio2中path-paths-files类的使用">NIO.2中Path、Paths、Files类的使用</h1>
+<ul>
+<li>Java NIO (New IO Non Blocking IO) 是 从 Java 1.4 版本开始引入的一套新的IO API，可以替代标准的 Java IO API。 NIO 与原来的 IO 有同样的作用和目的，但是使用的方式完全不同， NIO 支持面向缓冲区的 (IO 是面向流的) 、基于通道的 IO 操作。NIO将以更加高效的方式进行文件的读写操作。</li>
+<li>Java API 中提供了两套 NIO 一套是针对标准输入输出 NIO 另一套就是网络编程 NIO 。</li>
+<li>java.nio.channels.Channel
+<ul>
+<li>FileChannel：处理本地文件</li>
+<li>SocketChannel：TCP网络编程的客户端的 Channel</li>
+<li>ServerSocketChannel：TCP 网络编程的服务器端的 Channel</li>
+<li>DatagramChannel：UDP 网络编程中发送端和接收端的 Channel</li>
+</ul>
+</li>
+<li>NIO.2</li>
+<li>随着 JDK 7 的发布， Java 对 NIO 进行了极大的扩展，增强了对文件处理和文件系统特性的支持，以至于我们称他们为 NIO.2 。因为 NIO 提供的一些功能， NIO 已经成为文件处理中越来越重要的部分。<br>
+<a name="LyOjD"></a></li>
+</ul>
+<h2 id="path-paths-files类">Path、Paths、Files类</h2>
+<ul>
+<li>早期 的 Java 只提供了一个 File 类来访问文件系统，但 File 类的功能比较有限，所提供的方法性能也不高。而且， 大多数方法在出错时仅返回失败，并不会提供异常信息。</li>
+<li>NIO. 2 为了弥补这种不足，引入了 Path 接口，代表一个平台无关的平台路径，描述了目录结构中文件的位置。 Path 可以看成是 File 类的升级版本，实际引用的资源也可以不存在。</li>
+<li>在以前 IO 操作都是这样写的</li>
+</ul>
+<pre><code class="language-java">import java.io.File;
+File file = new File(&quot;index.html&quot;);
+</code></pre>
+<ul>
+<li>但在 Java7 中，我们可以这样写：</li>
+</ul>
+<pre><code class="language-java">import java.nio.file.Path;
+import java.nio.file.Paths;
+Path path = Paths.get(&quot;index.html&quot;);
+</code></pre>
+<ul>
+<li>同时， NIO.2 在 java.nio.file 包下还 提供了 Files 、 Paths 工具类， Files 包含了大量静态的工具方法来操作文件； Paths 则包含了两个返回 Path 的静态工厂方法。</li>
+<li>Paths 类提供的静态 get() 方法用来获取 Path 对象：
+<ul>
+<li>static Path get(String first, String … more) : 用于将多个字符串串连成路径</li>
+<li>static Path get(URI uri): 返回指定 uri 对应的 Path 路径</li>
+</ul>
+</li>
+</ul>
+<p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/Path-20220312152446671.png" alt="" loading="lazy"><br /><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/Files-20220312152446743.png" alt="" loading="lazy"><br /><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/Files-1-20220312152446799.png" alt="" loading="lazy"></p>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://yeyuan1107.github.io/post/java-fan-xing/" class="post-title gt-a-link">
+                    Java泛型
+                </a>
+            </div>
+        
+
+        
+
+        
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">温故而知新</div>
+    <div class="social-container">
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+    </div>
+    <div>
+        Theme <a href="https://github.com/imhanjie/gridea-theme-pure" target="_blank">Pure</a>, Powered by <a
+                href="https://gridea.dev" target="_blank">Gridea</a> | <a href="https://yeyuan1107.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+</div>
+
+<script>
+  hljs.highlightAll()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

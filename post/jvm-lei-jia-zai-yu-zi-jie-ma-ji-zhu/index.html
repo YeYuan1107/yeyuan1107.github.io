@@ -1,0 +1,2971 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>JVM类加载与字节码技术 | YBLOG</title>
+
+<link rel="shortcut icon" href="https://yeyuan1107.github.io/favicon.ico?v=1657077232781">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://yeyuan1107.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages//dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+    
+        <script src="https://cdn.jsdelivr.net/npm/mermaid@9.1.1/dist/mermaid.min.js"></script>
+        <script>mermaid.initialize({startOnLoad:true});</script> 
+    
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            YBLOG
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1657077232781"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    JVM类加载与字节码技术
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2022-02-25 ·
+                    </time>
+                    
+                        <a href="https://yeyuan1107.github.io/tag/hAPdG4Pk-/" class="post-tags">
+                            # JVM
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645779030862-32d83d43-fcdf-4762-aa93-7629d55c548c-20220312195348264.png" alt="image.png" loading="lazy"><br>
+<a name="Zuwyg"></a></p>
+<h1 id="类文件结构">类文件结构</h1>
+<pre><code class="language-java">package com.yuanye.jvm
+
+public class HelloWorld{
+	public static void main(String[] args){
+    	System.out.println(&quot;hello world&quot;);
+    }
+}
+</code></pre>
+<p>执行javac -parameters -d . HelloWorld.java</p>
+<pre><code>[root@localhost ~]# od -t xC HelloWorld.class
+0000000 ca fe ba be 00 00 00 34 00 23 0a 00 06 00 15 09
+0000020 00 16 00 17 08 00 18 0a 00 19 00 1a 07 00 1b 07
+0000040 00 1c 01 00 06 3c 69 6e 69 74 3e 01 00 03 28 29
+0000060 56 01 00 04 43 6f 64 65 01 00 0f 4c 69 6e 65 4e
+0000100 75 6d 62 65 72 54 61 62 6c 65 01 00 12 4c 6f 63
+0000120 61 6c 56 61 72 69 61 62 6c 65 54 61 62 6c 65 01
+0000140 00 04 74 68 69 73 01 00 1d 4c 63 6e 2f 69 74 63
+0000160 61 73 74 2f 6a 76 6d 2f 74 35 2f 48 65 6c 6c 6f
+0000200 57 6f 72 6c 64 3b 01 00 04 6d 61 69 6e 01 00 16
+0000220 28 5b 4c 6a 61 76 61 2f 6c 61 6e 67 2f 53 74 72
+0000240 69 6e 67 3b 29 56 01 00 04 61 72 67 73 01 00 13
+0000260 5b 4c 6a 61 76 61 2f 6c 61 6e 67 2f 53 74 72 69
+0000300 6e 67 3b 01 00 10 4d 65 74 68 6f 64 50 61 72 61
+0000320 6d 65 74 65 72 73 01 00 0a 53 6f 75 72 63 65 46
+0000340 69 6c 65 01 00 0f 48 65 6c 6c 6f 57 6f 72 6c 64
+0000360 2e 6a 61 76 61 0c 00 07 00 08 07 00 1d 0c 00 1e
+0000400 00 1f 01 00 0b 68 65 6c 6c 6f 20 77 6f 72 6c 64
+0000420 07 00 20 0c 00 21 00 22 01 00 1b 63 6e 2f 69 74
+0000440 63 61 73 74 2f 6a 76 6d 2f 74 35 2f 48 65 6c 6c
+0000460 6f 57 6f 72 6c 64 01 00 10 6a 61 76 61 2f 6c 61
+0000500 6e 67 2f 4f 62 6a 65 63 74 01 00 10 6a 61 76 61
+0000520 2f 6c 61 6e 67 2f 53 79 73 74 65 6d 01 00 03 6f
+0000540 75 74 01 00 15 4c 6a 61 76 61 2f 69 6f 2f 50 72
+0000560 69 6e 74 53 74 72 65 61 6d 3b 01 00 13 6a 61 76
+0000600 61 2f 69 6f 2f 50 72 69 6e 74 53 74 72 65 61 6d
+0000620 01 00 07 70 72 69 6e 74 6c 6e 01 00 15 28 4c 6a
+0000640 61 76 61 2f 6c 61 6e 67 2f 53 74 72 69 6e 67 3b
+0000660 29 56 00 21 00 05 00 06 00 00 00 00 00 02 00 01
+0000700 00 07 00 08 00 01 00 09 00 00 00 2f 00 01 00 01
+0000720 00 00 00 05 2a b7 00 01 b1 00 00 00 02 00 0a 00
+0000740 00 00 06 00 01 00 00 00 04 00 0b 00 00 00 0c 00
+0000760 01 00 00 00 05 00 0c 00 0d 00 00 00 09 00 0e 00
+0001000 0f 00 02 00 09 00 00 00 37 00 02 00 01 00 00 00
+0001020 09 b2 00 02 12 03 b6 00 04 b1 00 00 00 02 00 0a
+0001040 00 00 00 0a 00 02 00 00 00 06 00 08 00 07 00 0b
+0001060 00 00 00 0c 00 01 00 00 00 09 00 10 00 11 00 00
+0001100 00 12 00 00 00 05 01 00 10 00 00 00 01 00 13 00
+0001120 00 00 02 00 14
+</code></pre>
+<p>根据JVM规范，类文件结构如下<br /><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645779563499-251206a7-2758-4eb9-b0b0-d1d12671f40d-20220312195348551.png" alt="image.png" loading="lazy"><br />左侧u4、u2代表字节数<br /><a href="https://www.cnblogs.com/lilei94/p/9744331.html">字节码详解</a><br>
+<a name="svSrl"></a></p>
+<h2 id="魔数magic">魔数(magic)</h2>
+<p>u4，四个字节表示<br />0-3字节，表示它是否是<code>class</code>类型的文件<br />0000000 ca fe ba be 00 00 00 34 00 23 0a 00 06 00 15 09<br>
+<a name="f7NiP"></a></p>
+<h2 id="版本">版本</h2>
+<p>4-7字节，表示类的版本<br />0000000 ca fe ba be 00 00 00 34 00 23 0a 00 06 00 15 09<br>
+<a name="s1DwY"></a></p>
+<h2 id="常量池">常量池</h2>
+<p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645838051228-413019fc-91ea-431e-9fa7-ab1fb341e88f-20220312195348588.png" alt="image.png" loading="lazy"><br />8-9字节，表示常量池长度，0023(35)表示常量池有#1-#34项，注意#0项不计入，也没有值<br />0000000 ca fe ba be 00 00 00 34 00 23 0a 00 06 00 15 09</p>
+<p>第#1项0a(根据常量池)表示一个Method信息，0006和0015表示它引用了常量池中#6和#21项，来获取这个方法的所属类和方法名<br />0000000 ca fe ba be 00 00 00 34 00 23 0a 00 06 00 15 09</p>
+<p>第#2项09表示一个Field信息，0016和0017表示它引用了常量池中#22和#23来获得这个成员变量的所属类和成员变量名<br />0000000 ca fe ba be 00 00 00 34 00 23 0a 00 06 00 15 09<br />0000020 00 16 00 17 08 00 18 0a 00 19 00 1a 07 00 1b 07</p>
+<p>第#3项 08 表示一个字符串常量名称，0018表示它引用了常量池中 #24 项 <br />0000020 00 16 00 17 08 00 18 0a 00 19 00 1a 07 00 1b 07</p>
+<p>第#4项 0a 表示一个 Method 信息，0019和 001a表示它引用了常量池中 #25 和 #26 项来获得这个方法的所属类和方法名<br />0000020 00 16 00 17 08 00 18 0a 00 19 00 1a 07 00 1b 07</p>
+<p>第#5项 07 表示一个 Class 信息，00 1b表示它引用了常量池中 #27 项 <br />0000020 00 16 00 17 08 00 18 0a 00 19 00 1a 07 00 1b 07</p>
+<p>第#6项 07 表示一个 Class 信息，00 1c表示它引用了常量池中 #28 项<br />0000020 00 16 00 17 08 00 18 0a 00 19 00 1a 07 00 1b 07 <br />0000040 00 1c 01 00 06 3c 69 6e 69 74 3e 01 00 03 28 29</p>
+<p>第#7项 01 表示一个 utf8 串，00 06 表示长度，3c 69 6e 69 74 3e 是【 <init> 】<br />0000040 00 1c 01 00 06 3c 69 6e 69 74 3e 01 00 03 28 29</p>
+<p>第#8项 01 表示一个 utf8 串，00 03 表示长度，28 29 56 是【()V】其实就是表示无参、无返回值 0000040 00 1c 01 00 06 3c 69 6e 69 74 3e 01 00 03 28 29 <br />0000060 56 01 00 04 43 6f 64 65 01 00 0f 4c 69 6e 65 4e</p>
+<p>第#9项 01 表示一个 utf8 串，00 04 表示长度，43 6f 64 65 是【Code】 <br />0000060 56 01 00 04 43 6f 64 65 01 00 0f 4c 69 6e 65 4e</p>
+<p>第#10项 01 表示一个 utf8 串，00 0f(15) 表示长度，4c 69 6e 65 4e 75 6d 62 65 72 54 61 62 6c 65 是【LineNumberTable】<br />0000060 56 01 00 04 43 6f 64 65 01 00 0f 4c 69 6e 65 4e <br />0000100 75 6d 62 65 72 54 61 62 6c 65 01 00 12 4c 6f 63</p>
+<p>第#11项 01 表示一个 utf8 串，00 12(18) 表示长度，4c 6f 63 61 6c 56 61 72 69 61 62 6c 65 54 61 62 6c 65是【LocalVariableTable】<br />0000100 75 6d 62 65 72 54 61 62 6c 65 01 00 12 4c 6f 63 <br />0000120 61 6c 56 61 72 69 61 62 6c 65 54 61 62 6c 65 01</p>
+<p>第#12项 01 表示一个 utf8 串，00 04 表示长度，74 68 69 73 是【this】 <br />0000120 61 6c 56 61 72 69 61 62 6c 65 54 61 62 6c 65 01 <br />0000140 00 04 74 68 69 73 01 00 1d 4c 63 6e 2f 69 74 63</p>
+<p>第#13项 01 表示一个 utf8 串，00 1d(29) 表示长度，是【Lcn/itcast/jvm/t5/HelloWorld;】 <br />0000140 00 04 74 68 69 73 01 00 1d 4c 63 6e 2f 69 74 63 <br />0000160 61 73 74 2f 6a 76 6d 2f 74 35 2f 48 65 6c 6c 6f<br />0000200 57 6f 72 6c 64 3b 01 00 04 6d 61 69 6e 01 00 16</p>
+<p>第#14项 01 表示一个 utf8 串，00 04 表示长度，74 68 69 73 是【main】<br />0000200 57 6f 72 6c 64 3b 01 00 04 6d 61 69 6e 01 00 16</p>
+<p>第#15项 01 表示一个 utf8 串，00 16(22) 表示长度，是【([Ljava/lang/String;)V】其实就是参数为<br />字符串数组，无返回值<br />0000200 57 6f 72 6c 64 3b 01 00 04 6d 61 69 6e 01 00 16 <br />0000220 28 5b 4c 6a 61 76 61 2f 6c 61 6e 67 2f 53 74 72 <br />0000240 69 6e 67 3b 29 56 01 00 04 61 72 67 73 01 00 13</p>
+<p>第#16项 01 表示一个 utf8 串，00 04 表示长度，是【args】 <br />0000240 69 6e 67 3b 29 56 01 00 04 61 72 67 73 01 00 13</p>
+<p>第#17项 01 表示一个 utf8 串，00 13(19) 表示长度，是【[Ljava/lang/String;】<br />0000240 69 6e 67 3b 29 56 01 00 04 61 72 67 73 01 00 13 <br />0000260 5b 4c 6a 61 76 61 2f 6c 61 6e 67 2f 53 74 72 69 <br />0000300 6e 67 3b 01 00 10 4d 65 74 68 6f 64 50 61 72 61</p>
+<p>第#18项 01 表示一个 utf8 串，00 10(16) 表示长度，是【MethodParameters】 <br />0000300 6e 67 3b 01 00 10 4d 65 74 68 6f 64 50 61 72 61 <br />0000320 6d 65 74 65 72 73 01 00 0a 53 6f 75 72 63 65 46</p>
+<p>第#19项 01 表示一个 utf8 串，00 0a(10) 表示长度，是【SourceFile】 <br />0000320 6d 65 74 65 72 73 01 00 0a 53 6f 75 72 63 65 46 <br />0000340 69 6c 65 01 00 0f 48 65 6c 6c 6f 57 6f 72 6c 64</p>
+<p>第#20项 01 表示一个 utf8 串，00 0f(15) 表示长度，是【HelloWorld.java】 <br />0000340 69 6c 65 01 00 0f 48 65 6c 6c 6f 57 6f 72 6c 64<br />0000360 2e 6a 61 76 61 0c 00 07 00 08 07 00 1d 0c 00 1e</p>
+<p>第#21项 0c 表示一个 【名+类型】，00 07 00 08 引用了常量池中 #7 #8 两项<br />0000360 2e 6a 61 76 61 0c 00 07 00 08 07 00 1d 0c 00 1e</p>
+<p>第#22项 07 表示一个 Class 信息，00 1d(29) 引用了常量池中 #29 项 <br />0000360 2e 6a 61 76 61 0c 00 07 00 08 07 00 1d 0c 00 1e</p>
+<p>第#23项 0c 表示一个 【名+类型】，00 1e(30) 00 1f (31)引用了常量池中 #30 #31 两项 <br />0000360 2e 6a 61 76 61 0c 00 07 00 08 07 00 1d 0c 00 1e <br />0000400 00 1f 01 00 0b 68 65 6c 6c 6f 20 77 6f 72 6c 64</p>
+<p>第#24项 01 表示一个 utf8 串，00 0f(15) 表示长度，是【hello world】 <br />0000400 00 1f 01 00 0b 68 65 6c 6c 6f 20 77 6f 72 6c 64</p>
+<p>第#25项 07 表示一个 Class 信息，00 20(32) 引用了常量池中 #32 项 <br />0000420 07 00 20 0c 00 21 00 22 01 00 1b 63 6e 2f 69 74</p>
+<p>第#26项 0c 表示一个 【名+类型】，00 21(33) 00 22(34)引用了常量池中 #33 #34 两项 <br />0000420 07 00 20 0c 00 21 00 22 01 00 1b 63 6e 2f 69 74</p>
+<p>第#27项 01 表示一个 utf8 串，00 1b(27) 表示长度，是【cn/itcast/jvm/t5/HelloWorld】 <br />0000420 07 00 20 0c 00 21 00 22 01 00 1b 63 6e 2f 69 74 <br />0000440 63 61 73 74 2f 6a 76 6d 2f 74 35 2f 48 65 6c 6c <br />0000460 6f 57 6f 72 6c 64 01 00 10 6a 61 76 61 2f 6c 61</p>
+<p>第#28项 01 表示一个 utf8 串，00 10(16) 表示长度，是【java/lang/Object】 <br />0000460 6f 57 6f 72 6c 64 01 00 10 6a 61 76 61 2f 6c 61 <br />0000500 6e 67 2f 4f 62 6a 65 63 74 01 00 10 6a 61 76 61</p>
+<p>第#29项 01 表示一个 utf8 串，00 10(16) 表示长度，是【java/lang/System】 <br />0000500 6e 67 2f 4f 62 6a 65 63 74 01 00 10 6a 61 76 61 <br />0000520 2f 6c 61 6e 67 2f 53 79 73 74 65 6d 01 00 03 6f</p>
+<p>第#30项 01 表示一个 utf8 串，00 03 表示长度，是【out】 <br />0000520 2f 6c 61 6e 67 2f 53 79 73 74 65 6d 01 00 03 6f <br />0000540 75 74 01 00 15 4c 6a 61 76 61 2f 69 6f 2f 50 72</p>
+<p>第#31项 01 表示一个 utf8 串，00 15(21) 表示长度，是【Ljava/io/PrintStream;】<br />0000540 75 74 01 00 15 4c 6a 61 76 61 2f 69 6f 2f 50 72 <br />0000560 69 6e 74 53 74 72 65 61 6d 3b 01 00 13 6a 61 76</p>
+<p>第#32项 01 表示一个 utf8 串，00 13(19) 表示长度，是【java/io/PrintStream】 <br />0000560 69 6e 74 53 74 72 65 61 6d 3b 01 00 13 6a 61 76 <br />0000600 61 2f 69 6f 2f 50 72 69 6e 74 53 74 72 65 61 6d</p>
+<p>第#33项 01 表示一个 utf8 串，00 07 表示长度，是【println】 <br />0000620 01 00 07 70 72 69 6e 74 6c 6e 01 00 15 28 4c 6a</p>
+<p>第#34项 01 表示一个 utf8 串，00 15(21) 表示长度，是【(Ljava/lang/String;)V】 <br />0000620 01 00 07 70 72 69 6e 74 6c 6e 01 00 15 28 4c 6a <br />0000640 61 76 61 2f 6c 61 6e 67 2f 53 74 72 69 6e 67 3b <br />0000660 29 56 00 21 00 05 00 06 00 00 00 00 00 02 00 01</p>
+<p><a name="XlFVJ"></a></p>
+<h2 id="访问标识与继承信息">访问标识与继承信息</h2>
+<p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645839399281-6ed242cb-32e5-43ee-9636-a93f3318421f-20220312195348880.png" alt="image.png" loading="lazy"><br />21 表示该 class 是一个类，公共的 <br />0000660 29 56 00 21 00 05 00 06 00 00 00 00 00 02 00 01 <br />05 表示根据常量池中 #5 找到本类全限定名 <br />0000660 29 56 00 21 00 05 00 06 00 00 00 00 00 02 00 01 <br />06 表示根据常量池中 #6 找到父类全限定名 <br />0000660 29 56 00 21 00 05 00 06 00 00 00 00 00 02 00 <br />01 表示接口的数量，本类为 0 <br />0000660 29 56 00 21 00 05 00 06 00 00 00 00 00 02 00 01</p>
+<p><a name="saSre"></a></p>
+<h2 id="field信息">FIeld信息</h2>
+<p>表示成员变量数量，本类为0<br />0000660 29 56 00 21 00 05 00 06 00 00 00 00 00 02 00 01<br /><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645840710764-56f251c7-5bb3-4404-be50-b5253f350531-20220312195348925.png" alt="image.png" loading="lazy"><br>
+<a name="Rc4FG"></a></p>
+<h3 id="method信息">Method信息</h3>
+<p>表示方法数量，本类为 2 <br />0000660 29 56 00 21 00 05 00 06 00 00 00 00 00 02 00 01 <br />一个方法由 访问修饰符，名称，参数描述，方法属性(代码)数量，方法属性组成</p>
+<ul>
+<li>红色代表访问修饰符(本类中是 public)</li>
+<li>蓝色代表引用了常量池 #07 项作为方法名称</li>
+<li>绿色代表引用了常量池 #08 项作为方法参数描述</li>
+<li>黄色代表方法属性数量，本方法是 1</li>
+<li>红色代表方法属性
+<ul>
+<li>00 09 表示引用了常量池 #09 项，发现是【Code】属性</li>
+<li>00 00 00 2f 表示此属性的长度是 47</li>
+<li>00 01 表示【操作数栈】最大深度</li>
+<li>00 01 表示【局部变量表】最大槽(slot)数</li>
+<li>00 00 00 05 表示字节码长度，本例是 5</li>
+<li>2a b7 00 01 b1 是字节码指令</li>
+<li>00 00 00 02 表示方法细节属性数量，本例是 2</li>
+<li>00 0a 表示引用了常量池 #10 项，发现是【LineNumberTable】属性
+<ul>
+<li>00 00 00 06 表示此属性的总长度，本例是 6</li>
+<li>00 01 表示【LineNumberTable】长度</li>
+<li>00 00 表示【字节码】行号</li>
+<li>00 04 表示【java 源码】行号</li>
+</ul>
+</li>
+<li>00 0b 表示引用了常量池 #11 项，发现是【LocalVariableTable】属性
+<ul>
+<li>00 00 00 0c 表示此属性的总长度，本例是 12</li>
+<li>00 01 表示【LocalVariableTable】长度</li>
+<li>00 00 表示局部变量生命周期开始，相对于字节码的偏移量</li>
+<li>00 05 表示局部变量覆盖的范围长度</li>
+<li>00 0c 表示局部变量名称，本例引用了常量池 #12 项，是【this】</li>
+<li>00 0d 表示局部变量的类型，本例引用了常量池 #13 项，是 【Lcn/itcast/jvm/t5/HelloWorld;】</li>
+<li>00 00 表示局部变量占有的槽位(slot)编号，本例是 0</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>0000660 29 56 00 21 00 05 00 06 00 00 00 00 00 02 00 01 <br />0000700 00 07 00 08 00 01 00 09 00 00 00 2f 00 01 00 01 <br />0000720 00 00 00 05 2a b7 00 01 b1 00 00 00 02 00 0a 00 <br />0000740 00 00 06 00 01 00 00 00 04 00 0b 00 00 00 0c 00 <br />0000760 01 00 00 00 05 00 0c 00 0d 00 00 00 09 00 0e 00</p>
+<ul>
+<li>红色代表访问修饰符(本类中是 public static)</li>
+<li>蓝色代表引用了常量池 #14 项作为方法名称</li>
+<li>绿色代表引用了常量池 #15 项作为方法参数描述</li>
+<li>黄色代表方法属性数量，本方法是 2</li>
+<li>红色代表方法属性(属性1)
+<ul>
+<li>00 09 表示引用了常量池 #09 项，发现是【Code】属性</li>
+<li>00 00 00 37 表示此属性的长度是 55</li>
+<li>00 02 表示【操作数栈】最大深度</li>
+<li>00 01 表示【局部变量表】最大槽(slot)数</li>
+<li>00 00 00 05 表示字节码长度，本例是 9</li>
+<li>b2 00 02 12 03 b6 00 04 b1 是字节码指令</li>
+<li>00 00 00 02 表示方法细节属性数量，本例是 2</li>
+<li>00 0a 表示引用了常量池 #10 项，发现是【LineNumberTable】属性
+<ul>
+<li>00 00 00 0a 表示此属性的总长度，本例是 10</li>
+<li>00 02 表示【LineNumberTable】长度</li>
+<li>00 00 表示【字节码】行号 00 06 表示【java 源码】行号</li>
+<li>00 08 表示【字节码】行号 00 07 表示【java 源码】行号</li>
+</ul>
+</li>
+<li>00 0b 表示引用了常量池 #11 项，发现是【LocalVariableTable】属性
+<ul>
+<li>00 00 00 0c 表示此属性的总长度，本例是 12</li>
+<li>00 01 表示【LocalVariableTable】长度</li>
+<li>00 00 表示局部变量生命周期开始，相对于字节码的偏移量</li>
+<li>00 09 表示局部变量覆盖的范围长度</li>
+<li>00 10 表示局部变量名称，本例引用了常量池 #16 项，是【args】</li>
+<li>00 11 表示局部变量的类型，本例引用了常量池 #17 项，是【[Ljava/lang/String;】</li>
+<li>00 00 表示局部变量占有的槽位(slot)编号，本例是 0</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>0000760 01 00 00 00 05 00 0c 00 0d 00 00 00 09 00 0e 00 <br />0001000 0f 00 02 00 09 00 00 00 37 00 02 00 01 00 00 00 <br />0001020 09 b2 00 02 12 03 b6 00 04 b1 00 00 00 02 00 0a <br />0001040 00 00 00 0a 00 02 00 00 00 06 00 08 00 07 00 0b <br />0001060 00 00 00 0c 00 01 00 00 00 09 00 10 00 11 00 00</p>
+<p>红色代表方法属性(属性2)</p>
+<ul>
+<li>00 12 表示引用了常量池 #18 项，发现是【MethodParameters】属性
+<ul>
+<li>00 00 00 05 表示此属性的总长度，本例是 5</li>
+<li>01 参数数量</li>
+<li>00 10 表示引用了常量池 #16 项，是【args】</li>
+<li>00 00 访问修饰符</li>
+</ul>
+</li>
+</ul>
+<p>0001100 00 12 00 00 00 05 01 00 10 00 00 00 01 00 13 00 <br />0001120 00 00 02 00 14</p>
+<p><a name="HwW77"></a></p>
+<h2 id="附加属性">附加属性</h2>
+<ul>
+<li>00 01 表示附加属性数量</li>
+<li>00 13 表示引用了常量池 #19 项，即【SourceFile】</li>
+<li>00 00 00 02 表示此属性的长度</li>
+<li>00 14 表示引用了常量池 #20 项，即【HelloWorld.java】</li>
+</ul>
+<p>0001100 00 12 00 00 00 05 01 00 10 00 00 00 01 00 13 00 <br />0001120 00 00 02 00 14</p>
+<p><a name="Jiypc"></a></p>
+<h2 id="参考文档">参考文档</h2>
+<p><a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html">https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html</a></p>
+<p><a name="lNVGb"></a></p>
+<h1 id="字节码指令">字节码指令</h1>
+<p><a name="CMU6r"></a></p>
+<h2 id="入门">入门</h2>
+<p>接着上一节，研究一下两组字节码指令，一个是<br /><code>public cn.itcast.jvm.t5.HelloWorld();</code>构造方法的字节码指令</p>
+<pre><code>2a b7 00 01 b1
+</code></pre>
+<ol>
+<li>2a =&gt; aload_0 加载 slot 0 的局部变量，即 this，做为下面的 invokespecial 构造方法调用的参数</li>
+<li>b7 =&gt; invokespecial 预备调用构造方法，哪个方法呢？</li>
+<li>00 01 引用常量池中 #1 项，即【 Method java/lang/Object.&quot;&quot;😦)V 】</li>
+<li>b1 表示返回</li>
+</ol>
+<p>另一个是<code>public static void main(java.lang.String[]);</code>主方法的字节码指令</p>
+<pre><code>b2 00 02 12 03 b6 00 04 b1
+</code></pre>
+<ol>
+<li>b2 =&gt; getstatic 用来加载静态变量，哪个静态变量呢？</li>
+<li>00 02 引用常量池中 #2 项，即【Field java/lang/System.out:Ljava/io/PrintStream;】</li>
+<li>12 =&gt; ldc 加载参数，哪个参数呢？</li>
+<li>03 引用常量池中 #3 项，即 【String hello world】</li>
+<li>b6 =&gt; invokevirtual 预备调用成员方法，哪个方法呢？</li>
+<li>00 04 引用常量池中 #4 项，即【Method java/io/PrintStream.println:(Ljava/lang/String;)V】</li>
+<li>b1 表示返回<br>
+<a name="i6fDr"></a></li>
+</ol>
+<h3 id="参考">参考</h3>
+<p><a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-6.html#jvms-6.5">https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-6.html#jvms-6.5</a><br>
+<a name="D0qmV"></a></p>
+<h2 id="javap工具">javap工具</h2>
+<p>自己分析类文件结构太麻烦了，Oracle 提供了 javap 工具来反编译 class 文件</p>
+<pre><code>Classfile /Users/yy/projects/IdeaProjects/Leetcode/out/production/Leetcode/com/yuanye/jvm/HelloWorld.class
+  Last modified 2022年2月25日; size 562 bytes
+  MD5 checksum 68406ec2a8c4f60b7d40f3d3138c8146
+  Compiled from &quot;HelloWorld.java&quot;
+public class com.yuanye.jvm.HelloWorld
+  minor version: 0
+  major version: 55
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #5                          // com/yuanye/jvm/HelloWorld
+  super_class: #6                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 2, attributes: 1
+Constant pool:
+   #1 = Methodref          #6.#20         // java/lang/Object.&quot;&lt;init&gt;&quot;:()V
+   #2 = Fieldref           #21.#22        // java/lang/System.out:Ljava/io/PrintStream;
+   #3 = String             #23            // HelloWorld
+   #4 = Methodref          #24.#25        // java/io/PrintStream.println:(Ljava/lang/String;)V
+   #5 = Class              #26            // com/yuanye/jvm/HelloWorld
+   #6 = Class              #27            // java/lang/Object
+   #7 = Utf8               &lt;init&gt;
+   #8 = Utf8               ()V
+   #9 = Utf8               Code
+  #10 = Utf8               LineNumberTable
+  #11 = Utf8               LocalVariableTable
+  #12 = Utf8               this
+  #13 = Utf8               Lcom/yuanye/jvm/HelloWorld;
+  #14 = Utf8               main
+  #15 = Utf8               ([Ljava/lang/String;)V
+  #16 = Utf8               args
+  #17 = Utf8               [Ljava/lang/String;
+  #18 = Utf8               SourceFile
+  #19 = Utf8               HelloWorld.java
+  #20 = NameAndType        #7:#8          // &quot;&lt;init&gt;&quot;:()V
+  #21 = Class              #28            // java/lang/System
+  #22 = NameAndType        #29:#30        // out:Ljava/io/PrintStream;
+  #23 = Utf8               HelloWorld
+  #24 = Class              #31            // java/io/PrintStream
+  #25 = NameAndType        #32:#33        // println:(Ljava/lang/String;)V
+  #26 = Utf8               com/yuanye/jvm/HelloWorld
+  #27 = Utf8               java/lang/Object
+  #28 = Utf8               java/lang/System
+  #29 = Utf8               out
+  #30 = Utf8               Ljava/io/PrintStream;
+  #31 = Utf8               java/io/PrintStream
+  #32 = Utf8               println
+  #33 = Utf8               (Ljava/lang/String;)V
+{
+  public com.yuanye.jvm.HelloWorld();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object.&quot;&lt;init&gt;&quot;:()V
+         4: return
+      LineNumberTable:
+        line 3: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   Lcom/yuanye/jvm/HelloWorld;
+
+  public static void main(java.lang.String[]);
+    descriptor: ([Ljava/lang/String;)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: getstatic     #2                  // Field java/lang/System.out:Ljava/io/PrintStream;
+         3: ldc           #3                  // String HelloWorld
+         5: invokevirtual #4                  // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+         8: return
+      LineNumberTable:
+        line 6: 0
+        line 7: 8
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       9     0  args   [Ljava/lang/String;
+}
+</code></pre>
+<p><a name="OubPu"></a></p>
+<h2 id="图解方法执行流程">图解方法执行流程</h2>
+<p><a name="DyqF3"></a></p>
+<h3 id="原始java代码">原始java代码</h3>
+<pre><code class="language-java">package cn.itcast.jvm.t3.bytecode;
+
+/** 
+ * 演示 字节码指令 和 操作数栈、常量池的关系
+ */ 
+public class Demo3_1 { 
+    public static void main(String[] args) {
+        int a = 10;
+        int b = Short.MAX_VALUE + 1;
+        int c = a + b;
+        System.out.println(c);
+    }
+}
+</code></pre>
+<p><a name="QzE6u"></a></p>
+<h3 id="编译后的字节码文件">编译后的字节码文件</h3>
+<pre><code>[root@localhost ~]# javap -v Demo3_1.class
+Classfile /root/Demo3_1.class
+  	Last modified Jul 7, 2019; size 665 bytes
+  	MD5 checksum a2c29a22421e218d4924d31e6990cfc5
+  	Compiled from &quot;Demo3_1.java&quot;
+public class cn.itcast.jvm.t3.bytecode.Demo3_1
+  	minor version: 0
+  	major version: 52
+  	flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   	#1 = Methodref					#7.#26         // java/lang/Object.&quot;&lt;init&gt;&quot;:()V
+   	#2 = Class							#27            // java/lang/Short
+   	#3 = Integer						32768
+   	#4 = Fieldref						#28.#29        //
+java/lang/System.out:Ljava/io/PrintStream;
+		#5 = Methodref					#30.#31        // java/io/PrintStream.println:(I)V
+ 		#6 = Class							#32            // cn/itcast/jvm/t3/bytecode/Demo3_1
+ 		#7 = Class							#33            // java/lang/Object
+ 		#8 = Utf8								&lt;init&gt;
+ 		#9 = Utf8								()V
+		#10 = Utf8							Code
+		#11 = Utf8							LineNumberTable
+		#12 = Utf8							LocalVariableTable
+		#13 = Utf8							this
+		#14 = Utf8							Lcn/itcast/jvm/t3/bytecode/Demo3_1;
+		#15 = Utf8							main
+		#16 = Utf8							([Ljava/lang/String;)V
+		#17 = Utf8							args
+		#18 = Utf8							[Ljava/lang/String;
+		#19 = Utf8							a
+		#20 = Utf8							I
+		#21 = Utf8							b
+		#22 = Utf8							c
+		#23 = Utf8							MethodParameters
+		#24 = Utf8							SourceFile
+		#25 = Utf8							Demo3_1.java
+		#26 = NameAndType				#8:#9          // &quot;&lt;init&gt;&quot;:()V
+		#27 = Utf8							java/lang/Short
+		#28 = Class							#34            // java/lang/System
+		#29 = NameAndType				#35:#36        // out:Ljava/io/PrintStream;
+		#30 = Class							#37            // java/io/PrintStream
+		#31 = NameAndType				#38:#39        // println:(I)V
+		#32 = Utf8							cn/itcast/jvm/t3/bytecode/Demo3_1
+		#33 = Utf8							java/lang/Object
+		#34 = Utf8							java/lang/System
+		#35 = Utf8							out
+		#36 = Utf8							Ljava/io/PrintStream;
+		#37 = Utf8							java/io/PrintStream
+		#38 = Utf8							println
+		#39 = Utf8							(I)V
+{
+  public cn.itcast.jvm.t3.bytecode.Demo3_1();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1					// Method java/lang/Object.&quot;
+         0: aload_0
+         1: invokespecial #1						
+&lt;init&gt;&quot;:()V
+         4: return
+      LineNumberTable:
+        line 6: 0
+      LocalVariableTable:
+      	Start  Length  Slot  Name   Signature
+          	0       5     0  this   Lcn/itcast/jvm/t3/bytecode/Demo3_1;
+public static void main(java.lang.String[]);
+  descriptor: ([Ljava/lang/String;)V
+  flags: ACC_PUBLIC, ACC_STATIC
+  Code:
+		stack=2, locals=4, args_size=1
+   		0: bipush        	10
+   		2: istore_1				
+      3: ldc						#3										// int 32768
+   		5: istore_2
+   		6: iload_1
+   		7: iload_2
+   		8: iadd
+			9: istore_3
+			10: getstatic			#4										// Field
+java/lang/System.out:Ljava/io/PrintStream;
+			13: iload_3
+     	14: invokevirtual #5										// Method
+java/io/PrintStream.println:(I)V
+      17: return
+     LineNumberTable:
+      line 8: 0
+      line 9: 3
+			line 10: 6
+      line 11: 10
+      line 12: 17
+     LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      18     0  args   [Ljava/lang/String;
+            3      15     1     a   I
+            6      12     2     b   I
+           10       8     3     c   I
+    MethodParameters:
+				Name 												Flags
+				args 
+}
+</code></pre>
+<p><a name="VfBYq"></a></p>
+<h3 id="常量池载入运行时常量池">常量池载入运行时常量池</h3>
+<ul>
+<li>当java代码被执行时，由jvm的类加载器对main()方法所在的类进行类加载(将.class文件的字节数据读取到内存中)</li>
+<li>将常量池的数据会放入到运行时常量池中，运行时常量池属于方法区</li>
+<li>比较小的数字并不存在常量池中，与方法的字节码存放在一起。一旦数字超过了short类型的最大值，就存放在常量池中</li>
+</ul>
+<p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645845825715-9770beef-8a62-4af4-8886-a9be7816c00d-20220312195349217.png" alt="image.png" loading="lazy"><br>
+<a name="leilE"></a></p>
+<h3 id="方法字节码载入方法区">方法字节码载入方法区</h3>
+<p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645846131904-b5f3e282-f51f-475b-9395-4c17d3e9465a-20220312195349267.png" alt="image.png" loading="lazy"><br>
+<a name="iQpWs"></a></p>
+<h3 id="main线程开始运行分配栈帧内存">main线程开始运行，分配栈帧内存</h3>
+<ul>
+<li>绿色代表局部变量标，蓝色表示操作数栈</li>
+<li>stack表示操作数栈深度，locals表示局部变量表长度</li>
+</ul>
+<p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645846162873-430f7574-fb8f-47ff-a75a-6da88970b9e5-20220312195349549.png" alt="image.png" loading="lazy"><br>
+<a name="BjE8m"></a></p>
+<h3 id="执行引擎开始执行字节码">执行引擎开始执行字节码</h3>
+<p><a name="DLL1T"></a></p>
+<h4 id="bipush-10">bipush 10</h4>
+<ul>
+<li>将一个byte压入操作数栈(其长度会补齐4个字节)，类似的指令还有
+<ul>
+<li>sipush将一个short压入操作数栈(其长度会补齐4个字节)</li>
+<li>ldc将一个int压入操作数栈</li>
+<li>ldc2_w将一个long压入操作数栈(分两次压入，因为long是8个字节)</li>
+<li>这里小的数字都是和字节码指令存在一起，超过short范围的数字存入了常量池</li>
+</ul>
+</li>
+</ul>
+<p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645850434229-e3e1c66a-2ea9-44b8-9c04-c326a16ecda4-20220312195349830.png" alt="image.png" loading="lazy"><br>
+<a name="IqbI9"></a></p>
+<h4 id="istore_1">istore_1</h4>
+<ul>
+<li>将操作数栈顶数据弹出，存入局部变量表的slot 1</li>
+<li>对应java代码中<code>a=10;</code></li>
+</ul>
+<p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645850624004-8b563621-74b5-492f-b34b-b170d1453dd6-20220312195350225.png" alt="image.png" loading="lazy"><br /><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645850652813-4d8baee7-565a-46c1-a2d3-0ecf0b1c3a36-20220312195350307.png" alt="image.png" loading="lazy"><br>
+<a name="aFH5R"></a></p>
+<h4 id="ldc3">ldc#3</h4>
+<ul>
+<li>从常量池加载#3数据到操作数栈</li>
+<li>注意 Short.MAX_VALUE是32767，所以32768=Short.MAX_VALUE+1实际是在编译期间计算好的</li>
+</ul>
+<p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645850787229-dde4352a-ca73-40c2-b069-d178473a0a3f-20220312195350571.png" alt="image.png" loading="lazy"><br>
+<a name="bplmV"></a></p>
+<h4 id="istore-2">istore 2</h4>
+<p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645850818540-25488cbe-4136-43be-b40e-3d4d5014273e-20220312195350861.png" alt="image.png" loading="lazy"><br /><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645850830550-86bbe5ff-d634-48b0-b618-0eb2af3a778d-20220312195351171.png" alt="image.png" loading="lazy"><br>
+<a name="G8A1L"></a></p>
+<h4 id="iload-1">iload 1</h4>
+<p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645850860003-8aa26fe5-12cd-46ba-9810-4661eb8fae21-20220312195351493.png" alt="image.png" loading="lazy"><br>
+<a name="wr0nQ"></a></p>
+<h4 id="iload-2">iload 2</h4>
+<p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645850879972-3fb306c0-bef3-4797-be02-c4cd2ff8e391-20220312195351914.png" alt="image.png" loading="lazy"><br>
+<a name="UT7L4"></a></p>
+<h4 id="iadd">iadd</h4>
+<ul>
+<li>运算需要在操作数栈中运行，所以需要加载到栈中</li>
+<li>iadd弹出两个结果进行运算，将结果压入到操作数栈中</li>
+</ul>
+<p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645850958769-c20fe0ad-215e-4591-b434-4ee454e50069-20220312195352025.png" alt="image.png" loading="lazy"><br>
+<a name="hjkrl"></a></p>
+<h4 id="istore-3">istore 3</h4>
+<p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645851296331-99d1ca1f-0084-4589-af79-77545e50ee2f-20220312195352323.png" alt="image.png" loading="lazy"><br /><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645851426930-26c390c8-1514-4e60-93d7-e2981920be0d-20220312195352705.png" alt="image.png" loading="lazy"><br>
+<a name="O65wJ"></a></p>
+<h4 id="getstatic-41">getstatic #41</h4>
+<ul>
+<li>getstatic到常量池中找到成员变量的引用</li>
+<li>成员变量存放在堆中，通过常量池找到堆中的成员变量</li>
+<li>然后将成员变量的引用放入到操作数栈中</li>
+</ul>
+<p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645851522360-db9438ff-a721-40ce-8737-fa2876843094-20220312195353114.png" alt="image.png" loading="lazy"><br /><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645851694474-b5c51e5b-2070-479f-8ffe-fa71d3bddaf9-20220312195353247.png" alt="image.png" loading="lazy"><br>
+<a name="BMF67"></a></p>
+<h4 id="iload3">iload3</h4>
+<p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645851730146-3901f6c6-61ef-4a92-a327-9a7fc4c0880d-20220312195353567.png" alt="image.png" loading="lazy"><br /><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645851752394-8df2533f-5bf4-4aa8-ba73-839d1b6a3cca-20220312195353874.png" alt="image.png" loading="lazy"><br>
+<a name="uWhXa"></a></p>
+<h4 id="invokevirtual-5">invokevirtual #5</h4>
+<ul>
+<li>找到常量池#5项</li>
+<li>定位到方法区java/io/PrintStream.println:(I)V方法</li>
+<li>生成新的栈帧(分配locals、stack等)</li>
+<li>传递参数，执行新栈帧中的字节码</li>
+</ul>
+<figure data-type="image" tabindex="1"><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645852515253-d79039fd-2e0c-47bf-a5db-365002ace170-20220312195354460.png" alt="image.png" loading="lazy"></figure>
+<ul>
+<li>执行完毕弹出栈帧</li>
+<li>清除main操作数栈内容</li>
+</ul>
+<p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645852591763-d2a434a0-78f9-4f00-9cda-c6ae2ea3ffed-20220312195354564.png" alt="image.png" loading="lazy"><br>
+<a name="IGKMF"></a></p>
+<h4 id="return">return</h4>
+<ul>
+<li>完成main方法调用，弹出main栈帧</li>
+<li>程序结束<br>
+<a name="JEQEn"></a></li>
+</ul>
+<h3 id="自增运算图解a-a">自增运算图解(a++, ++a)</h3>
+<ul>
+<li>注意iinc指令是直接在局部变量slot上进行运算
+<ul>
+<li>第一个参数是对哪个slot做自增，第二个参数为自增多少</li>
+</ul>
+</li>
+<li>a++和++a的区别是先执行iload还是先执行iinc</li>
+</ul>
+<p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645852894998-2d29f519-d608-4406-990d-e1c358b4e4e5-20220312195354823.png" alt="image.png" loading="lazy"><br /><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645852954122-6ee13d04-74ae-4c6c-91d4-3d2f52bc8827-20220312195355103.png" alt="image.png" loading="lazy"><br>
+<a name="ybIXB"></a></p>
+<h4 id="a">a++</h4>
+<p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645853023370-29d29c2d-b35d-40b3-a487-448f445bb548-20220312195355186.png" alt="image.png" loading="lazy"><br /><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645853146454-088af3e2-7e44-4193-acc2-66e395400c89-20220312195355451.png" alt="image.png" loading="lazy"><br>
+<a name="X5zxI"></a></p>
+<h4 id="a-2">++a</h4>
+<p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645853129168-47251ae1-9647-4541-93c2-b88c65c2b05e-20220312195355733.png" alt="image.png" loading="lazy"><br /><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645853535988-843af1c8-0d68-4fde-a778-b951a81b9531-20220312195355829.png" alt="image.png" loading="lazy"><br>
+<a name="k84hl"></a></p>
+<h2 id="条件判断指令">条件判断指令</h2>
+<p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645855218703-d9247847-190c-41ef-aa98-22cc662a7a86-20220312195355888.png" alt="image.png" loading="lazy"><br>
+<a name="ixepn"></a></p>
+<h3 id="几点说明">几点说明</h3>
+<ul>
+<li>byte，short，char都会按int比较，因为操作数栈都是4</li>
+<li>goto用来进行跳转到指定行号的字节码<br>
+<a name="tEK73"></a></li>
+</ul>
+<h3 id="源码">源码</h3>
+<pre><code class="language-java">public class Demo3_3 {
+    public static void main(String[] args) {
+        int a = 0;
+        if(a == 0) {
+            a = 10;
+        } else {
+            a = 20; 
+        }
+    }
+}
+</code></pre>
+<p><a name="AcPw2"></a></p>
+<h4 id="字节码">字节码</h4>
+<ul>
+<li>iconst_0得到一个0的常量从<code>-1-5</code>之间的数用iconst</li>
+</ul>
+<pre><code> 0: iconst_0
+ 1: istore_1
+ 2: iload_1
+ 3: ifne          12
+ 6: bipush        10
+ 8: istore_1
+ 9: goto          15
+12: bipush        20
+14: istore_1
+15: return
+</code></pre>
+<blockquote>
+<p>思考<br>
+细心的同学应当注意到，以上比较指令中没有 long，float，double 的比较，那么它们要比较怎 么办?<br>
+参考 <a href="https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-6.html#jvms-6.5.lcmp">https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-6.html#jvms-6.5.lcmp</a></p>
+</blockquote>
+<p><a name="v7Bsr"></a></p>
+<h2 id="循环控制执行">循环控制执行</h2>
+<p>其实循环控制还是条件判断中的那些指令<br>
+<a name="qe7Qz"></a></p>
+<h3 id="while源代码">While源代码</h3>
+<pre><code class="language-java">public class Demo3_4 {
+    public static void main(String[] args) {
+        int a = 0;
+        while (a &lt; 10) {
+            a++; 
+        }
+    } 
+}
+</code></pre>
+<p><a name="dZM49"></a></p>
+<h4 id="while对应字节码">While对应字节码</h4>
+<pre><code> 0: iconst_0
+ 1: istore_1
+ 2: iload_1
+ 3: bipush			10
+ 5: if_icmpge		14
+ 8: iinc				1, 1
+11: goto				2
+14: return
+</code></pre>
+<p><a name="Q7l6W"></a></p>
+<h3 id="do-while源代码">Do while源代码</h3>
+<pre><code class="language-java">public class Demo3_5 {
+    public static void main(String[] args) {
+        int a = 0; 
+        do {
+            a++;
+        } while (a &lt; 10);
+    }
+}
+</code></pre>
+<p><a name="WnKUb"></a></p>
+<h4 id="do-while字节码">Do while字节码</h4>
+<pre><code>0: iconst_0 
+1: istore_1 		
+2: iinc					1, 1
+5: iload_1 
+6: bipush				10
+8: if_icmplt		2
+11: return
+</code></pre>
+<p><a name="OyVS9"></a></p>
+<h3 id="for循环源代码">For循环源代码</h3>
+<pre><code class="language-java">public class Demo3_6 {
+    public static void main(String[] args) {
+        for (int i = 0; i &lt; 10; i++) {
+        }
+    }
+}
+</code></pre>
+<p><a name="dvjzY"></a></p>
+<h4 id="for循环字节码">For循环字节码</h4>
+<pre><code> 0: iconst_0
+ 1: istore_1
+ 2: iload_1
+ 3: bipush				10
+ 5: if_icmpge			14
+ 8: iinc					1, 1
+11: goto					2
+14: return
+</code></pre>
+<blockquote>
+<p>注意<br>
+比较while和for的字节码，你发现他们是一模一样的，殊途同归</p>
+</blockquote>
+<p><a name="L3nYZ"></a></p>
+<h3 id="练习">练习</h3>
+<pre><code class="language-java">public class Demo3_6_1 {
+    public static void main(String[] args) {
+        int i = 0;
+        int x = 0;
+        while (i &lt; 10) {
+			x = x++;//iload_x --&gt; iinc 1,1 --&gt; istore_x(存回去的x=0覆盖了自增后的x=1)
+			i++; 
+        }
+		System.out.println(x); // 结果是 0 
+    }
+}
+</code></pre>
+<p><a name="yvQpL"></a></p>
+<h2 id="构造器方法">构造器方法</h2>
+<p><a name="Jf0W3"></a></p>
+<h3 id="cinitv"><cinit>()V</h3>
+<pre><code class="language-java">public class Demo3_8_1 {
+    static int i = 10;
+    
+    static {
+        i = 20;
+    }
+    
+    static {
+        i = 30;
+    } 
+}
+</code></pre>
+<p>编译器会按从上至下的顺序，收集所有 static 静态代码块和静态成员赋值的代码，合并为一个特殊的方 法 <code>&lt;cinit&gt;()V </code></p>
+<pre><code> 0: bipush        10
+ 2: putstatic     #2				//Field i:I
+ 5: bipush        20
+ 7: putstatic     #2				//Field i:I
+10: bipush        30
+12: putstatic     #2				//Field i:I
+15: return
+</code></pre>
+<p><code>&lt;cinit&gt;()V </code>方法会在类加载的初始化阶段被调用</p>
+<blockquote>
+<p>练习<br>
+可以调整一下static变量和静态代码块的位置，观察字节码的改动</p>
+</blockquote>
+<p><a name="qbO71"></a></p>
+<h3 id="initv"><init>()V</h3>
+<pre><code class="language-java">public class Demo3_8_2 {
+    private String a = &quot;s1&quot;;
+    {
+        b = 20;
+    }
+    private int b = 10;
+    {
+        a = &quot;s2&quot;;
+    }
+    public Demo3_8_2(String a, int b) {
+        this.a = a;
+        this.b = b; 
+    }
+    public static void main(String[] args) {
+        Demo3_8_2 d = new Demo3_8_2(&quot;s3&quot;, 30);
+        System.out.println(d.a);
+        System.out.println(d.b);
+    } 
+}
+
+</code></pre>
+<p>编译器会按从上至下的顺序，收集所有 {} 代码块和成员变量赋值的代码，形成新的构造方法，但原始构 造方法内的代码总是在最后</p>
+<ul>
+<li>aload_0把this加载到栈</li>
+<li>
+<br />
+</li>
+</ul>
+<p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645858529647-7b17bf1a-fc5a-498f-b072-84be9d54bb6d-20220312195356178.png" alt="image.png" loading="lazy"><br>
+<a name="gKCP6"></a></p>
+<h2 id="方法调用">方法调用</h2>
+<p>看一下几种不同的方法调用对应的字节码指令</p>
+<pre><code class="language-java">public class Demo3_9 {
+    public Demo3_9() { }
+    private void test1() { }
+    private final void test2() { }
+    public void test3() { }
+    public static void test4() { }
+    public static void main(String[] args) {
+        Demo3_9 d = new Demo3_9();
+        d.test1();
+        d.test2();
+    } 
+}
+</code></pre>
+<pre><code> 0: new           #2						//class cn/itcast/jvm/t3/bytecode/Demo3_9
+ 3: dup
+ 4: invokespecial #3						//Method &quot;&lt;init&gt;&quot;:()V
+ 7: astore_1				
+ 8: aload_1	
+ 9: invokespecial #4						//Method test1:()V
+12: aload_1
+13: invokespecial #5						//Method test2:()V
+16: aload_1
+17: invokevirtual #6						//Method test3:()V
+20: aload_1
+21: pop
+22: invokestatic  #7						//Method test4:()V
+25: invokestatic  #7						//Method test4:()V
+28: return
+</code></pre>
+<ul>
+<li>new 是创建【对象】，给对象分配堆内存，执行成功会将【对象引用】压入操作数栈</li>
+<li>dup 是赋值操作数栈栈顶的内容，本例即为【对象引用】，为什么需要两份引用呢，一个是要配合 invokespecial 调用该对象的构造方法 &quot;<init>&quot;😦)V (会消耗掉栈顶一个引用)，另一个要配合 astore_1 赋值给局部变量</li>
+<li>最终方法(final)，私有方法(private)，构造方法都是由 invokespecial 指令来调用，属于静态绑定</li>
+<li>普通成员方法是由 invokevirtual 调用，属于动态绑定，即支持多态 ，具体方法需要在运行时确定</li>
+<li>成员方法与静态方法调用的另一个区别是，执行方法前是否需要【对象引用】</li>
+<li>比较有意思的是 d.test4(); 是通过【对象引用】调用一个静态方法，可以看到在调用 invokestatic 之前执行了 pop 指令，把【对象引用】从操作数栈弹掉了，因此调用静态方法时不要使用对象调用，会产生两条无用的字节码指令，直接使用类来调用即可</li>
+<li>还有一个执行 invokespecial 的情况是通过 super 调用父类方法<br>
+<a name="PJeyb"></a></li>
+</ul>
+<h2 id="多态的原理">多态的原理</h2>
+<pre><code class="language-java">package cn.itcast.jvm.t3.bytecode;
+import java.io.IOException;
+/**
+* 演示多态原理，注意加上下面的 JVM 参数，禁用指针压缩
+* -XX:-UseCompressedOops -XX:-UseCompressedClassPointers */
+public class Demo3_10 {
+    public static void test(Animal animal) {
+        animal.eat();
+        System.out.println(animal.toString());
+    }
+    public static void main(String[] args) throws IOException {
+        test(new Cat());
+        test(new Dog());
+        System.in.read();
+    }
+}
+
+abstract class Animal {
+    public abstract void eat();
+    @Override
+    public String toString() {
+        return &quot;我是&quot; + this.getClass().getSimpleName();
+    } 
+}
+
+class Dog extends Animal {
+    @Override
+    public void eat() { 
+        System.out.println(&quot;啃骨头&quot;);
+    } 
+}
+
+class Cat extends Animal {
+    @Override
+    public void eat() { 
+        System.out.println(&quot;吃鱼&quot;);
+    } 
+}
+</code></pre>
+<p><a name="tepZO"></a></p>
+<h3 id="运行代码">运行代码</h3>
+<p>停在 System.in.read() 方法上，这时运行 jps 获取进程 id<br>
+<a name="HljgA"></a></p>
+<h3 id="运行hsdb工具">运行HSDB工具</h3>
+<p>进入JDK安装目录，执行<br /><code>java -cp ./lib/sa-jdi.jar sun.jvm.hotspot.HSDB</code><br>
+<a name="xwoAc"></a></p>
+<h3 id="查找某个对象">查找某个对象</h3>
+<p>打开Tools --&gt; Find Object By Query<br />输入<code>select d from cn.itcast.jvm.t3.bytecode.Dog d</code>点击Execute执行<br /><code>d为指定的类型别名</code><br /><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645860895070-01e16056-2661-4c77-b94f-b78417e1bcb6-20220312195356205.png" alt="image.png" loading="lazy"><br>
+<a name="PW7mo"></a></p>
+<h3 id="查看对象内存结构">查看对象内存结构</h3>
+<p>点击超链接可以看到对象的内存结构，此对象没有任何属性，因此只有对象头的 16 字节，前 8 字节是<br />MarkWord，后 8 字节就是对象的 Class 指针 <br />但目前看不到它的实际地址<br /><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645860939528-45eb91c6-9405-4f99-bc64-0f3b92bdcc1a-20220312195356237.png" alt="image.png" loading="lazy"><br>
+<a name="HUtyi"></a></p>
+<h3 id="查看对象class的内存地址">查看对象Class的内存地址</h3>
+<p>通过windows --&gt; console 进入命令行模式，执行<br /><code>mem 0x00000001299b4978 2</code><br />mem有两个参数，参数1是对象地址，参数2是查看2行(即16字节)<br />结果中第二行 0x000000001b7d4028 即为 Class 的内存地址<br /><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645861038408-47c8a77b-3a6e-4c74-90c4-47b4f70297bb-20220312195356282.png" alt="image.png" loading="lazy"><br>
+<a name="ElR7V"></a></p>
+<h3 id="查看类的vtable">查看类的vtable</h3>
+<ul>
+<li>方法1:Alt+R进入Inspector工具，输入刚才的Class内存地址，看到如下洁面</li>
+</ul>
+<figure data-type="image" tabindex="2"><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645861093102-40364e6e-de00-44c6-80b3-92456584fc27-20220312195356598.png" alt="image.png" loading="lazy"></figure>
+<ul>
+<li>方法2:或者 Tools -&gt; Class Browser 输入 Dog 查找，可以得到相同的结果</li>
+</ul>
+<p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645861118051-a13134d1-6556-4219-b8ba-061ee6cf2a0f-20220312195356705.png" alt="image.png" loading="lazy"><br />无论通过哪种方法，都可以找到 Dog Class 的 vtable 长度为 6，意思就是 Dog 类有 6 个虚方法(多态相关的，final，static 不会列入)<br />那么这 6 个方法都是谁呢?从 Class 的起始地址开始算，偏移 0x1b8 就是 vtable 的起始地址，进行计算得到:</p>
+<pre><code>0x000000001b7d4028
+               1b8 +
+---------------------
+0x000000001b7d41e0
+</code></pre>
+<p>通过windows --&gt; console进入命令行模式，执行</p>
+<pre><code>mem 0x000000001b7d41e0 6
+
+0x000000001b7d41e0: 0x000000001b3d1b10
+0x000000001b7d41e8: 0x000000001b3d15e8
+0x000000001b7d41f0: 0x000000001b7d35e8
+0x000000001b7d41f8: 0x000000001b3d1540
+0x000000001b7d4200: 0x000000001b3d1678
+0x000000001b7d4208: 0x000000001b7d3fa8
+</code></pre>
+<p>就得到了6个虚方法的入口<br>
+<a name="Rvr9R"></a></p>
+<h3 id="验证方法地址">验证方法地址</h3>
+<p>通过 Tools -&gt; Class Browser 查看每个类的方法定义，比较可知</p>
+<pre><code>Dog - public void eat() @0x000000001b7d3fa8
+Animal - public java.lang.String toString() @0x000000001b7d35e8;
+Object - protected void finalize() @0x000000001b3d1b10;
+Object - public boolean equals(java.lang.Object) @0x000000001b3d15e8;
+Object - public native int hashCode() @0x000000001b3d1540;
+Object - protected native java.lang.Object clone() @0x000000001b3d1678;
+</code></pre>
+<p>对号入座，发现</p>
+<ul>
+<li>eat() 方法是 Dog 类自己的</li>
+<li>toString() 方法是继承 Animal 类的</li>
+<li>finalize() ，equals()，hashCode()，clone() 都是继承 Object 类的<br>
+<a name="Gjh9x"></a></li>
+</ul>
+<h3 id="小结">小结</h3>
+<p>当执行 invokevirtual 指令时，</p>
+<ol>
+<li>先通过栈帧中的对象引用找到对象</li>
+<li>分析对象头，找到对象的实际 Class</li>
+<li>Class 结构中有 vtable，它在类加载的链接阶段就已经根据方法的重写规则生成好了</li>
+<li>查表得到方法的具体地址</li>
+<li>执行方法的字节码<br>
+<a name="VcWXL"></a></li>
+</ol>
+<h2 id="异常处理">异常处理</h2>
+<p><a name="XlU1a"></a></p>
+<h3 id="try-catch">try-catch</h3>
+<pre><code class="language-java">public class Demo3_11_1 {
+    public static void main(String[] args) {
+        int i = 0;
+        try {
+            i = 10;
+        } catch (Exception e) {
+            i = 20;
+        }
+    }
+}
+</code></pre>
+<blockquote>
+<p>注意<br>
+为了抓住重点，下面的字节码省略了不重要的部分</p>
+</blockquote>
+<pre><code>public static void main(java.lang.String[]);
+    descriptor: ([Ljava/lang/String;)V
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=3, args_size=1
+         0: iconst_0
+         1: istore_1
+         2: bipush        10
+         4: istore_1
+         5: goto          12
+         8: astore_2
+         9: bipush        20
+11: istore_1
+        12: return
+      Exception table:
+         from    to  target type
+             2     5     8   Class java/lang/Exception
+      LineNumberTable: ...
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            9       3     2     e   Ljava/lang/Exception;
+            0      13     0  args   [Ljava/lang/String;
+            2      11     1     i   I
+      StackMapTable: ...
+    MethodParameters: ...
+}
+</code></pre>
+<ul>
+<li>可以看到多出来一个 Exception table 的结构，[from, to) 是前闭后开的检测范围，一旦这个范围内的字节码执行出现异常，则通过 type 匹配异常类型，如果一致，进入 target 所指示行号</li>
+<li>8 行的字节码指令 astore_2 是将异常对象引用存入局部变量表的 slot 2 位置<br>
+<a name="RK1IO"></a></li>
+</ul>
+<h3 id="多个single-catch块的情况">多个single-catch块的情况</h3>
+<pre><code class="language-java">public class Demo3_11_2 {
+    public static void main(String[] args) {
+        int i = 0;
+        try {
+            i = 10;
+        } catch (ArithmeticException e) {
+            i = 30;
+        } catch (NullPointerException e) {
+            i = 40;
+        } catch (Exception e) {
+            i = 50; 
+        }
+    }
+}
+</code></pre>
+<pre><code>public static void main(java.lang.String[]);
+    descriptor: ([Ljava/lang/String;)V
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=3, args_size=1
+         0: iconst_0
+         1: istore_1
+         2: bipush        10
+         4: istore_1
+         5: goto          26
+         8: astore_2
+         9: bipush        30
+        11: istore_1
+        12: goto          26
+        15: astore_2
+        16: bipush        40
+        18: istore_1
+        19: goto          26
+        22: astore_2
+        23: bipush        50
+        25: istore_1
+        26: return
+      Exception table:
+         from    to  target type
+258 2 5 15 2 5 22
+LineNumberTable: ...
+LocalVariableTable:
+Class java/lang/ArithmeticException
+Class java/lang/NullPointerException
+Class java/lang/Exception
+    Start  Length  Slot  Name   Signature
+        9       3     2     e   Ljava/lang/ArithmeticException;
+       16       3     2     e   Ljava/lang/NullPointerException;
+       23       3     2     e   Ljava/lang/Exception;
+        0      27     0  args   [Ljava/lang/String;
+        2      25     1     i   I
+  StackMapTable: ...
+MethodParameters: ...
+</code></pre>
+<ul>
+<li>因为异常出现时，只能进入Exception table中一个分支，所以局部变量表slot2位置被共用<br>
+<a name="P5WAt"></a></li>
+</ul>
+<h3 id="multi-catch的情况">multi-catch的情况</h3>
+<pre><code class="language-java">public class Demo3_11_3 {
+    public static void main(String[] args) {
+        try {
+            Method test = Demo3_11_3.class.getMethod(&quot;test&quot;);
+            test.invoke(null);
+        } catch (NoSuchMethodException | 
+                 IllegalAccessException |
+                 InvocationTargetException e) {
+            e.printStackTrace();
+        } 
+    }
+    public static void test() {
+        System.out.println(&quot;ok&quot;);
+    } 
+}
+</code></pre>
+<pre><code>public static void main(java.lang.String[]);
+    descriptor: ([Ljava/lang/String;)V
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=2, args_size=1
+         0: ldc           #2
+         2: ldc           #3
+         4: iconst_0
+         5: anewarray     #4
+         8: invokevirtual #5
+        11: astore_1
+        12: aload_1
+        13: aconst_null
+        14: iconst_0
+        15: anewarray     #6
+        18: invokevirtual #7
+        21: pop
+        22: goto          30
+        25: astore_1
+        26: aload_1
+        27: invokevirtual #11 // e.printStackTrace:()V
+        30: return
+      Exception table:
+         from    to  target type
+       0    22    25
+       0    22    25
+       0    22    25
+LineNumberTable: ...
+LocalVariableTable:
+Class java/lang/NoSuchMethodException
+Class java/lang/IllegalAccessException
+Class java/lang/reflect/InvocationTargetException
+    Start  Length  Slot  Name   Signature
+       12      10     1  test   Ljava/lang/reflect/Method;
+       26       4     1     e   Ljava/lang/ReflectiveOperationException;
+        0      31     0  args   [Ljava/lang/String;
+  StackMapTable: ...
+MethodParameters: ...
+</code></pre>
+<p><a name="x1uES"></a></p>
+<h3 id="finally">finally</h3>
+<pre><code class="language-java">public class Demo3_11_4 {
+    public static void main(String[] args) {
+        int i = 0;
+        try {
+            i = 10;
+        } catch (Exception e) {
+            i = 20;
+        } finally {
+            i = 30;
+        } 
+    }
+}
+</code></pre>
+<p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645863188002-c36058a0-22f9-4098-b174-d256178f659d-20220312195357006.png" alt="image.png" loading="lazy"><br />可以看到 finally 中的代码被复制了 3 份，分别放入 try 流程，catch 流程以及 catch 剩余的异常类型流程<br>
+<a name="VVP60"></a></p>
+<h4 id="finally面试题">finally面试题</h4>
+<p><a name="g4F1n"></a></p>
+<h5 id="finally出现了return">finally出现了return</h5>
+<pre><code class="language-java">public class Demo3_12_2 {
+    public static void main(String[] args) {
+        int result = test();
+        System.out.println(result);
+    }
+    public static int test() {
+        try {
+            return 10;
+        } finally {
+            return 20; 
+        }
+    }
+}
+</code></pre>
+<pre><code>public static int test();
+  descriptor: ()I
+  flags: ACC_PUBLIC, ACC_STATIC
+  Code:
+    stack=1, locals=2, args_size=0
+    	0: bipush				10		//&lt;--10放入栈顶
+			2: istore_0						//10--&gt;slot0(从栈顶移除了)
+			3: bipush				20    //&lt;--20放入栈顶
+			5: ireturn						//返回栈顶 int(20)
+			6: astore_1						//catch any --&gt; slot 1
+			7: bipush				20		//&lt;--20放入栈顶
+			9: ireturn						//返回栈顶 int(20)
+    Exception table
+  from    to  target type
+     0     3     6   any
+	LineNumberTable: ...
+	StackMapTable: ... 
+</code></pre>
+<ul>
+<li>由于 finally 中的 ireturn 被插入了所有可能的流程，因此返回结果肯定以 finally 的为准 至于字节码中第 2 行，似乎没啥用，且留个伏笔，看下个例子</li>
+<li>跟上例中的 finally 相比，发现没有 athrow 了，这告诉我们:如果在 finally 中出现了 return，会吞掉异常😱😱😱，可以试一下下面的代码</li>
+</ul>
+<pre><code class="language-java">public class Demo3_12_1 {
+    public static void main(String[] args) {
+        int result = test();
+        System.out.println(result);
+    }
+    public static int test() {
+        try {
+            int i = 1/0;
+    		return 10;
+		} finally {
+            return 20; 
+        }
+    }
+}
+</code></pre>
+<p><a name="B7qd6"></a></p>
+<h4 id="finally对返回值的影响">finally对返回值的影响</h4>
+<pre><code class="language-java">public class Demo3_12_2 {
+    public static void main(String[] args) {
+        int result = test();
+        System.out.println(result);
+    }
+    public static int test() {
+        int i = 10;
+        try {
+            return i;
+        } finally {
+            i = 20;
+        } 
+    }
+}
+</code></pre>
+<pre><code>public static int test();
+  descriptor: ()I
+  flags: ACC_PUBLIC, ACC_STATIC
+  Code:
+    stack=1, locals=3, args_size=0
+    	0: bipush				10		// &lt;- 10 放入栈顶
+			2: istore_0						// 10-&gt;i
+			3: iload_0						// &lt;- i(10)
+			4: istore_1						// 10 -&gt; slot 1，暂存至 slot 1，目的是为了固定返回值
+			5: bipush				20		// &lt;- 20 放入栈顶
+			7: istore_0						// 20-&gt;i
+			8: iload_1						// &lt;- slot 1(10) 载入 slot 1 暂存的值
+			9: ireturn						// 返回栈顶的 int(10)
+      10: astore_2
+  		11: bipush    	20
+  		13: istore_0
+  		14: aload_2
+  		15: athrow
+    Exception table:
+   	from    to  target type
+       3     5    10   any
+		LineNumberTable: ...
+		LocalVariableTable:
+  	Start  Length  Slot  Name   Signature
+				3 			13 		0 		i 					I
+    StackMapTable: ...
+</code></pre>
+<p><a name="ZHWkF"></a></p>
+<h2 id="synchronized">synchronized</h2>
+<pre><code class="language-java">public class Demo3_13 {
+    public static void main(String[] args) {
+        Object lock = new Object();
+        synchronized (lock) {
+            System.out.println(&quot;ok&quot;);
+        }
+    }
+}
+</code></pre>
+<figure data-type="image" tabindex="3"><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645867124693-fa8cddde-949a-468d-88cc-d16f860c9d1e-20220312195357240.png" alt="image.png" loading="lazy"></figure>
+<ul>
+<li>monitorenter加锁，monitorexit解锁</li>
+</ul>
+<blockquote>
+<p>注意<br>
+方法级别的synchronized不会在字节码指令中有所体现</p>
+</blockquote>
+<p><a name="K44Uv"></a></p>
+<h1 id="编译期处理">编译期处理</h1>
+<p>语法糖 ，其实就是指 java 编译器把 *.java 源码编译为 *.class 字节码的过程中，自动生成 和转换的一些代码，主要是为了减轻程序员的负担，算是 java 编译器给我们的一个额外福利(给糖吃嘛)<br />注意，以下代码的分析，借助了 javap 工具，idea 的反编译功能，idea 插件 jclasslib 等工具。另外， 编译器转换的结果直接就是 class 字节码，只是为了便于阅读，给出了 几乎等价 的 java 源码方式，并 不是编译器还会转换出中间的 java 源码，切记。<br>
+<a name="iBUE2"></a></p>
+<h2 id="默认构造器">默认构造器</h2>
+<pre><code class="language-java">public class Candy1 {
+}
+</code></pre>
+<p><a name="ccKZe"></a></p>
+<h3 id="编译成class后的代码">编译成class后的代码</h3>
+<pre><code class="language-java">public class Candy1 {
+	// 这个无参构造是编译器帮助我们加上的 
+    public Candy1() {
+		super(); // 即调用父类 Object 的无参构造方法，即调用 java/lang/Object.&quot; &lt;init&gt;&quot;:()V
+	} 
+}
+</code></pre>
+<p><a name="Eo7mg"></a></p>
+<h2 id="自动拆装箱">自动拆装箱</h2>
+<p>这个特性是<code>JDK 5</code>开始加入的</p>
+<pre><code class="language-java">public class Candy2 {
+    public static void main(String[] args) {
+		Integer x = 1;
+		int y = x; 
+    }
+}
+</code></pre>
+<p>这段代码在<code>JDK 5</code>之前是无法编译通过的，必须改写为:</p>
+<pre><code class="language-java">public class Candy2 {
+    public static void main(String[] args) {
+        Integer x = Integer.valueOf(1);
+        int y = x.intValue();
+    }
+}
+</code></pre>
+<p>显然之前版本的代码太麻烦了，需要在基本类型和包装类型之间来回转换(尤其是集合类中操作的都是 包装类型)，因此这些转换的事情在 JDK 5 以后都由编译器在编译阶段完成。即 <code>代码片段1</code> 都会在编译阶段被转换为 <code>代码片段2</code><br>
+<a name="lG6Ur"></a></p>
+<h2 id="泛型集合取值">泛型集合取值</h2>
+<p>泛型也是在 JDK 5 开始加入的特性，但 java 在编译泛型代码后会执行 <code>泛型擦除</code> 的动作，即泛型信息<br />在编译为字节码之后就丢失了，实际的类型都当做了 Object 类型来处理:</p>
+<pre><code class="language-java">public class Candy3 {
+    public static void main(String[] args) {
+        List&lt;Integer&gt; list = new ArrayList&lt;&gt;();
+        list.add(10); // 实际调用的是 List.add(Object e)
+        Integer x = list.get(0); // 实际调用的是 Object obj = List.get(int index);
+    }
+}
+</code></pre>
+<p>所以在取值时，编译器真正生成的字节码中，还要额外做一个类型转换的操作</p>
+<pre><code class="language-java">// 需要将 Object 转为 Integer 
+Integer x = (Integer)list.get(0);
+</code></pre>
+<p>如果前面的x变量类型修改为int基本类型那么最终生成的字节码是</p>
+<pre><code class="language-java">// 需要将 Object 转为 Integer, 并执行拆箱操作 
+int x = ((Integer)list.get(0)).intValue();
+</code></pre>
+<p>擦除的是字节码上的泛型信息，可以看到 LocalVariableTypeTable 仍然保留了方法参数泛型的信息</p>
+<pre><code>LocalVariableTable:
+  Start  Length  Slot  Name   Signature
+  		0      32     0  args   [Ljava/lang/String;
+      8      24     1  list   Ljava/util/List;
+LocalVariableTypeTable:
+  Start  Length  Slot  Name   Signature
+      8      24     1  list   Ljava/util/List&lt;Ljava/lang/Integer;&gt;;
+</code></pre>
+<p>使用反射，仍然能够获得这些信息</p>
+<pre><code class="language-java">public Set&lt;Integer&gt; test(List&lt;String&gt; list, Map&lt;Integer, Object&gt; map) {
+}
+</code></pre>
+<pre><code class="language-java">Method test = Candy3.class.getMethod(&quot;test&quot;, List.class, Map.class);
+Type[] types = test.getGenericParameterTypes();
+for (Type type : types) {
+    if (type instanceof ParameterizedType) {
+        ParameterizedType parameterizedType = (ParameterizedType) type; 
+        System.out.println(&quot;原始类型 - &quot; + parameterizedType.getRawType()); 
+        Type[] arguments = parameterizedType.getActualTypeArguments(); 
+        for (int i = 0; i &lt; arguments.length; i++) {
+            System.out.printf(&quot;泛型参数[%d] - %s\n&quot;, i, arguments[i]); 
+        }
+    }
+}
+</code></pre>
+<pre><code class="language-java">//输出结果
+原始类型 - interface java.util.List 
+泛型参数[0] - class java.lang.String 
+原始类型 - interface java.util.Map 
+泛型参数[0] - class java.lang.Integer 
+泛型参数[1] - class java.lang.Object
+</code></pre>
+<p><a name="HUhIk"></a></p>
+<h2 id="可变参数">可变参数</h2>
+<p>可变参数也是JDK 5开始加入的新特性</p>
+<pre><code class="language-java">public class Candy4 {
+    public static void foo(String... args) {
+		String[] array = args; // 直接赋值
+        System.out.println(array);
+    }
+    public static void main(String[] args) {
+        foo(&quot;hello&quot;, &quot;world&quot;);
+	} 
+}
+</code></pre>
+<p>可变参数 String... args 其实是一个 String[] args ，从代码中的赋值语句中就可以看出来。 同样 java 编译器会在编译期间将上述代码变换为:</p>
+<pre><code class="language-java">public class Candy4 {
+    public static void foo(String[] args) {
+		String[] array = args; // 直接赋值
+        System.out.println(array);
+    }
+    public static void main(String[] args) {
+        foo(new String[]{&quot;hello&quot;, &quot;world&quot;});
+	} 
+}
+</code></pre>
+<blockquote>
+<p>注意<br>
+如果调用了foo()则等价代码为foo(new String[]{})，创建了一个空的数组，而不会传递null进去</p>
+</blockquote>
+<p><a name="tDpcp"></a></p>
+<h2 id="foreach循环">foreach循环</h2>
+<p>仍是JDK5开始引入的语法糖，<br>
+<a name="N939v"></a></p>
+<h3 id="数组的循环">数组的循环：</h3>
+<pre><code class="language-java">public class Candy5_1 {
+    public static void main(String[] args) {
+        int[] array = {1, 2, 3, 4, 5}; // 数组赋初值的简化写法也是语法糖哦 
+        for (int e : array) {
+            System.out.println(e);
+        }
+    }
+}
+</code></pre>
+<p>会被编译器转换为</p>
+<pre><code class="language-java">public class Candy5_1 {
+    public Candy5_1() {
+    }
+    public static void main(String[] args) {
+        int[] array = new int[]{1, 2, 3, 4, 5};
+        for(int i = 0; i &lt; array.length; ++i) {
+            int e = array[i];
+            System.out.println(e);
+        }
+    }
+}
+</code></pre>
+<p><a name="lD1Zs"></a></p>
+<h3 id="集合的循环">集合的循环</h3>
+<pre><code class="language-java">public class Candy5_2 {
+    public static void main(String[] args) {
+        List&lt;Integer&gt; list = Arrays.asList(1,2,3,4,5);
+        for (Integer i : list) {
+            System.out.println(i);
+        }
+    }
+}
+</code></pre>
+<p>实际被编译器转换为对迭代器的调用</p>
+<pre><code class="language-java">public class Candy5_2 {
+   public Candy5_2() {
+   }
+   public static void main(String[] args) {
+       List&lt;Integer&gt; list = Arrays.asList(1, 2, 3, 4, 5);
+       Iterator iter = list.iterator();
+       while(iter.hasNext()) {
+           Integer e = (Integer)iter.next();
+           System.out.println(e);
+       }
+   }
+}
+</code></pre>
+<blockquote>
+<p>注意<br>
+foreach循环写法，能够配合数组，以及所有实现了iterable接口的集合类一起食用，其中Iterable用来获取集合的迭代器</p>
+</blockquote>
+<p><a name="fzgxG"></a></p>
+<h2 id="switch字符串">switch字符串</h2>
+<p>从 JDK 7 开始，switch 可以作用于字符串和枚举类，这个功能其实也是语法糖</p>
+<pre><code class="language-java">public class Candy6_1 {
+    public static void choose(String str) {
+        switch (str) {
+            case &quot;hello&quot;: {
+                System.out.println(&quot;h&quot;);
+				break; 
+            }
+            case &quot;world&quot;: {
+                System.out.println(&quot;w&quot;);
+                break;
+			} 
+        }
+    } 
+}
+</code></pre>
+<blockquote>
+<p>注意<br>
+switch 配合 String 和枚举使用时，变量不能为null，原因分析完语法糖转换后的代码应当自然清楚</p>
+</blockquote>
+<pre><code class="language-java">public class Candy6_1 {
+    public Candy6_1() {
+    }
+    public static void choose(String str) {
+		byte x = -1; 
+        switch(str.hashCode()) {
+            case 99162322: // hello 的 hashCode
+                if (str.equals(&quot;hello&quot;)) {
+                    x = 0; 
+                }
+				break;
+            case 113318802: // world 的 hashCode
+                if (str.equals(&quot;world&quot;)) {
+                    x = 1;
+                } 
+        }
+		switch(x) {
+            case 0:
+                System.out.println(&quot;h&quot;);
+                break;
+            case 1:
+                System.out.println(&quot;w&quot;);
+        }
+    }
+}
+</code></pre>
+<p>可以看到，执行了两遍 switch，第一遍是根据字符串的 hashCode 和 equals 将字符串的转换为相应 byte 类型，第二遍才是利用 byte 执行进行比较。<br />为什么第一遍时必须既比较 hashCode，又利用 equals 比较呢?<br />hashCode 是为了提高效率，减少可 能的比较;<br />而 equals 是为了防止 hashCode 冲突，例如 BM 和 C. 这两个字符串的hashCode值都是2123 ，如果有如下代码:</p>
+<pre><code class="language-java">public class Candy6_2 {
+    public static void choose(String str) {
+        switch (str) {
+            case &quot;BM&quot;: {
+                System.out.println(&quot;h&quot;);
+                break; 
+            }
+            case &quot;C.&quot;: {
+                System.out.println(&quot;w&quot;);
+                break;
+            } 
+        }
+    } 
+}
+</code></pre>
+<p>会被编译器转换为</p>
+<pre><code class="language-java">public class Candy6_2 {
+    public Candy6_2() {
+    }
+    public static void choose(String str) {
+        byte x = -1;
+		switch(str.hashCode()) {
+            case 2123: // hashCode 值可能相同，需要进一步用 equals 比较
+            if (str.equals(&quot;C.&quot;)){
+                x = 1;
+            } else if (str.equals(&quot;BM&quot;)) {
+                x = 0;
+            } default:
+                switch(x) {
+                    case 0:
+                        System.out.println(&quot;h&quot;);
+                        break;
+                    case 1:
+                        System.out.println(&quot;w&quot;);
+                }
+        }
+    }
+}
+</code></pre>
+<p><a name="UyRSa"></a></p>
+<h2 id="switch枚举">switch枚举</h2>
+<p>switch枚举的例子，原始代码：</p>
+<pre><code class="language-java">enum Sex {
+    MALE, FEMALE
+}
+</code></pre>
+<pre><code class="language-java">public class Candy7 {
+    public static void foo(Sex sex) {
+        switch (sex) {
+            case MALE:
+                System.out.println(&quot;男&quot;); 
+                break; 
+            case FEMALE:
+                System.out.println(&quot;女&quot;); 
+                break;
+        }
+    }
+}
+</code></pre>
+<p>转换后代码</p>
+<pre><code class="language-java">public class Candy7 {
+    /**
+    * 定义一个合成类(仅 jvm 使用，对我们不可见)
+    * 用来映射枚举的 ordinal 与数组元素的关系
+    * 枚举的 ordinal 表示枚举对象的序号，从 0 开始
+    * 即 MALE 的 ordinal()=0，FEMALE 的 ordinal()=1 
+    */
+    static class $MAP {
+        // 数组大小即为枚举元素个数，里面存储case用来对比的数字 
+        static int[] map = new int[2];
+        static {
+            map[Sex.MALE.ordinal()] = 1;
+            map[Sex.FEMALE.ordinal()] = 2;
+        }
+    }
+    
+    public static void foo(Sex sex) {
+        int x = $MAP.map[sex.ordinal()];
+        switch (x) {
+            case 1: 
+                System.out.println(&quot;男&quot;); 
+                break;
+            case 2:
+                System.out.println(&quot;女&quot;); 
+                break;
+        }
+    }
+}
+</code></pre>
+<p><a name="E7zMF"></a></p>
+<h2 id="枚举类">枚举类</h2>
+<p>JDK 7 新增了枚举类，以前面的性别枚举为例:</p>
+<pre><code class="language-java">enum Sex {
+    MALE, FEMALE
+}
+</code></pre>
+<p>转换后代码</p>
+<pre><code class="language-java">public final class Sex extends Enum&lt;Sex&gt; {
+    public static final Sex MALE;
+    public static final Sex FEMALE;
+    private static final Sex[] $VALUES;
+    static {
+        MALE = new Sex(&quot;MALE&quot;, 0);
+        FEMALE = new Sex(&quot;FEMALE&quot;, 1);
+        $VALUES = new Sex[]{MALE, FEMALE};
+    }
+    /**
+     * Sole constructor.  Programmers cannot invoke this constructor.
+     * It is for use by code emitted by the compiler in response to
+     * enum type declarations.
+     *
+     * @param name    - The name of this enum constant, which is the identifier
+     *                used to declare it.
+     * @param ordinal - The ordinal of this enumeration constant (its position
+     *                in the enum declaration, where the initial constant is assigned 
+     */
+    private Sex(String name, int ordinal) {
+        super(name, ordinal);
+    }
+    public static Sex[] values() {
+        return $VALUES.clone();
+    }
+    public static Sex valueOf(String name) {
+        return Enum.valueOf(Sex.class, name);
+    } 
+}
+</code></pre>
+<p><a name="qwEYk"></a></p>
+<h2 id="try-with-resources">try-with-resources</h2>
+<p>JDK 7开始新增了对需要关闭的资源处理的特殊语法try-with-resources:</p>
+<pre><code class="language-java">try(资源变量 = 创建资源对象){ 
+    
+} catch( ) {
+    
+}
+</code></pre>
+<p>其中资源对象需要实现<code>AutoCloseable</code>接口，例如<code>InputStream、OutStream、Connection、Statement、ResultSet</code>等接口都实现了<code>AutoCloseable</code>使用<code>try-with-resources</code>可以不用写finally语法块，编译器会帮助生成关闭资源代码</p>
+<pre><code class="language-java">public class Candy9 {
+    public static void main(String[] args) {
+        try(InputStream is = new FileInputStream(&quot;d:\\1.txt&quot;)) {
+            System.out.println(is);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } 
+    }
+}
+</code></pre>
+<p>会被转换为</p>
+<pre><code class="language-java">public class Candy9 {
+    public Candy9() {
+    }
+    public static void main(String[] args) {
+        try {
+            InputStream is = new FileInputStream(&quot;d:\\1.txt&quot;);
+            Throwable t = null;
+            try {
+                System.out.println(is);
+            } catch (Throwable e1) {
+                // t 是我们代码出现的异常 
+                t = e1;
+                throw e1;
+            } finally {
+                // 判断了资源不为空 
+                if (is != null) {
+                	// 如果我们代码有异常 
+                    if (t != null) {
+                        try {
+                            is.close();
+                        } catch (Throwable e2) {
+                            // 如果 close 出现异常，作为被压制异常添加 
+                            t.addSuppressed(e2);
+                        }
+                    } else {
+                        // 如果我们代码没有异常，close 出现的异常就是最后 catch 块中的 e
+                        is.close();
+                    }
+                } 
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } 
+    }
+}
+</code></pre>
+<p>为什么要设计一个<code>addSuppressed(Throwable e)</code>(添加被压制异常)的方法：</p>
+<ul>
+<li>是为了防止异常信息的丢失(想想 <code>try-with-resources</code> 生成的 fianlly 中如果抛出了异常)</li>
+</ul>
+<pre><code class="language-java">public class Test6 {
+    public static void main(String[] args) {
+        try (MyResource resource = new MyResource()) {
+            int i = 1/0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+class MyResource implements AutoCloseable {
+    public void close() throws Exception {
+        throw new Exception(&quot;close 异常&quot;); 
+    }
+}
+</code></pre>
+<p>输出：</p>
+<pre><code>java.lang.ArithmeticException: / by zero
+at test.Test6.main(Test6.java:7) Suppressed: java.lang.Exception: close 异常
+        at test.MyResource.close(Test6.java:18)
+        at test.Test6.main(Test6.java:6)
+</code></pre>
+<p>如以上代码所示，两个异常信息都不会丢失<br>
+<a name="uSvAb"></a></p>
+<h2 id="方法重写时的桥接方法">方法重写时的桥接方法</h2>
+<p>我们都知道，方法重写时对返回值分两种情况：</p>
+<ul>
+<li>父子类的返回值完全一致</li>
+<li>子类返回值可以是夫类返回值的子类</li>
+</ul>
+<pre><code class="language-java">class A {
+    public Number m() {
+        return 1; 
+    }
+}
+
+class B extends A {
+    @Override
+    // 子类 m 方法的返回值是 Integer 是父类 m 方法返回值 Number 的子类 
+    public Integer m() {
+        return 2; 
+    }
+}
+</code></pre>
+<p>对于子类，java编译器会做如下处理</p>
+<pre><code class="language-java">class B extends A {
+    public Integer m() {
+        return 2; 
+    }
+    // 此方法才是真正重写了父类 public Number m() 方法 
+    public synthetic bridge Number m() {
+        // 调用 public Integer m()
+        return m(); 
+    }
+}
+</code></pre>
+<p>其中桥接方法比较特殊，仅对 java 虚拟机可见，并且与原来的 public Integer m() 没有命名冲突，可以用下面反射代码来验证</p>
+<pre><code class="language-java">for (Method m : B.class.getDeclaredMethods()) {
+    System.out.println(m);
+}
+</code></pre>
+<pre><code class="language-java">public java.lang.Integer test.candy.B.m()
+public java.lang.Number test.candy.B.m()
+</code></pre>
+<p><a name="BB6iR"></a></p>
+<h2 id="匿名内部类">匿名内部类</h2>
+<pre><code class="language-java">public class Candy11 {
+    public static void main(String[] args) {
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                System.out.println(&quot;ok&quot;);
+            } 
+        };
+    } 
+}
+</code></pre>
+<p>转换后的代码</p>
+<pre><code class="language-java">// 额外生成的类
+final class Candy11$1 implements Runnable {
+    Candy11$1() {
+    }
+    public void run() {
+        System.out.println(&quot;ok&quot;);
+    }
+}
+
+public class Candy11 {
+    public static void main(String[] args) {
+        Runnable runnable = new Candy11$1();
+    }
+}
+</code></pre>
+<p>引用局部变量的匿名内部类，源代码：</p>
+<pre><code class="language-java">public class Candy11 {
+    public static void test(final int x) {
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                System.out.println(&quot;ok:&quot; + x);
+            } 
+        };
+    } 
+}
+</code></pre>
+<p>转换后的代码</p>
+<pre><code class="language-java">// 额外生成的类
+final class Candy11$1 implements Runnable {
+    int val$x;
+    Candy11$1(int x) {
+        this.val$x = x;
+    }
+    public void run() {
+        System.out.println(&quot;ok:&quot; + this.val$x);
+    } 
+}
+
+public class Candy11 {
+    public static void test(final int x) {
+        Runnable runnable = new Candy11$1(x);
+    }
+} 
+</code></pre>
+<blockquote>
+<p>注意<br>
+这同时解释了为什么匿名内部类引用局部变量时，局部变量必须是 final 的:因为在创建 Candy11$1 对象时，将 x 的值赋值给了 Candy11<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mn>1</mn><mi mathvariant="normal">对</mi><mi mathvariant="normal">象</mi><mi mathvariant="normal">的</mi><mi>v</mi><mi>a</mi><mi>l</mi></mrow><annotation encoding="application/x-tex">1 对象的 val</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord">1</span><span class="mord cjk_fallback">对</span><span class="mord cjk_fallback">象</span><span class="mord cjk_fallback">的</span><span class="mord mathdefault" style="margin-right:0.03588em;">v</span><span class="mord mathdefault">a</span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span></span></span></span>x 属性，所以 x 不应该再发生变化了，如果变化，那么 val$x 属性没有机会再跟着一起变化</p>
+</blockquote>
+<p><a name="qbnE6"></a></p>
+<h1 id="类加载阶段">类加载阶段</h1>
+<p><a name="LjtrV"></a></p>
+<h2 id="加载">加载</h2>
+<ul>
+<li>将类的字节码载入方法区中，内部采用 C++ 的 instanceKlass 描述 java 类，它的重要 field 有:
+<ul>
+<li>_java_mirror 即 java 的类镜像，例如对 String 来说，就是 String.class，作用是把 klass 暴 露给 java 使用</li>
+<li>_super 即父类</li>
+<li>_fields 即成员变量</li>
+<li>_methods 即方法</li>
+<li>_constants 即常量池</li>
+<li>_class_loader 即类加载器</li>
+<li>_vtable 虚方法表</li>
+<li>_itable 接口方法表</li>
+</ul>
+</li>
+<li>如果这个类还有父类没有加载，先加载父类</li>
+<li>加载和链接可能是交替运行的</li>
+</ul>
+<blockquote>
+<p>注意<br>
+instanceKlass这样的【元数据】是存储在方法区(1.8后的元空间内)，但_java_mirror是存储在堆中的<br>
+可以通过HSDB工具来查看</p>
+</blockquote>
+<figure data-type="image" tabindex="4"><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645887896636-54eb1b6f-2abc-4a08-9b68-699d374b2b65-20220312195357603.png" alt="image.png" loading="lazy"></figure>
+<ul>
+<li>Person.class有instanceKlass的地址信息，_java_mirror中有Person.class的地址信息</li>
+<li>对象实例化后，有一个对象头，其中包含了class地址，如果想获取class信息那就会根据对象头中的class地址来获取person.class再间接到元空间找到instanceKlass，从元空间中找method等信息<br>
+<a name="XqSCX"></a></li>
+</ul>
+<h2 id="链接">链接</h2>
+<p><a name="Cf47b"></a></p>
+<h3 id="验证">验证</h3>
+<p>验证类是否符合JVM规范，安全性检查<br />用 UE 等支持二进制的编辑器修改 HelloWorld.class 的魔数，在控制台运行</p>
+<pre><code>E:\git\jvm\out\production\jvm&gt;java cn.itcast.jvm.t5.HelloWorld
+Error: A JNI error has occurred, please check your installation and try again
+Exception in thread &quot;main&quot; java.lang.ClassFormatError: Incompatible magic value
+3405691578 in class file cn/itcast/jvm/t5/HelloWorld
+        at java.lang.ClassLoader.defineClass1(Native Method)
+        at java.lang.ClassLoader.defineClass(ClassLoader.java:763)
+        at java.security.SecureClassLoader.defineClass(SecureClassLoader.java:142)
+        at java.net.URLClassLoader.defineClass(URLClassLoader.java:467)
+        at java.net.URLClassLoader.access$100(URLClassLoader.java:73)
+        at java.net.URLClassLoader$1.run(URLClassLoader.java:368)
+        at java.net.URLClassLoader$1.run(URLClassLoader.java:362)
+				at java.security.AccessController.doPrivileged(Native Method)
+				at java.net.URLClassLoader.findClass(URLClassLoader.java:361)
+				at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
+				at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:331)
+				at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
+				at sun.launcher.LauncherHelper.checkAndLoadMain(LauncherHelper.java:495)
+</code></pre>
+<p><a name="YNnzr"></a></p>
+<h3 id="准备">准备</h3>
+<ul>
+<li>为 static 变量分配空间，设置默认值
+<ul>
+<li>static 变量在 JDK 7 之前存储于 instanceKlass 末尾，从 JDK 7 开始，存储于 _java_mirror 末尾</li>
+<li>static 变量分配空间和赋值是两个步骤，分配空间在准备阶段完成，赋值在初始化阶段完成</li>
+<li>如果 static 变量是 final 的基本类型，以及字符串常量，那么编译阶段值就确定了，赋值在准备阶段完成</li>
+<li>如果 static 变量是 final 的，但属于引用类型，那么赋值也会在初始化阶段完成<br>
+<a name="khjyD"></a></li>
+</ul>
+</li>
+</ul>
+<h3 id="解析">解析</h3>
+<p>将常量池中的符号引用解析为直接引用(直接引用可以知道在内存中的位置)</p>
+<pre><code class="language-java">package cn.itcast.jvm.t3.load;
+/**
+* 解析的含义 */
+public class Load2 {
+    public static void main(String[] args) throws ClassNotFoundException,
+IOException {
+    	ClassLoader classloader = Load2.class.getClassLoader();
+    	// loadClass 方法不会导致类的解析和初始化
+    	Class&lt;?&gt; c = classloader.loadClass(&quot;cn.itcast.jvm.t3.load.C&quot;);
+    	
+    	//会进行类的解析和初始化
+    	// new C();
+
+    	System.in.read();
+    }
+}
+
+class C {
+    D d = new D();
+}
+
+class D { 
+
+}
+</code></pre>
+<p><a name="WeYIm"></a></p>
+<h2 id="初始化">初始化</h2>
+<p><cinit>()V方法<br />初始化即调用<code>&lt;cinit&gt;()V方法</code>，虚拟机会保证这个类的【构造方法】的线程安全<br>
+<a name="mn12B"></a></p>
+<h3 id="发生的时机">发生的时机</h3>
+<ul>
+<li>概括得说，类初始化是【懒惰的】
+<ul>
+<li>main 方法所在的类，总会被首先初始化</li>
+<li>首次访问这个类的静态变量或静态方法时，会导致这个类的初始化</li>
+<li>子类初始化，如果父类还没初始化，会引发父类的初始化</li>
+<li>子类访问父类的静态变量，只会触发父类的初始化</li>
+<li>Class.forName</li>
+<li>new 会导致初始化</li>
+</ul>
+</li>
+<li>不会导致类初始化的情况
+<ul>
+<li>访问类的 static final 静态常量(基本类型和字符串)不会触发初始化</li>
+<li>类对象.class 不会触发初始化</li>
+<li>创建该类的数组不会触发初始化</li>
+<li>类加载器的 loadClass 方法</li>
+<li>Class.forName 的参数 2 为 false 时<br>
+<a name="peYbL"></a></li>
+</ul>
+</li>
+</ul>
+<h3 id="实验">实验</h3>
+<pre><code class="language-java">class A {
+    static int a = 0;
+    static {
+        System.out.println(&quot;a init&quot;);
+    }
+}
+class B extends A {
+    final static double b = 5.0;
+    static boolean c = false;
+    static {
+        System.out.println(&quot;b init&quot;);
+    }
+}
+</code></pre>
+<p>验证(实验时请先全部注释，每次只执行其中一个)</p>
+<pre><code class="language-java">public class Load3 {
+    static {
+        System.out.println(&quot;main init&quot;);
+    }
+	public static void main(String[] args) throws ClassNotFoundException { 
+        
+        // 1. 静态常量(基本类型和字符串)不会触发初始化
+		System.out.println(B.b);
+		// 2. 类对象.class 不会触发初始化
+		System.out.println(B.class);
+		// 3. 创建该类的数组不会触发初始化
+		System.out.println(new B[0]);
+		// 4. 不会初始化类 B，但会加载 B、A
+		ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        cl.loadClass(&quot;cn.itcast.jvm.t3.B&quot;);
+		// 5. 不会初始化类 B，但会加载 B、A
+		ClassLoader c2 = Thread.currentThread().getContextClassLoader(); 
+        Class.forName(&quot;cn.itcast.jvm.t3.B&quot;, false, c2);
+		// 1. 首次访问这个类的静态变量或静态方法时 
+        System.out.println(A.a);
+		// 2. 子类初始化，如果父类还没初始化，会引发 
+        System.out.println(B.c);
+		// 3. 子类访问父类静态变量，只触发父类初始化 
+        System.out.println(B.a);
+		// 4. 会初始化类 B，并先初始化类 A 
+        Class.forName(&quot;cn.itcast.jvm.t3.B&quot;);
+    }
+}
+</code></pre>
+<p><a name="AmR2B"></a></p>
+<h2 id="练习-2">练习</h2>
+<p>从字节码分析，使用a，b，c这三个常量是否会导致E初始化</p>
+<pre><code class="language-java">public class Load4 {
+    public static void main(String[] args) {
+        System.out.println(E.a);
+        System.out.println(E.b);
+        System.out.println(E.c);
+    } 
+}
+class E {
+    //不会
+    public static final int a = 10;
+    //不会
+    public static final String b = &quot;hello&quot;;
+    //会
+    //Integer.valueOf(20)
+    public static final Integer c = 20;
+}
+</code></pre>
+<p>典型应用-完成懒惰初始化单例模式</p>
+<pre><code class="language-java">public final class Singleton { 
+    private Singleton() { }
+    // 内部类中保存单例
+    private static class LazyHolder {
+        static final Singleton INSTANCE = new Singleton();
+    }
+    //如果只调用外部类中的静态方法，会导致外部类的初始化，并不会导致内部类的初始化
+	// 第一次调用 getInstance 方法，才会导致内部类加载和初始化其静态成员 
+    public static Singleton getInstance() {
+        return LazyHolder.INSTANCE;
+    }
+}
+</code></pre>
+<p>以上的实现特点是：</p>
+<ul>
+<li>懒惰实例化</li>
+<li>初始化时的线程安全是有保障的<br>
+<a name="mG2G8"></a></li>
+</ul>
+<h1 id="类加载器">类加载器</h1>
+<p>以JDK8为例：</p>
+<ul>
+<li>类加载器各自加载对应位置的类</li>
+<li>有层级关系，低级加载器加载类时会问上级加载器是否加载过该类(例如，Application ClassLoader询问Extension ClassLoader是否加载，然后Extension ClassLoader 询问 Bootstrap ClassLoader)</li>
+<li>如果上级均未加载，那么才让低级加载器加载该类</li>
+<li>这就是双亲委派模型</li>
+</ul>
+<p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645957908084-4f81f0be-a643-4df7-a3e8-bd1f81c40030-20220312195357653.png" alt="image.png" loading="lazy"><br>
+<a name="XA4xA"></a></p>
+<h2 id="启动类加载器bootstrap-classloader">启动类加载器(Bootstrap ClassLoader)</h2>
+<p>用Bootstrap类加载器加载类</p>
+<pre><code class="language-java">package cn.itcast.jvm.t3.load;
+public class F {
+    static {
+        System.out.println(&quot;bootstrap F init&quot;);
+    }
+}
+</code></pre>
+<p>执行</p>
+<pre><code class="language-java">package cn.itcast.jvm.t3.load;
+public class Load5_1 {
+    public static void main(String[] args) throws ClassNotFoundException {
+        Class&lt;?&gt; aClass = Class.forName(&quot;cn.itcast.jvm.t3.load.F&quot;);
+        //获取加载该类的类加载器
+        System.out.println(aClass.getClassLoader());
+    } 
+}
+</code></pre>
+<p>输出</p>
+<pre><code>E:\git\jvm\out\production\jvm&gt;java -Xbootclasspath/a:. cn.itcast.jvm.t3.load.Load5
+bootstrap F init
+null
+</code></pre>
+<ul>
+<li>-Xbootclasspath表示设置bootclasspath</li>
+<li>其中/a:.表示将当前目录追加至bootclasspath之后</li>
+<li>可以用这个办法替换核心类
+<ul>
+<li><code>java -Xbootclasspath:&lt;new bootclasspath&gt;</code></li>
+<li><code>java -Xbootclasspath/a:&lt;追加路径&gt;</code> /a为后追加</li>
+<li><code>java -Xbootclasspath/p:&lt;追加路径&gt;</code> /p为前追加，可以用来替换一些核心类<br>
+<a name="VlKvq"></a></li>
+</ul>
+</li>
+</ul>
+<h2 id="扩展类加载器">扩展类加载器</h2>
+<pre><code class="language-java">package cn.itcast.jvm.t3.load;
+public class G {
+    static {
+        System.out.println(&quot;classpath G init&quot;);
+    }
+}
+</code></pre>
+<p>执行</p>
+<pre><code class="language-java">public class Load5_2 {
+    public static void main(String[] args) throws ClassNotFoundException {
+        Class&lt;?&gt; aClass = Class.forName(&quot;cn.itcast.jvm.t3.load.G&quot;);
+        System.out.println(aClass.getClassLoader());
+    }
+}
+</code></pre>
+<p>输出</p>
+<pre><code>classpath G init
+sun.misc.Launcher$AppClassLoader@18b4aac2
+</code></pre>
+<p>写一个同名的类</p>
+<pre><code class="language-java">package cn.itcast.jvm.t3.load;
+public class G {
+    static {
+        System.out.println(&quot;ext G init&quot;);
+    }
+}
+</code></pre>
+<p>打个jar包</p>
+<pre><code>E:\git\jvm\out\production\jvm&gt;jar -cvf my.jar cn/itcast/jvm/t3/load/G.class
+已添加清单
+正在添加: cn/itcast/jvm/t3/load/G.class(输入 = 481) (输出 = 322)(压缩了 33%)
+</code></pre>
+<p>将jar包拷贝到 JAVA_HOME/jre/lib/ext<br />重新执行Load5_2<br />输出</p>
+<pre><code>ext G init
+sun.misc.Launcher$ExtClassLoader@29453f44
+</code></pre>
+<p><a name="d6tvW"></a></p>
+<h2 id="双亲委派模型">双亲委派模型</h2>
+<p>所谓的双亲委派，就是指调用类加载器的 loadClass 方法时，查找类的规则</p>
+<ul>
+<li>委派上级做类的加载</li>
+<li>如果上级没有，那么由本级的类加载器加载</li>
+</ul>
+<blockquote>
+<p>注意<br>
+这里的双亲，翻译为上级似乎更为合适，因为它们并没有继承关系</p>
+</blockquote>
+<pre><code class="language-java">protected Class&lt;?&gt; loadClass(String name, boolean resolve) throws ClassNotFoundException {
+    synchronized (getClassLoadingLock(name)) { 
+        // 1. 检查该类是否已经加载
+        Class&lt;?&gt; c = findLoadedClass(name);
+        if (c == null) {
+            long t0 = System.nanoTime();
+            try {
+                if (parent != null) {
+                    // 2. 有上级的话，委派上级 
+                    loadClass c = parent.loadClass(name, false);
+                } else {
+                    // 3. 如果没有上级了(ExtClassLoader)，则委派BootstrapClassLoader
+                    c = findBootstrapClassOrNull(name);
+                }
+            } catch (ClassNotFoundException e) {
+            }
+            if (c == null) {
+                long t1 = System.nanoTime();
+                // 4. 每一层找不到，调用 findClass 方法(每个类加载器自己扩展)来加载 
+                c = findClass(name);
+                // 5. 记录耗时 
+                sun.misc.PerfCounter.getParentDelegationTime().addTime(t1 - t0); 
+                sun.misc.PerfCounter.getFindClassTime().addElapsedTimeFrom(t1); 
+                sun.misc.PerfCounter.getFindClasses().increment();
+            } 
+        }
+        if (resolve) {
+            resolveClass(c);
+        }
+        return c; 
+    }
+}
+</code></pre>
+<p>例如</p>
+<pre><code class="language-java">public class Load5_3 {
+    public static void main(String[] args) throws ClassNotFoundException {
+        Class&lt;?&gt; aClass = Load5_3.class.getClassLoader()
+            .loadClass(&quot;cn.itcast.jvm.t3.load.H&quot;);
+        System.out.println(aClass.getClassLoader());
+    } 
+}
+</code></pre>
+<p>执行流程为</p>
+<pre><code>1. sun.misc.Launcher$AppClassLoader //1 处， 开始查看已加载的类，结果没有
+2. sun.misc.Launcher$AppClassLoader // 2 处，委派上级
+   sun.misc.Launcher$ExtClassLoader.loadClass()
+3. sun.misc.Launcher$ExtClassLoader // 1 处，查看已加载的类，结果没有
+4. sun.misc.Launcher$ExtClassLoader // 3 处，没有上级了，则委派 BootstrapClassLoader查找
+5. BootstrapClassLoader 是在 JAVA_HOME/jre/lib 下找 H 这个类，显然没有
+6. sun.misc.Launcher$ExtClassLoader // 4 处，调用自己的 findClass 方法，是在
+	 JAVA_HOME/jre/lib/ext 下找 H 这个类，显然没有，回到 sun.misc.Launcher$AppClassLoader
+	 的 // 2 处
+7. 继续执行到 sun.misc.Launcher$AppClassLoader // 4 处，调用它自己的 findClass 方法，在
+	 classpath 下查找，找到了
+</code></pre>
+<p><a name="MfxPE"></a></p>
+<h2 id="线程上下文类加载器">线程上下文类加载器</h2>
+<p>我们在使用JDBC时，都需要加载Driver驱动，但是，不写</p>
+<pre><code class="language-java">Class.forName(&quot;com.mysql.jdbc.Driver&quot;)
+</code></pre>
+<p>也是可以让<code>com.mysql.jdbc.Driver</code>正确加载的</p>
+<pre><code class="language-java">public class DriverManager {
+// 注册驱动的集合
+private final static CopyOnWriteArrayList&lt;DriverInfo&gt; registeredDrivers
+        = new CopyOnWriteArrayList&lt;&gt;();
+	// 初始化驱动 
+    static {
+        loadInitialDrivers();
+        println(&quot;JDBC DriverManager initialized&quot;);
+    }
+</code></pre>
+<p>先不看别的，看看DriverManager的类加载器</p>
+<pre><code class="language-java">System.out.println(DriverManager.class.getClassLoader());
+</code></pre>
+<p>打印 null，表示它的类加载器是 Bootstrap ClassLoader，会到 JAVA_HOME/jre/lib 下搜索类，但 JAVA_HOME/jre/lib 下显然没有 mysql-connector-java-5.1.47.jar 包，这样问题来了，在 DriverManager 的静态代码块中，怎么能正确加载 com.mysql.jdbc.Driver 呢?<br />继续看loadInitialDrivers()方法</p>
+<pre><code class="language-java">private static void loadInitialDrivers() {
+    String drivers;
+    try {
+        drivers = AccessController.doPrivileged(new PrivilegedAction&lt;String&gt;(){
+            public String run() {
+                return System.getProperty(&quot;jdbc.drivers&quot;);
+            }
+        });
+    } catch (Exception ex) {
+        drivers = null;
+    }
+    // 1)使用 ServiceLoader 机制加载驱动，即 SPI 
+    AccessController.doPrivileged(new PrivilegedAction&lt;Void&gt;() {
+        public Void run() {
+            ServiceLoader&lt;Driver&gt; loadedDrivers = ServiceLoader.load(Driver.class);
+            Iterator&lt;Driver&gt; driversIterator = loadedDrivers.iterator();
+            try{
+                while(driversIterator.hasNext()) {
+                    //也破坏了双亲委派模型
+                    driversIterator.next();
+                }
+            } catch(Throwable t) {
+                // Do nothing
+            }
+            return null;
+        }
+    });
+    println(&quot;DriverManager.initialize: jdbc.drivers = &quot; + drivers);
+    // 2)使用 jdbc.drivers 定义的驱动名加载驱动
+    if (drivers == null || drivers.equals(&quot;&quot;)) {
+        return; 
+    }
+    String[] driversList = drivers.split(&quot;:&quot;);
+    println(&quot;number of Drivers:&quot; + driversList.length);
+    for (String aDriver : driversList) {
+        try {
+            println(&quot;DriverManager.Initialize: loading &quot; + aDriver);
+            // 这里的 ClassLoader.getSystemClassLoader() 就是应用程序类加载器 
+            Class.forName(aDriver, true, ClassLoader.getSystemClassLoader());
+        } catch (Exception ex) {
+            println(&quot;DriverManager.Initialize: load failed: &quot; + ex);
+        } 
+    } 
+}
+</code></pre>
+<ul>
+<li>先看 2)发现它最后是使用 Class.forName 完成类的加载和初始化，关联的是应用程序类加载器，因此 可以顺利完成类加载，打破了双亲委派模型</li>
+<li>再看 1)它就是大名鼎鼎的 Service Provider Interface (SPI) 约定如下，在 jar 包的 META-INF/services 包下，以接口全限定名为文件名，文件内容是实现类名称</li>
+</ul>
+<p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645962350246-d25040bf-1b06-4517-9270-0a555a778d88-20220312195357777.png" alt="image.png" loading="lazy"><br />这样就可以使用</p>
+<pre><code class="language-java">//找到接口的所有实现类
+ServiceLoader&lt;接口类型&gt; allImpls = ServiceLoader.load(接口类型.class); 
+Iterator&lt;接口类型&gt; iter = allImpls.iterator();
+while(iter.hasNext()) {
+    //每次调用了迭代器，就可以返回实现类的实例
+    iter.next();
+}
+</code></pre>
+<p>来得到实现类，体现的是【面向接口编程+解耦】的思想，在下面一些框架中都运用了此思想:</p>
+<ul>
+<li>JDBC</li>
+<li>Servlet 初始化器</li>
+<li>Spring 容器</li>
+<li>Dubbo(对 SPI 进行了扩展)</li>
+</ul>
+<p>接着看 ServiceLoader.load 方法:</p>
+<pre><code class="language-java">public static &lt;S&gt; ServiceLoader&lt;S&gt; load(Class&lt;S&gt; service) {
+	// 获取线程上下文类加载器(默认就是应用程序类加载器)
+    // 在线程启动时，jvm会把应用程序类加载器复制给当前线程
+	ClassLoader cl = Thread.currentThread().getContextClassLoader(); 
+    return ServiceLoader.load(service, cl);
+}
+</code></pre>
+<p>线程上下文类加载器是当前线程使用的类加载器，默认就是应用程序类加载器，它内部又是由 Class.forName 调用了线程上下文类加载器完成类加载，具体代码在 ServiceLoader 的内部类 LazyIterator 中:</p>
+<pre><code class="language-java">private S nextService() {
+    if (!hasNextService())
+        throw new NoSuchElementException();
+    String cn = nextName;
+    nextName = null;
+    Class&lt;?&gt; c = null;
+    try {
+        c = Class.forName(cn, false, loader);
+    } catch (ClassNotFoundException x) {&quot;Provider &quot; + cn + &quot; not found&quot;);
+    }
+    if (!service.isAssignableFrom(c)) {
+        fail(service, 
+             &quot;Provider &quot; + cn  + &quot; not a subtype&quot;);
+    } try {
+        S p = service.cast(c.newInstance());
+        providers.put(cn, p);
+        return p;
+    } catch (Throwable x) {
+        fail(service,
+             &quot;Provider &quot; + cn + &quot; could not be instantiated&quot;,
+             x);
+    }
+    throw new Error();          // This cannot happen
+}
+</code></pre>
+<p><a name="Ym5It"></a></p>
+<h2 id="自定义类加载器">自定义类加载器</h2>
+<p>什么时候需要自定义类加载器</p>
+<ol>
+<li>想加载非classpath随意路径中的类文件</li>
+<li>都是通过接口来使用实现，希望解耦时，常用在框架设计</li>
+<li>这些类希望予以隔离，不同应用的同名类都可以加载，不冲突，常见于tomcat容器</li>
+</ol>
+<p>步骤：</p>
+<ol>
+<li>继承 ClassLoader 父类</li>
+<li>要遵从双亲委派机制，重写 findClass 方法
+<ol>
+<li>注意不是重写 loadClass 方法，否则不会走双亲委派机制</li>
+</ol>
+</li>
+<li>读取类文件的字节码</li>
+<li>调用父类的 defineClass 方法来加载类</li>
+<li>使用者调用该类加载器的 loadClass 方法</li>
+</ol>
+<p>示例: <br />准备好两个类文件放入 E:\myclasspath，它实现了 java.util.Map 接口，可以先反编译看一下:<br /><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1645969043336-fdc5d884-e9c1-4eeb-9a8c-fb0b0db0094e-20220312195358048.png" alt="image.png" loading="lazy"></p>
+<pre><code class="language-java">package cn.itcast.jvm.t3.load;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+public class Load7 {
+    public static void main(String[] args) throws Exception {
+        MyClassLoader classLoader = new MyClassLoader();
+        Class&lt;?&gt; c1 = classLoader.loadClass(&quot;MapImpl1&quot;);
+        Class&lt;?&gt; c2 = classLoader.loadClass(&quot;MapImpl1&quot;);
+        
+        //true
+        System.out.println(c1 == c2);
+
+        MyClassLoader classLoader2 = new MyClassLoader();
+        Class&lt;?&gt; c3 = classLoader2.loadClass(&quot;MapImpl1&quot;);
+        
+        //false，包名类名相同，且类加载器对象相同，才认为这是同一个类，不然认为是相互隔离的
+        System.out.println(c1 == c3);
+
+        c1.newInstance();
+    }
+}
+
+//继承ClassLoader并重写findClass方法
+class MyClassLoader extends ClassLoader {
+
+    @Override // name 就是类名称
+    protected Class&lt;?&gt; findClass(String name) throws ClassNotFoundException {
+        String path = &quot;e:\\myclasspath\\&quot; + name + &quot;.class&quot;;
+
+        try {
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+            Files.copy(Paths.get(path), os);
+
+            // 得到字节数组
+            byte[] bytes = os.toByteArray();
+
+            // byte[] -&gt; *.class
+            return defineClass(name, bytes, 0, bytes.length);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new ClassNotFoundException(&quot;类文件未找到&quot;, e);
+        }
+    }
+}
+
+</code></pre>
+<p><a name="W2Wqr"></a></p>
+<h1 id="运行期优化">运行期优化</h1>
+<p><a name="RyZ3t"></a></p>
+<h2 id="即时编译">即时编译</h2>
+<p><a name="Nflf0"></a></p>
+<h3 id="分层编译tieredcompilation">分层编译(TieredCompilation)</h3>
+<pre><code class="language-java">public class JIT1 {
+    public static void main(String[] args) {
+        for (int i = 0; i &lt; 200; i++) {
+            long start = System.nanoTime();
+            for (int j = 0; j &lt; 1000; j++) {
+                new Object();
+            }
+            long end = System.nanoTime();
+            System.out.printf(&quot;%d\t%d\n&quot;,i,(end - start));
+        }
+    }
+}
+</code></pre>
+<pre><code>0   96426
+1   52907
+2   44800
+3   119040
+4   65280
+5   47360
+6   45226
+7   47786
+8   48640
+9   60586
+10  42667
+11  48640
+12  70400
+13  49920
+14  49493
+15  45227
+16  45653
+17  60160
+18  58880
+19  46080
+20  47787
+21  49920
+22  54187
+23  57173
+24  50346
+25  52906
+26  50346
+27  47786
+28  49920
+29  64000
+30  49067
+31  63574
+32  63147
+33  56746
+34  49494
+35  64853
+36  107520
+37  46933
+38  51627
+39  45653
+40  103680
+41  51626
+42  60160
+43  49067
+44  45653
+45  49493
+46  51626
+47  49066
+48  47360
+49  50774
+50  70827
+51  64000
+52  72107
+53  49066
+54  46080
+55  44800
+56  46507
+57  73813
+58  61013
+59  57600
+60  83200
+61  7024204
+62  49493
+63  20907
+64  20907
+65  20053
+66  20906
+67  20907
+68  21333
+69  22187
+70  20480
+71  21760
+72  19200
+73  15360
+74  18347
+75  19627
+76  17067
+77  34134
+78  19200
+79  18347
+80  17493
+81  15360
+82  18774
+83  17067
+84  21760
+85  23467
+86  17920
+87  17920
+88  18774
+89  18773
+90  19200
+91  20053
+92  18347
+93  22187
+94  17920
+95  18774
+96  19626
+97  33280
+98  20480
+99  20480
+100 18773
+101 47786
+102 17493
+103 22614
+104 64427
+105 18347
+106 19200
+107 26027
+108 21333
+109 20480
+110 24747
+111 32426
+112 21333
+113 17920
+114 17920
+115 19200
+116 18346
+117 15360
+118 24320
+119 19200
+120 20053
+121 17920
+122 18773
+123 20053
+124 18347
+125 18347
+126 22613
+127 18773
+128 19627
+129 20053
+130 20480
+131 19627
+132 20053
+133 15360
+134 136533
+135 43093
+136 853
+137 853
+138 853
+139 853
+140 854
+141 853
+142 853
+143 853
+144 853
+145 853
+146 853
+147 854
+148 853
+149 853
+150 854
+151 853
+152 853
+153 853
+154 1280
+155 853
+156 853
+157 854
+158 853
+159 853
+160 854
+161 854
+162 853
+163 854
+164 854
+165 854
+166 854
+167 853
+168 853
+169 854
+170 853
+171 853
+172 853
+173 1280
+174 853
+175 1280
+176 853
+177 854
+178 854
+179 427
+180 853
+181 854
+182 854
+183 854
+184 853
+185 853
+186 854
+187 853
+188 853
+189 854
+190 1280
+191 853
+192 853
+193 853
+194 853
+195 854
+196 853
+197 853
+198 853
+199 854
+</code></pre>
+<p>原因是什么呢?<br />JVM 将执行状态分成了 5 个层次:</p>
+<ul>
+<li>0 层，解释执行(Interpreter)
+<ul>
+<li>字节码加载到虚拟机，解释器将字节码解释为机器码</li>
+<li>字节码被反复调用，到达一定阈值，就会启用编译器进行编译执行</li>
+</ul>
+</li>
+<li>1 层，使用 C1 即时编译器编译执行(不带 profiling)</li>
+<li>2 层，使用 C1 即时编译器编译执行(带基本的 profiling)</li>
+<li>3 层，使用 C1 即时编译器编译执行(带完全的 profiling)</li>
+<li>4 层，使用 C2 即时编译器编译执行
+<ul>
+<li>比C1优化程度更高</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>profiling 是指在运行过程中收集一些程序执行状态的数据，例如【方法的调用次数】，【循环的 回边次数】等</p>
+</blockquote>
+<p>即时编译器(JIT)与解释器的区别</p>
+<ul>
+<li>解释器是将字节码解释为机器码，下次即使遇到相同的字节码，仍会执行重复的解释</li>
+<li>JIT 是将一些字节码编译为机器码，并存入 Code Cache，下次遇到相同的代码，直接执行，无需再编译</li>
+<li>解释器是将字节码解释为针对所有平台都通用的机器码</li>
+<li>JIT 会根据平台类型，生成平台特定的机器码</li>
+</ul>
+<p>对于占据大部分的不常用的代码，我们无需耗费时间将其编译成机器码，而是采取解释执行的方式运 行;另一方面，对于仅占据小部分的热点代码，我们则可以将其编译成机器码，以达到理想的运行速度。 执行效率上简单比较一下 Interpreter &lt; C1(提升5倍左右高) &lt; C2(提升10-100倍)，总的目标是发现热点代码(hotspot名称的由来)，并优化之</p>
+<p>刚才的一种优化手段称之为【逃逸分析】，发现新建的对象是否逃逸(外层是否会用到该对象)。可以使用 -XX:- DoEscapeAnalysis 关闭逃逸分析，再运行刚才的示例观察结果</p>
+<p>参考资料：<a href="https://docs.oracle.com/en/java/javase/12/vm/java-hotspot-virtual-machine-performance-enhancements.html#GUID-D2E3DC58-D18B-4A6C-8167-4A1DFB4888E4">https://docs.oracle.com/en/java/javase/12/vm/java-hotspot-virtual-machine-performance-enhancements.html#GUID-D2E3DC58-D18B-4A6C-8167-4A1DFB4888E4</a></p>
+<p><a name="D6YlW"></a></p>
+<h3 id="方法内联inlining">方法内联(Inlining)</h3>
+<pre><code class="language-java">private static int square(final int i) {
+    return i * i;
+}
+</code></pre>
+<pre><code class="language-java">System.out.println(square(9));
+</code></pre>
+<p>如果发现 square 是热点方法，并且长度不太长时，会进行内联，所谓的内联就是把方法内代码拷贝、 粘贴到调用者的位置:</p>
+<pre><code class="language-java">//System.out.println(square(9))进行方法内联后
+//变为
+System.out.println(9 * 9);
+</code></pre>
+<p>还能够进行常量折叠(constant folding)的优化</p>
+<pre><code class="language-java">//9固定不变，可以进行常量折叠的优化
+System.out.println(81);
+</code></pre>
+<p>实验：</p>
+<pre><code class="language-java">public class JIT2 {
+    // -XX:+UnlockDiagnosticVMOptions -XX:+PrintInlining (解锁隐藏参数)打印inlining 信息
+    // -XX:CompileCommand=dontinline,*JIT2.square 禁止某个方法 inlining *表示报名，JIT2为类名然后为方法名
+    // -XX:+PrintCompilation 打印编译信息
+    public static void main(String[] args) {
+        int x = 0;
+        for (int i = 0; i &lt; 500; i++) {
+            long start = System.nanoTime();
+            for (int j = 0; j &lt; 1000; j++) {
+                x = square(9);
+            }
+        	long end = System.nanoTime();
+        	System.out.printf(&quot;%d\t%d\t%d\n&quot;,i,x,(end - start));
+    	}
+	}
+    private static int square(final int i) {
+        return i * i;
+    } 
+}
+</code></pre>
+<p><a name="y6x4j"></a></p>
+<h3 id="字段优化">字段优化</h3>
+<p>字段优化为对成员变量和静态成员变量进行优化<br />JMH基准测试请参考<a href="http://openjdk.java.net/projects/code-tools/jmh/">http://openjdk.java.net/projects/code-tools/jmh/</a><br />创建maven工程，添加依赖如下</p>
+<pre><code class="language-xml">&lt;dependency&gt;
+    &lt;groupId&gt;org.openjdk.jmh&lt;/groupId&gt;
+    &lt;artifactId&gt;jmh-core&lt;/artifactId&gt;
+    &lt;version&gt;${jmh.version}&lt;/version&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.openjdk.jmh&lt;/groupId&gt;
+    &lt;artifactId&gt;jmh-generator-annprocess&lt;/artifactId&gt;
+    &lt;version&gt;${jmh.version}&lt;/version&gt;
+    &lt;scope&gt;provided&lt;/scope&gt;
+&lt;/dependency&gt;
+</code></pre>
+<p>编写基准测试代码</p>
+<pre><code class="language-java">package test;
+import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.runner.Runner;
+import org.openjdk.jmh.runner.RunnerException;
+import org.openjdk.jmh.runner.options.Options;
+import org.openjdk.jmh.runner.options.OptionsBuilder;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
+// 热身，让程序预热一段时间，让JIT对其进行充分的优化
+@Warmup(iterations = 2, time = 1)
+// 进行几轮测试
+@Measurement(iterations = 5, time = 1)
+@State(Scope.Benchmark)
+public class Benchmark1 {
+    int[] elements = randomInts(1_000);
+    private static int[] randomInts(int size) {
+        Random random = ThreadLocalRandom.current();
+        int[] values = new int[size];
+        for (int i = 0; i &lt; size; i++) {
+            values[i] = random.nextInt();
+        }
+        return values;
+    }
+    
+	@Benchmark
+    public void test1() {
+        for (int i = 0; i &lt; elements.length; i++) {
+            doSum(elements[i]);
+        }
+	}
+    
+	@Benchmark
+    public void test2() {
+        int[] local = this.elements;
+        for (int i = 0; i &lt; local.length; i++) {
+            doSum(local[i]);
+        }
+	}
+    
+	@Benchmark
+    public void test3() {
+        for (int element : elements) {
+            doSum(element);
+        }
+    }
+    
+    static int sum = 0;
+    
+    // 控制是否进行内联
+    @CompilerControl(CompilerControl.Mode.INLINE)
+    static void doSum(int x) {
+        sum += x; 
+    }
+    
+    public static void main(String[] args) throws RunnerException {
+        Options opt = new OptionsBuilder()
+                .include(Benchmark1.class.getSimpleName())
+                .forks(1)
+                .build();
+        new Runner(opt).run();
+    }
+}
+</code></pre>
+<p>首先启用doSum的方法内联，测试结果如下(每秒吞吐量，分数越高越好)</p>
+<pre><code>Benchmark              Mode  	Samples        Score  Score error  Units
+t.Benchmark1.test1    thrpt					5  2420286.539   390747.467  ops/s
+t.Benchmark1.test2    thrpt					5  2544313.594    91304.136  ops/s
+t.Benchmark1.test3    thrpt					5  2469176.697   450570.647  ops/s
+</code></pre>
+<p>接下来禁用doSum方法内联</p>
+<pre><code class="language-java">//禁用内联
+@CompilerControl(CompilerControl.Mode.DONT_INLINE)
+static void doSum(int x) {
+    sum += x; 
+}
+</code></pre>
+<p>测试结果如下</p>
+<pre><code>Benchmark              Mode  	Samples       Score  Score error  Units
+t.Benchmark1.test1    thrpt					5  296141.478    63649.220  ops/s
+t.Benchmark1.test2    thrpt					5  371262.351    83890.984  ops/s
+t.Benchmark1.test3    thrpt					5  368960.847    60163.391  ops/s
+</code></pre>
+<p>分析：<br />在刚才的示例中，doSum 方法是否内联会影响 elements 成员变量读取的优化: 如果 doSum 方法内联了，刚才的 test1 方法会被优化成下面的样子(伪代码):</p>
+<pre><code class="language-java">@Benchmark
+public void test1() {
+    // elements.length 首次读取会缓存起来 -&gt; int[] local
+    for (int i = 0; i &lt; elements.length; i++) { // 后续 999 次 求长度 &lt;- local
+		sum += elements[i]; // 1000 次取下标 i 的元素 &lt;- local 
+    }	
+}
+</code></pre>
+<p>可以节省1999次Field读取操作<br />但如果doSum方法没有内联，则不会进行上面的优化</p>
+<p>练习:在内联情况下将 elements 添加 volatile 修饰符，观察测试结果</p>
+<p><a name="wGyBB"></a></p>
+<h2 id="反射优化">反射优化</h2>
+<pre><code class="language-java">package cn.itcast.jvm.t3.reflect;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+public class Reflect1 {
+    public static void foo() {
+        System.out.println(&quot;foo...&quot;);
+    }
+    public static void main(String[] args) throws Exception {
+        Method foo = Reflect1.class.getMethod(&quot;foo&quot;);
+        for (int i = 0; i &lt;= 16; i++) {
+            System.out.printf(&quot;%d\t&quot;, i);
+            foo.invoke(null);
+        }
+        System.in.read();
+    }
+}
+</code></pre>
+<p>foo.invoke前面 0 ~ 15 次调用使用的是 MethodAccessor 的 NativeMethodAccessorImpl 实现</p>
+<pre><code class="language-java">package sun.reflect;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import sun.reflect.misc.ReflectUtil;
+class NativeMethodAccessorImpl extends MethodAccessorImpl {
+    private final Method method;
+    private DelegatingMethodAccessorImpl parent;
+    private int numInvocations;
+    NativeMethodAccessorImpl(Method method) {
+        this.method = method;
+	}
+    public Object invoke(Object target, Object[] args) 
+        throws IllegalArgumentException, InvocationTargetException {
+        // inflationThreshold 膨胀阈值，默认 15
+        if (++this.numInvocations &gt; ReflectionFactory.inflationThreshold()
+            &amp;&amp; !ReflectUtil.isVMAnonymousClass(this.method.getDeclaringClass())){
+            // 使用 ASM 动态生成的新实现代替本地实现，速度较本地实现快 20 倍左右 
+            MethodAccessorImpl generatedMethodAccessor =
+                (MethodAccessorImpl)
+                    (new MethodAccessorGenerator())
+                        .generateMethod(
+                            this.method.getDeclaringClass(),
+                            this.method.getName(),
+                            this.method.getParameterTypes(),
+                            this.method.getReturnType(),
+                            this.method.getExceptionTypes(),
+                            this.method.getModifiers()
+                        );
+            this.parent.setDelegate(generatedMethodAccessor);
+        }
+        // 调用本地实现
+    	return invoke0(this.method, target, args);
+    }
+    
+    void setParent(DelegatingMethodAccessorImpl parent) {
+        this.parent = parent;
+    }
+    private static nat ive Object invoke0(Method method, Object target, Object[] args);
+}
+</code></pre>
+<p>当调用到第 16 次(从0开始算)时，会采用运行时生成的类代替掉最初的实现，可以通过 debug 得到 类名为 sun.reflect.GeneratedMethodAccessor1<br />可以使用阿里的 arthas 工具:</p>
+<pre><code>java -jar arthas-boot.jar
+[INFO] arthas-boot version: 3.1.1
+[INFO] Found existing java process, please choose one and hit RETURN.
+* [1]: 13065 cn.itcast.jvm.t3.reflect.Reflect1
+</code></pre>
+<p>选择1回车表示分析该进程</p>
+<pre><code>1
+[INFO] arthas home: /root/.arthas/lib/3.1.1/arthas
+[INFO] Try to attach process 13065
+[INFO] Attach process 13065 success.
+[INFO] arthas-client connect 127.0.0.1 3658
+
+wiki      https://alibaba.github.io/arthas
+tutorials https://alibaba.github.io/arthas/arthas-tutorials
+version   3.1.1
+pid       13065
+time      2019-06-10 12:23:54
+</code></pre>
+<p>在输入【jad+类名】来进行反编译</p>
+<pre><code class="language-java">$ jad sun.reflect.GeneratedMethodAccessor1
+ClassLoader:
++-sun.reflect.DelegatingClassLoader@15db9742
+  +-sun.misc.Launcher$AppClassLoader@4e0e2f2a
+    +-sun.misc.Launcher$ExtClassLoader@2fdb006e
+Location:
+/*
+ * Decompiled with CFR 0_132.
+ *
+ * Could not load the following classes:
+ *  cn.itcast.jvm.t3.reflect.Reflect1
+ */
+package sun.reflect;
+import cn.itcast.jvm.t3.reflect.Reflect1;
+import java.lang.reflect.InvocationTargetException;
+import sun.reflect.MethodAccessorImpl;
+public class GeneratedMethodAccessor1
+extends MethodAccessorImpl {
+    /*
+     * Loose catch block
+     * Enabled aggressive block sorting
+     * Enabled unnecessary exception pruning
+     * Enabled aggressive exception aggregation
+     * Lifted jumps to return sites
+     */
+  public Object invoke(Object object, Object[] arrobject) 
+    throws InvocationTargetException {
+    // 比较奇葩的做法，如果有参数，那么抛非法参数异常 
+    block4 : {
+      if (arrobject == null || arrobject.length == 0) break block4;
+      throw new IllegalArgumentException();
+    }
+    try {
+      // 可以看到，已经是直接调用了😱😱😱 
+      Reflect1.foo();
+      // 因为没有返回值
+      return null;
+    }
+    catch (Throwable throwable) {
+      throw new InvocationTargetException(throwable);
+    }
+    catch (ClassCastException | NullPointerException runtimeException) {
+      throw new IllegalArgumentException(Object.super.toString());
+    } 
+  }
+}
+Affect(row-cnt:1) cost in 1540 ms.
+</code></pre>
+<blockquote>
+<p>注意<br>
+通过查看 ReflectionFactory 源码可知</p>
+<ul>
+<li>sun.reflect.noInflation 可以用来禁用膨胀(直接生成 GeneratedMethodAccessor1，但首次生成比较耗时，如果仅反射调用一次，不划算)</li>
+<li>sun.reflect.inflationThreshold 可以修改膨胀阈值</li>
+</ul>
+</blockquote>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://yeyuan1107.github.io/post/jvm-la-ji-hui-shou/" class="post-title gt-a-link">
+                    JVM垃圾回收
+                </a>
+            </div>
+        
+
+        
+
+        
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">温故而知新</div>
+    <div class="social-container">
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+    </div>
+    <div>
+        Theme <a href="https://github.com/imhanjie/gridea-theme-pure" target="_blank">Pure</a>, Powered by <a
+                href="https://gridea.dev" target="_blank">Gridea</a> | <a href="https://yeyuan1107.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+</div>
+
+<script>
+  hljs.highlightAll()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,1110 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>Java面向对象 | YBLOG</title>
+
+<link rel="shortcut icon" href="https://yeyuan1107.github.io/favicon.ico?v=1657077232781">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://yeyuan1107.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages//dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+    
+        <script src="https://cdn.jsdelivr.net/npm/mermaid@9.1.1/dist/mermaid.min.js"></script>
+        <script>mermaid.initialize({startOnLoad:true});</script> 
+    
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            YBLOG
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1657077232781"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    Java面向对象
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2021-10-30 ·
+                    </time>
+                    
+                        <a href="https://yeyuan1107.github.io/tag/wZpx5Scef/" class="post-tags">
+                            # Java
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <p><a name="udRAY"></a></p>
+<h1 id="面向对象内容的三条主线">面向对象内容的三条主线</h1>
+<ol>
+<li>Java类及类的成员
+<ul>
+<li><strong>属性</strong></li>
+<li><strong>方法</strong></li>
+<li><strong>构造器</strong></li>
+<li>代码块</li>
+<li>内部类</li>
+</ul>
+</li>
+<li>面向对象的三大特性
+<ul>
+<li>封装性</li>
+<li>继承性</li>
+<li>多态性</li>
+</ul>
+</li>
+<li>其他类关键字
+<ul>
+<li>this</li>
+<li>super</li>
+<li>static</li>
+<li>final</li>
+<li>abstract</li>
+<li>interface</li>
+<li>package</li>
+<li>import<br>
+<a name="PfJ4G"></a></li>
+</ul>
+</li>
+</ol>
+<h1 id="类和对象">类和对象</h1>
+<p>类：是对一类事物的描述，是抽象的、概念上的定义<br />对象：是实际存在的该类食物的每个个体，因而也称为实例</p>
+<blockquote>
+<p>对象的功能取决于类的设计<br />设计类相当于设计类的成员</p>
+</blockquote>
+<p>类：</p>
+<ul>
+<li>属性：成员变量 field(域，字段)</li>
+<li>方法：函数 mehod(成员函数)</li>
+</ul>
+<p>JavaBean：是一种Java语言写成的可重用组建<br />所谓JavaBean是指符合如下标准的Java类</p>
+<ol>
+<li>类是公共的</li>
+<li>有一个无参的公共构造器</li>
+<li>有属性且有对应的get/set方法</li>
+</ol>
+<blockquote>
+<p>属性vs局部变量<br />不同点：<br />声明位置不同，属性直接定义在类的一对大括号内，局部变量声明在方法内以及方法形参中<br />修饰符，属性可以使用修饰符，局部变量不能使用除final外的修饰符<br />默认初始化，类的属性在类实例化时根据其类型有初始化值，局部变量无初始化值<br />内存位置不同，属性在堆中或静态域中，局部变量在栈中<br />相同点：<br />定义变量的格式相同<br />都需要先声明后使用<br />都有其对应的作用域</p>
+</blockquote>
+<p><a name="FcJVl"></a></p>
+<h2 id="object类的使用">Object类的使用</h2>
+<p>Object类是所有Java类的根父类，如果在类的声明中未使用extends指明其父类，则默认父类为java.lang.Object类<br /><strong>数组可以看作一个特殊的Object类</strong><br>
+<a name="ju93P"></a></p>
+<h3 id="object类中的主要结构">Object类中的主要结构</h3>
+<table>
+<thead>
+<tr>
+<th>No</th>
+<th>方法名称</th>
+<th>类型</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>public Object()</td>
+<td>构造</td>
+<td>构造器</td>
+</tr>
+<tr>
+<td>2</td>
+<td>public boolean equals(Object obj)</td>
+<td>普通</td>
+<td>对象比较</td>
+</tr>
+<tr>
+<td>3</td>
+<td>public int hashCode()</td>
+<td>普通</td>
+<td>取得Hash码</td>
+</tr>
+<tr>
+<td>4</td>
+<td>public String toString()</td>
+<td>普通</td>
+<td>对象打印时调用</td>
+</tr>
+</tbody>
+</table>
+<p><a name="vwGuK"></a></p>
+<h3 id="与equals区别">==与equals()区别</h3>
+<ol>
+<li>==运算符
+<ul>
+<li>可以使用在基本数据类型变量和引用数据类型变量，基本数据类型可以自动提升类型来进行比较</li>
+<li>如果为基本数据类型变量是比较两个变量数据是否相等(不一定类型相同)</li>
+<li>如果为引用数据类型变量比较两个对象的地址值是否相同</li>
+</ul>
+</li>
+<li>equals()方法
+<ul>
+<li>是一个方法而不是运算符，基本数据类型变量无法使用</li>
+<li>Object类中equals定义：return this == obj 与==运算符相同，同为比较两个引用数据类型变量的地址</li>
+<li>像String，Date，File，等包装类比较的不是两个引用的地址是否相同，而是比较两个对象的实体内容是否相同。具体为先判断地址是否相同，再看是否为同一类，最后看比较关注的属性即实体内容。</li>
+<li>当自定义使用equals()时，可以重写。用于比较两个对象的内容是否都相等。<br>
+<a name="Z3Cwn"></a></li>
+</ul>
+</li>
+</ol>
+<h3 id="tostring方法">toString()方法</h3>
+<ol>
+<li>当输出一个对象的引用时，实际上就是调用当前对象的toString()方法</li>
+<li>String与其他类型数据连接时，调用该类型的toString()方法</li>
+<li>Object类中的toString()方法为<code>return getClass().getName() + &quot;@&quot; + Integer.toHexString(hashCode());</code></li>
+<li>String Date File包装类都重写了toString()方法，使得在调用对象的toString()方法时返回实体内容的信息<br>
+<a name="QV5aJ"></a></li>
+</ol>
+<h2 id="包装类">包装类</h2>
+<p>Java提供了8种基本数据类型对应的包装类，使得基本数据类型变量具有类的特征<br /><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/%E5%8C%85%E8%A3%85%E7%B1%BB.png#crop=0&amp;crop=0&amp;crop=1&amp;crop=1&amp;id=wAvBb&amp;originHeight=539&amp;originWidth=1076&amp;originalType=binary&amp;ratio=1&amp;rotation=0&amp;showTitle=false&amp;status=done&amp;style=none&amp;title=" alt="" loading="lazy"><br /><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B%E4%B8%8E%E5%8C%85%E8%A3%85%E7%B1%BB.png#crop=0&amp;crop=0&amp;crop=1&amp;crop=1&amp;id=vwHhS&amp;originHeight=842&amp;originWidth=1548&amp;originalType=binary&amp;ratio=1&amp;rotation=0&amp;showTitle=false&amp;status=done&amp;style=none&amp;title=" alt="" loading="lazy"><br />JDK5后有自动装箱和拆箱</p>
+<pre><code class="language-java">int num2 = 10;
+Integer int1 = num2;
+int num1 = int1;
+</code></pre>
+<p><a name="a5qsI"></a></p>
+<h3 id="注意">注意</h3>
+<ol>
+<li>Integer中有Cache数组从-128 - 127，如果为该范围内的数，则直接指向数组位置，如果超过则用new来构造一个新对象</li>
+<li>对于形参是Object obj的函数，JDK5之后可以用基本数据类型数据通过自动装箱来作为实参传入。<br>
+<a name="c3FNR"></a></li>
+</ol>
+<h2 id="类的语法格式">类的语法格式</h2>
+<pre><code class="language-java">//创建一个类
+修饰符 class 类名
+{
+	修饰符 属性类型 属性名 = (是否显式初始化);
+	修饰符 返回值类型 方法名(形参列表)
+	{
+		方法体;
+	}
+}
+
+//实例化一个类
+类名 对象名 = new 类名();
+//匿名对象：创建的对象没有显示符给一个变量名
+//匿名对象特征：只能调用一次
+new 类名();
+//常用在方法的参数之中
+</code></pre>
+<p><a name="af2jr"></a></p>
+<h3 id="修饰符">修饰符</h3>
+<p>权限修饰符：在封装性中详细讲解</p>
+<ol>
+<li>private</li>
+<li>缺省</li>
+<li>protected</li>
+<li>public</li>
+</ol>
+<p>其他修饰符：在其他关键字中讲解</p>
+<ol>
+<li>static</li>
+<li>final<br>
+<a name="DjvBs"></a></li>
+</ol>
+<h2 id="方法">方法</h2>
+<p><a name="JRkAc"></a></p>
+<h3 id="方法的重载">方法的重载</h3>
+<ul>
+<li>在同一个类中，允许存在一个以上的同名方法，只要它们的参数个数或者参数类型不同即可</li>
+<li>与返回值类型无关，只看参数列表，且参数列表必须不同。调用时，根据方法参数列表的不同来区别</li>
+<li>总结：两同一不同，同类同方法名，参数不同(参数顺序不同也可以)。改变返回值且参数也改变也算重载<br>
+<a name="sB84e"></a></li>
+</ul>
+<h3 id="可变个数形参">可变个数形参</h3>
+<ul>
+<li>JDK5之前：采用数组形参来定义方法，传入多个同一类型变量<code>变量类型[] 变量名</code></li>
+<li>JDK5及之后：采用可变个数形参来定义方法，传入多个同一类型变量<code>变量类型...变量名</code></li>
+</ul>
+<blockquote>
+<p>注意：<br>
+可变个数形参的参数个数可以为0个，1个，2个...可变形参的方法与本类中方法名相同，形参不同的方法构成重载，优先使用固定参数匹配的可变个数的形参与对应数组冲突如方法名(String[] args) 与 方法名(String...args)冲突访问可变参数形参时将其看作一个数组即可可变个数形参在方法的形参列表中，必须声明在末尾，且只能有一个可变个数形参</p>
+</blockquote>
+<p><a name="rds33"></a></p>
+<h3 id=""></h3>
+<p><a name="klQu6"></a></p>
+<h3 id="方法参数的传递机制">方法参数的传递机制</h3>
+<p>Java中只有值传递：即将实际参数值的副本传入方法内，而参数本身不受影响</p>
+<ul>
+<li>形参是基本数据类型：将实参基本数据类型变量的“数据值”传递给形参</li>
+<li>形参是引用数据类型：将实参引用数据类型变量的“地址值”传递给形参<br>
+<a name="qTV65"></a></li>
+</ul>
+<h3 id="方法的重写overrideoverwrite">方法的重写(Override/Overwrite)</h3>
+<ul>
+<li>在子类中可以根据需要从父类中继承来的方法进行改造，也成为方法的重置、覆盖。在程序执行时，子类的方法将覆盖父类的方法。</li>
+<li>要求
+<ul>
+<li>子类重写的方法<strong>必须</strong>和父类被重写的方法具有相同的方法名称、参数列表</li>
+<li>子类重写的方法的返回值类型<strong>不能大于</strong>父类被重写的方法的返回值类型
+<ul>
+<li>父类为void，子类必须也为void</li>
+<li>父类为A类型，子类返回值可以为A类或者A的子类</li>
+<li>父类为基本数据类型，子类返回值要求与父类相同</li>
+</ul>
+</li>
+<li>子类重写的方法使用的访问权限<strong>不能小于</strong>父类被重写方法的访问权限
+<ul>
+<li>子类不能重写父类中声明为private权限的方法</li>
+<li>子类与父类中同名同参数的方法必须同时声明为非static的，或者同时声明为static的(但是不是重写)，因为static方法是属于类的，子类无法覆盖父类的方法</li>
+</ul>
+</li>
+<li>子类方法抛出的异常不能大于父类被重写方法的异常
+<ul>
+<li>在多态情况下，对方法的调用和异常的捕获按父类声明的异常处理，如果大于父类的异常则出错</li>
+<li>父类没有抛异常子类也不能抛出异常<br>
+<a name="kSMAS"></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="重写和重载的区别">重写和重载的区别</h3>
+<ul>
+<li>概念</li>
+<li>具体规则</li>
+<li>重载不表现为多态，重写表现为多态<br>
+<a name="s9Y6F"></a></li>
+</ul>
+<h2 id="构造器">构造器</h2>
+<p>创建类的方法：new + 构造器;</p>
+<ul>
+<li>特征：</li>
+</ul>
+<ol>
+<li>它具有与类相同的名称</li>
+<li>他不声明返回值类型</li>
+<li>不能被static, final, synchronized, abstrat, native修饰，不能有return语句返回值</li>
+</ol>
+<ul>
+<li>作用：</li>
+</ul>
+<p>创建对象，给对象进行初始化</p>
+<ul>
+<li>构造器语法格式：</li>
+</ul>
+<pre><code class="language-java">修饰符 类名(形参列表)
+{
+	初始化语句;
+}
+</code></pre>
+<ul>
+<li>属性赋值顺序</li>
+</ul>
+<ol>
+<li>默认初始化</li>
+<li>显式初始化或代码块，看位置先后</li>
+<li>构造器中赋值</li>
+<li>通过<code>对象.方法</code>或<code>对象.属性</code>的方法赋值</li>
+</ol>
+<blockquote>
+<p>注意：<br />如果无显式声明构造器，系统提供一个无参构造器使用，如果存在显式构造器，则不会提供<br />默认构造器的修饰符与所述类的修饰符一致<br />一个类可以创建多个重载的构造器<br />父类的构造器不可被子类继承</p>
+</blockquote>
+<p><a name="GFmu8"></a></p>
+<h2 id="代码块">代码块</h2>
+<p><a name="IW7GH"></a></p>
+<h3 id="简介">简介</h3>
+<p>代码块的作用：对Java类或对象进行初始化，只能用static修饰<br />代码块的分类：</p>
+<ol>
+<li>被static修饰，称为静态代码块：通常用于初始化static的属性</li>
+<li>没有使用static修饰的，称为非静态代码块<br>
+<a name="mR9LX"></a></li>
+</ol>
+<h3 id="静态代码块">静态代码块</h3>
+<ol>
+<li>可以有输出语句。</li>
+<li>可以对类的属性、类的声明进行初始化操作。</li>
+<li>不可以对非静态的属性初始化。即：不可以调用非静态的属性和方法。</li>
+<li>若有多个静态的代码块，那么按照从上到下的顺序依次执行。</li>
+<li>静态代码块的执行要先于非静态代码块。</li>
+<li>静态代码块随着类的加载而加载，且只执行一次。<br>
+<a name="NDnhs"></a></li>
+</ol>
+<h3 id="非静态代码块">非静态代码块</h3>
+<ol>
+<li>可以有输出语句 。</li>
+<li>可以对类的属性 、 类的声明进行初始化操作 。</li>
+<li>除了调用非静态的结构外 还可以调用静态的变量或方法 。</li>
+<li>若有多个非静态的代码块 那么按照从上到下的顺序依次执行 。</li>
+<li>每次创建对象的时候都会执行一次 。且先于构造器执行<br>
+<a name="cPcpz"></a></li>
+</ol>
+<h2 id="内部类">内部类</h2>
+<p><a name="XFy7h"></a></p>
+<h3 id="简介-2">简介</h3>
+<p>当一个事物的内部，还有一个部分需要一个完整的结构进行描述，而这个内部的完整结构又只为外部事物提供服务，那么整个内部的完整结构最好使用内部类。<br>
+<a name="geFCj"></a></p>
+<h3 id="分类">分类</h3>
+<ol>
+<li>成员内部类(static成员内部类和非static成员内部类)
+<ul>
+<li>一方面作为外部类的成员
+<ul>
+<li>调用外部类的结构<code>外部类名.this.外部类结构</code></li>
+<li>可以被static修饰，外部类不可以</li>
+<li>可以修饰为public或者protected</li>
+</ul>
+</li>
+<li>另一方面作为一个类
+<ul>
+<li>内部类可以声明属性、方法、构造器等结构</li>
+<li>可以声明为abstract类，因此可以被其他内部类继承</li>
+<li>可以声明为final的</li>
+</ul>
+</li>
+<li>注意
+<ul>
+<li>非static的成员内部类中的成员不能声明为static的，只有在外部类或static的成员内部类中才可声明static成员</li>
+<li>外部类访问成员内部类的成员需要通过<code>内部类.成员</code>或者<code>内部类对象.成员</code>的方式</li>
+<li>成员内部类可以使用外部类的所有成员，包括私有的数据</li>
+<li>当想要在外部类的静态成员部分使用内部类时，可以考虑将内部类声明为静态的</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>局部内部类(方法内、代码块内、构造器内)
+<ul>
+<li>使用
+<ul>
+<li>只能在声明他的方法或代码块中使用，且为先声明后使用。除此之外任何地方都不能使用该类</li>
+<li>但是他的对象可以通过外部方法的返回值返回使用，返回值类型只能是局部内部类的父类或父类接口类型</li>
+</ul>
+</li>
+<li>特点
+<ul>
+<li>内部类仍然是一个独立的类，在编译之后内部类会被编译成独立的 .class 文件，但是前面冠以外部类的类名和符号，以及数字编号。</li>
+<li>只能在声明它的方法或代码块中使用，而且是先声明后使用。除此之外的任何地方都不能使用该类。</li>
+<li>局部内部类可以使用外部类的成员，包括私有的 。</li>
+<li>局部内部类可以使用外部方法的局部变量，但是必须是 final 的。 由局部内部类和局部变量的声明周期不同所致。</li>
+<li>局部内部类和局部变量地位类似，不能使用 public,protected, 缺省 ,private</li>
+<li>局部内部类不能使用 static 修饰，因此也不能包含静态成员<br>
+<a name="x1q2n"></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="匿名内部类">匿名内部类</h3>
+<p>匿名内部类不能定义任何静态成员、方法和类，只能创建匿名内部类的一个实例。一个匿名内部类一定是在new的后面，用其隐含实现一个接口或实现一个类。<br>
+<a name="OJkfZ"></a></p>
+<h4 id="格式">格式</h4>
+<pre><code class="language-java">new 父类构造器(实参列表)|实现接口(){
+	//匿名内部类的类体部分
+}
+</code></pre>
+<p><a name="wLCQZ"></a></p>
+<h4 id="特点">特点</h4>
+<ol>
+<li>匿名内部类必须继承父类或实现接口</li>
+<li>匿名内部类只能有一个对象</li>
+<li>匿名内部类对象只能使用多态形式引用<br>
+<a name="mPpTb"></a></li>
+</ol>
+<h3 id="内部类的使用">内部类的使用</h3>
+<ol>
+<li>实例化成员内部类对象
+<ul>
+<li>静态内部类 <code>外部类名.内部类名 内部对象名 = new 外部类名.内部类名();</code></li>
+<li>非静态 <code>外部类名 外部类对象 = new 外部类名(); 外部类名.内部类名 内部对象名 = 外部对象名.new 内部类名()</code></li>
+</ul>
+</li>
+<li>在成员内部类中区分调用外部类结构，当变量名及形参重名时<code>内部类 this.变量名</code> <code>外部类 外部类名.this.变量名</code></li>
+<li>开发中局部内部类的使用：常见于返回值类型为接口的情况<br>
+<a name="OjQko"></a></li>
+</ol>
+<h2 id="程序中成员变量赋值的执行顺序">程序中成员变量赋值的执行顺序</h2>
+<ol>
+<li>声明变量的默认初始化</li>
+<li>显式初始化、多个代码化块依次被执行(同级别下按先后顺序执行)</li>
+<li>构造器再对成员进行初始化操作</li>
+<li>通过&quot;对象.属性&quot;或&quot;对象.方法&quot;的方式，可多次给属性赋值<br>
+<a name="H0N4M"></a></li>
+</ol>
+<h2 id="创建子类子类的实例化">创建子类(子类的实例化)</h2>
+<ol>
+<li>先从Object开始加载，然后加载到子类</li>
+<li>由父及子，静态先行</li>
+<li>父的静态代码块 --&gt; 子的静态代码块 --&gt; 父的非静态 --&gt; 父的构造器 --&gt; 子的非静态 --&gt; 子的构造器</li>
+<li>在此创建对象时不再执行静态代码块</li>
+<li>main函数开始前先执行所属类的静态代码块<br>
+<a name="De0bt"></a></li>
+</ol>
+<h2 id="简单的内存解析">简单的内存解析</h2>
+<p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/WechatIMG15-20220312140512702-20220312151854600.png" alt="" loading="lazy"><br />编译完源码之后，生成一个或多个字节码文件，我们使用JVM中的类加载器对生成的字节码文件进行解释运行，意味着需要将字节码中的对应的类加载到内存中。<br />虚拟机栈：即栈，局部变量存放在栈中<br />堆：new出来的结构，对象的非static属性也放在堆中<br />方法区：类的加载信息，常量池，静态域<br>
+<a name="buPTc"></a></p>
+<h2 id="万事万物皆对象的理解">万事万物皆对象的理解</h2>
+<ol>
+<li>Java中，我们将功能结构封装到类中，通过类的实例化来调用具体的功能</li>
+<li>涉及到Java与前端Html后端的数据库交互式都体现为类对象，比如数据库中一个表可以看作一个类，表的字段可以看作为类的属性，表的每一行数据可以看作一个对象。<br>
+<a name="T0xDy"></a></li>
+</ol>
+<h2 id="instanceof操作符">instanceof操作符</h2>
+<pre><code class="language-java">//检查x是否为类A的对象，返回值为boolean类型。
+//如果x属于类A的子类B那么也返回true
+x instanceof A;
+</code></pre>
+<p><a name="cD0WF"></a></p>
+<h2 id="对象类型转换">对象类型转换</h2>
+<ol>
+<li>从子类到父类的类型转换可以自动进行</li>
+<li>从父类到子类的类型转换必须通过强制类型转换实现</li>
+<li>无继承关系的引用类型间的转换是非法的</li>
+<li>在强制类型转换前可以使用instanceof操作符测试一个对象的类型</li>
+</ol>
+<p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2.jpg#crop=0&amp;crop=0&amp;crop=1&amp;crop=1&amp;id=bMR6W&amp;originHeight=353&amp;originWidth=694&amp;originalType=binary&amp;ratio=1&amp;rotation=0&amp;showTitle=false&amp;status=done&amp;style=none&amp;title=" alt="" loading="lazy"><br>
+<a name="o6oQF"></a></p>
+<h1 id="面向对象的三大特征">面向对象的三大特征</h1>
+<p><a name="F0O68"></a></p>
+<h2 id="封装和隐藏封装性">封装和隐藏(封装性)</h2>
+<blockquote>
+<p>为什么要封装和隐藏<br />设计追求：高内聚，低耦合<br />隐藏对象内部的复杂性，只对外公开简单的接口。便于外界调用，从而提高系统的可扩展性、可维护性</p>
+</blockquote>
+<p>封装性需要有权限修饰符来配合，面向对象的主要体现在：</p>
+<ol>
+<li>属性私有化(提供相对应的Getter/Setter方法)</li>
+<li>方法私有化(仅类内部使用)</li>
+<li>单例模式(设计模式中的一种，恶汉式/懒汉式)</li>
+</ol>
+<p>四种权限修饰符，可以修饰类的内部结构：属性，方法，内部类，构造器。其中只有<code>public</code>和<code>缺省</code>可以修饰类</p>
+<table>
+<thead>
+<tr>
+<th>权限修饰符</th>
+<th>类内部</th>
+<th>同一个包</th>
+<th>不同包的子类</th>
+<th>同一个工程</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>private</td>
+<td>Yes</td>
+<td>No</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr>
+<td>缺省</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr>
+<td>protected</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr>
+<td>public</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+</tbody>
+</table>
+<p><a name="U9Vim"></a></p>
+<h2 id="继承性">继承性</h2>
+<pre><code class="language-java">class A extends B{
+	子类特有的属性
+	子类特有的方法
+}
+</code></pre>
+<ul>
+<li>多个类中存在相同的属性和行为时，将这些内容抽取到单独一个类中，那么多个类无需再定义这些属性和行为，只要继承那个类即可。一旦子类继承了父类之后，子类就获得了父类中声明的所有结构，属性，方法。子类可以获得private权限的属性，方法，只不过因为封装性影响不能直接调用而已，子类继承父类后可以声明自己特有的属性和方法，实现功能的拓展。</li>
+<li>好处:
+<ul>
+<li>减少代码冗余提高复用性</li>
+<li>便于功能的扩展</li>
+<li>为之后多态性提供了前提</li>
+</ul>
+</li>
+<li>注意：
+<ul>
+<li>单继承性：一个父类可以有多个子类，一个子类只能有一个父类</li>
+<li>子父类是相对的概念：子类 ==&gt; 直接父类 ==&gt; 间接父类 ==&gt; 间接父类</li>
+<li>所有的Java类(除Java.lang.Object类之外)都直接或间接的继承于Java.lang.Object类</li>
+<li>父类中的方法如果使用了this关键字，子类继承后该this指代子类的对象</li>
+<li>寻找一个属性或方法是，先查看子类，如果没有则看直接父类，如果依旧没有查看间接父类，以此类推<br>
+<a name="JTULM"></a></li>
+</ul>
+</li>
+</ul>
+<h2 id="多态性">多态性</h2>
+<p><a name="MocPG"></a></p>
+<h3 id="简介-3">简介</h3>
+<p>多态性可以理解为一种事物的多种形态<strong>对象的多态性：父类的引用纸箱子类的对象实例</strong></p>
+<pre><code class="language-java">父类名 C1 = new 子类名();
+</code></pre>
+<p>Java引用变量有两个类型：编译时类型和运行时类型。编译时类型由声明该变量时使用的类型决定，运行时类型由实际赋予该变量的对象决定。简单来说：编译时，看左边；运行时，看右边。<br>
+<a name="oLXRm"></a></p>
+<h3 id="使用">使用</h3>
+<p>当调用子父类中同名同参数的方法时，实际执行的是子类重写父类的方法，即虚拟方法调用，不能调用子类特有的方法(即父类中没有的方法)<br /><strong>虚拟方法调用(动态绑定)</strong>：在编译器只能调用父类中声明的方法，但在运行时我们实际执行子类的方法。父类的方法我们称为虚拟方法，动态调用子类的方法。<br>
+<a name="vX31X"></a></p>
+<h3 id="存在的前提">存在的前提</h3>
+<ol>
+<li>有类的继承关系</li>
+<li>方法的重写<br>
+<a name="zptLK"></a></li>
+</ol>
+<h3 id="多态的意义">多态的意义</h3>
+<p>代码复用，可以在定义方法时写父类。<br>
+<a name="ffvCb"></a></p>
+<h3 id="注意-2">注意</h3>
+<ol>
+<li>属性无多态性，属性的编译和运行都看等号左边。</li>
+<li>多态是运行时行为。</li>
+<li>一个引用类型变量如果生命为父类的类型，但实际引用的是子类的对象，那么该变量就不能再访问子类中添加的属性和方法。如果需要调用子类特有的属性或方法，则需要使用强制类型转换。</li>
+<li>在使用类强制转换时可能出现<strong>ClassCastException</strong><br>
+<a name="Kng44"></a></li>
+</ol>
+<h1 id="关键字">关键字</h1>
+<p><a name="mCXTL"></a></p>
+<h2 id="this关键字">this关键字</h2>
+<ul>
+<li>this理解为当前的对象</li>
+<li>什么时候使用this关键字：
+<ul>
+<li>在类的方法或者构造器中可以使用<code>this.属性</code>或<code>this.方法</code>的方式。</li>
+<li>调用当前对象的属性或方法，但在通常情况下我们都选择省略this。</li>
+<li>特殊情况下当方法形参予属性重名，我们必须显式的使用this，表明为属性而不是形参。</li>
+<li>使用this访问属性和方法时，如果在本类中未找到，会从父类中查找。</li>
+<li>this可以作为一个类中构造器相互调用的特殊格式</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>一个类中有n个构造器最多有n-1个构造器中使用了this(xxx)<br />规定this调用构造器时，必须放在构造器的首行，且只能有一个this(xxx)<br />构造器不能通过this(xxx)调用自身</p>
+</blockquote>
+<p><a name="qRHU3"></a></p>
+<h2 id="super关键字">super关键字</h2>
+<ol>
+<li>super可用于访问父类中定义的属性</li>
+<li>super可用于调用父类中定义的成员方法</li>
+<li>super可用于在子类构造器中调用父类的构造器
+<ul>
+<li>子类中所有的构造器默认都会访问父类中空参数的构造器</li>
+<li>可以在子类的构造器中显式的使用“super(形参列表)”的方式，调用父类中声明的制定的构造器</li>
+<li>super(形参列表)的使用必须声明在子类构造器的首行</li>
+<li>this(形参列表)和super(形参列表)只能二选一</li>
+<li>在构造器首行没有显式的声明this(形参列表)或super(形参列表)则默认使用父类的空参构造器</li>
+<li>在类的构造器中至少有一个构造器使用了super</li>
+</ul>
+</li>
+</ol>
+<blockquote>
+<p>注意<br />尤其当子父类出现同名成员时，可以用super表明调用的是父类中的成员<br />super的追溯不仅限于直接父类<br />super和this的用法很像，this代表本类对象的引用，super代表父类的内存空间的标识<br />当子类重写了父类中的方法以后，我们想在子类中调用父类中被重写的方法时用super调用，如果直接父类重写了间接父类的方法super调用的是直接父类的方法</p>
+</blockquote>
+<p><a name="sl7BX"></a></p>
+<h3 id="子类对象实例化全过程">子类对象实例化全过程</h3>
+<ol>
+<li>从结果上看<br />子类继承父类后就获得了父类中声明的属性或方法，创建该子类对象，在堆空间中就会加载父类中的所有属性</li>
+<li>从过程上看<br />当通过子类的构造器创建类类对象时，我们一定会直接或间接调用父类的构造器，进而调用父类的父类的构造器，直到调用了Object类中的构造器位置。正因为加载过所有的父类的结构，所以才可以看到内存中有父类的结构，子类对象才可以考虑进行调用。</li>
+</ol>
+<p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/%E5%AD%90%E7%B1%BB%E5%AE%9E%E4%BE%8B%E5%8C%96%E8%BF%87%E7%A8%8B.jpg#crop=0&amp;crop=0&amp;crop=1&amp;crop=1&amp;id=uBNjy&amp;originHeight=375&amp;originWidth=798&amp;originalType=binary&amp;ratio=1&amp;rotation=0&amp;showTitle=false&amp;status=done&amp;style=none&amp;title=" alt="" loading="lazy"><br>
+<a name="oVNhO"></a></p>
+<h2 id="this和super的对比">this和super的对比</h2>
+<table>
+<thead>
+<tr>
+<th>No</th>
+<th>区别点</th>
+<th>this</th>
+<th>super</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>访问属性</td>
+<td>访问本类中的属性，如果本类没有此属性则从父类中继续查找</td>
+<td>直接访问父类中的属性</td>
+</tr>
+<tr>
+<td>2</td>
+<td>调用方法</td>
+<td>访问本类中的方法，如果本类没有此方法则从父类中继续查找</td>
+<td>直接访问父类中的方法</td>
+</tr>
+<tr>
+<td>3</td>
+<td>调用构造器</td>
+<td>调用本类构造器，必须放在构造器的首行</td>
+<td>调用父类构造器，必须放在子类构造器的首行</td>
+</tr>
+</tbody>
+</table>
+<p><a name="Dljo0"></a></p>
+<h2 id="static关键字">static关键字</h2>
+<p><a name="puqb2"></a></p>
+<h3 id="简介-4">简介</h3>
+<p>无论是否产生了对象或无论产生了多少对象的情况下，某些特定的数据在内存空间里只有一份。</p>
+<ol>
+<li>静态的</li>
+<li>可以用来修饰：<strong>属性、方法、代码块、内部类</strong></li>
+<li>被修饰后的成员具有如下特点：
+<ul>
+<li>随着类的加载而加载</li>
+<li>优先于对象存在</li>
+<li>修饰的成员，被所有对象所共享</li>
+<li>访问权限允许事，可不创建对象，直接被类调用。<br>
+<a name="vnRSg"></a></li>
+</ul>
+</li>
+</ol>
+<h3 id="类属性-类方法的设计思路">类属性、类方法的设计思路</h3>
+<ol>
+<li>类属性作为该类各个对象之间共享的变量。在设计类时，分析哪些属性不因对象的不同而改变，将这些属性设置为类属性。相应的方法设置为类方法</li>
+<li>如果方法与调用者无关，则这样的方法通常被声明为类方法，由于不需要创建对象就可以调用类方法，从而简化了方法的调用。<br>
+<a name="IFLey"></a></li>
+</ol>
+<h3 id="静态变量与实例变量">静态变量与实例变量</h3>
+<p>属性是否使用static修饰可以分为：静态属性(类变量)，非静态属性(实例变量)</p>
+<ol>
+<li>实例变量：我们创建多个对象，每个对象都独立拥有一台类中的非静态属性，当修改其中一个对象中的非静态属性时，不会导致其他对象中同样的属性值的修改。</li>
+<li>静态属性：多个对象共享同一个静态变量，当通过某一个对象修改静态变量时，会导致其他对象调用此静态变量时时修改过了的。
+<ul>
+<li>静态变量随着类的加载而加载，非静态变量随着对象的创建而加载</li>
+<li>静态变量的加载早于对象的创建</li>
+<li>可以通过<code>类名.静态变量名</code>的方式而调用</li>
+<li>类只会加载一次，静态变量也只会加载一次，存在方法区的静态域中</li>
+</ul>
+</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>类变量</th>
+<th>实例变量</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>类</td>
+<td>YES</td>
+<td>NO</td>
+</tr>
+<tr>
+<td>对象</td>
+<td>YES</td>
+<td>YES</td>
+</tr>
+</tbody>
+</table>
+<p><a name="CIgjc"></a></p>
+<h3 id="静态变量的内存解析">静态变量的内存解析</h3>
+<p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/%E9%9D%99%E6%80%81%E5%8F%98%E9%87%8F%E5%86%85%E5%AD%98%E8%A7%A3%E6%9E%90.png#crop=0&amp;crop=0&amp;crop=1&amp;crop=1&amp;id=UkAWc&amp;originHeight=801&amp;originWidth=1545&amp;originalType=binary&amp;ratio=1&amp;rotation=0&amp;showTitle=false&amp;status=done&amp;style=none&amp;title=" alt="" loading="lazy"><br>
+<a name="lRSnq"></a></p>
+<h3 id="静态方法">静态方法</h3>
+<ol>
+<li>随着类的加载而加载，可通过<code>类名.静态方法名()</code>的方式调用</li>
+<li>静态方法中只能调用静态的方法或属性</li>
+<li>非静态方法中既可以调用非静态的方法和属性，也可以调用静态的方法与属性</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>静态方法</th>
+<th>非静态方法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>类</td>
+<td>YES</td>
+<td>NO</td>
+</tr>
+<tr>
+<td>对象</td>
+<td>YES</td>
+<td>YES</td>
+</tr>
+</tbody>
+</table>
+<p><a name="ofLLC"></a></p>
+<h4 id="注意-3">注意</h4>
+<ol>
+<li>在静态方法中不能使用this关键字、super关键字(因为不需要实例就可以访问static方法)</li>
+<li>static修饰的方法不能被重写<br>
+<a name="i4HCO"></a></li>
+</ol>
+<h3 id="何时使用static关键字">何时使用static关键字</h3>
+<ol>
+<li>属性
+<ul>
+<li>属性不随对象不同而不同，是多个对象共享的</li>
+<li>常量一般也常声明为static</li>
+</ul>
+</li>
+<li>方法
+<ul>
+<li>操作静态属性的方法</li>
+<li>工具类的方法<br>
+<a name="AthhU"></a></li>
+</ul>
+</li>
+</ol>
+<h2 id="理解main方法的语法">理解main()方法的语法</h2>
+<ul>
+<li>由于 Java 虚拟机需要调用类的 main() 方法，所以该方法的访问权限必须是 public 又因为 Java 虚拟机在执行 main() 方法时不必创建对象，所以该方法必须是 static 的，该方法接收一个 String 类型的数组参数，该数组中保存执行 Java 命令时传递给所运行的类的参数</li>
+<li>又因为 main () 方法是静态的 ，我们不能直接访问该类中的非静态成员，必须创建该类的一个实例对象后，才能通过这个对象去访问类中的非静态成员，这种情况，我们在之前的例子中多次碰到。</li>
+<li>参数用法<code>java XXX &quot;参数一&quot; &quot;参数二&quot; &quot;参数三&quot;</code></li>
+<li>main函数开始前先执行所属类的静态代码块<br>
+<a name="YRtsd"></a></li>
+</ul>
+<h2 id="final关键字">final关键字</h2>
+<p>final关键字可以修饰<strong>类、方法、变量</strong>表示最终的<br>
+<a name="PVFfg"></a></p>
+<h3 id="作用">作用</h3>
+<ol>
+<li>final标记的类不能被继承。提高安全性，提高程序的可能性
+<ul>
+<li>final修饰的类对应的实例中的属性可以改变。</li>
+<li>String类、System类、StringBuffer类</li>
+</ul>
+</li>
+<li>final标记的方法不能被子类重写
+<ul>
+<li>如Object类中的getClass()</li>
+</ul>
+</li>
+<li>final标记的变量(成员变量或局部变量)即称为常量
+<ul>
+<li>final标记的成员变量必须在声明时或在每个构造器中或代码块中显式赋值，然后才能使用</li>
+<li>final double MY_PI = 3.14</li>
+</ul>
+</li>
+<li>static 与 final 一起使用可以修饰<strong>方法和属性</strong>表示<strong>全局常量</strong><br>
+<a name="i2tqH"></a></li>
+</ol>
+<h2 id="abstract关键字">abstract关键字</h2>
+<ol>
+<li>用abstract关键字可以用来修饰抽象类和抽象方法</li>
+<li>abstract不能修饰属性、构造器、代码块等</li>
+<li>不能修饰私有方法、静态方法、final的方法</li>
+<li>可以多态</li>
+<li>抽象类的匿名子类</li>
+</ol>
+<pre><code class="language-java">//抽象类的匿名子类
+new 抽象类名(){
+	重写方法；
+}
+</code></pre>
+<p><a name="qKvXG"></a></p>
+<h3 id="抽象类">抽象类</h3>
+<p>抽象类：随着继承层次中一个个新子类的定义，类编的越来越具体，而父类则更一般，更通用。类的设计应该保证父类和子类能够共享特征。有时将一个父类设计的非常抽象，以至于他没有具体的实例，这样的类叫抽象类。<br>
+<a name="jIP7Q"></a></p>
+<h4 id="抽象类特征">抽象类特征</h4>
+<ol>
+<li>此类不能实例化</li>
+<li>类中仍然有构造器便于子类实例化时使用</li>
+<li>开发中都会提供抽象类的子类，让子类实例化完成相关的操作<br>
+<a name="k9X4O"></a></li>
+</ol>
+<h4 id="抽象类应用">抽象类应用</h4>
+<p>抽象类是用来模型化那些父类无法确定全部实现，而是由其子类提供具体实现的对象的类<br>
+<a name="VSwuu"></a></p>
+<h3 id="抽象方法">抽象方法</h3>
+<ol>
+<li><code>权限修饰符+abstract+返回值类型+方法名(形参列表);</code></li>
+<li>抽象方法只有方法声明无方法体</li>
+<li>包含抽象方法的类一定是一个抽象类，但是抽象类可以没有抽象方法</li>
+<li>若子类重写了父类中所有抽象方法后，此子类可实例化</li>
+<li>若子类没有重写所有抽象方法，那该子类也应当为抽象类<br>
+<a name="mY2RD"></a></li>
+</ol>
+<h2 id="interface关键字接口">interface关键字(接口)</h2>
+<p>接口：<strong>抽象方法和常量定义的集合</strong>。接口不存在is-a关系，但是具有相同的行为特征。继承是一个是不是的关系，接口实现则是能不能的关系。接口的本质是契约，标准，规范。<br>
+<a name="buVl3"></a></p>
+<h3 id="接口的使用">接口的使用</h3>
+<ol>
+<li>接口使用interface来定义</li>
+<li>Java中接口和类是两个并列结构</li>
+<li>接口中的成员变量都是默认由public static final修饰的(修饰可以省略)</li>
+<li>接口中的抽象方法都是默认由public abstract修饰的(修饰可以省略)</li>
+<li>接口中没有构造器</li>
+<li>JDK7及之前只能包含常量和方法的定义，JDK8及之后还可以定义静态方法和默认方法</li>
+<li>接口不能实例化</li>
+<li>Java开发中通过让类去实现接口来使用，如果实现了所有抽象方法则可以实例化，否则仍为抽象类</li>
+<li>接口可以多继承</li>
+<li>接口与接口间也可以继承，且可以多继承</li>
+<li>接口也有多态性</li>
+<li>接口实际上可以看作一种特殊的类，也可以看作一种规范</li>
+<li>接口可以作为形参，但传入的实参应当实现抽象方法</li>
+<li>如果一个接口中定义了一个默认方法，另一个接口中也定义了同名同参的方法，在实现类中同时实现这两个接口时会出现接口冲突，<strong>实现类必须覆盖接口中同名同参的方法，来解决冲突</strong></li>
+<li>若一个接口中定义了一个默认方法，而父类中也定义了一个同名同参的非抽象方法，则不会出现冲突问题。此时遵守<strong>类优先原则</strong>接口中具有同名同参的默认方法会被忽略。</li>
+<li>接口中定义的静态方法只能通过<code>接口名.方法名()</code>使用</li>
+<li>默认方法重写时不需要带default修饰符</li>
+<li>如果实现类重写了默认方法，则使用重写后的方法</li>
+<li>实现类中调用接口中的默认方法<code>接口名.super.方法名()</code><br>
+<a name="ZzLau"></a></li>
+</ol>
+<h3 id="代码示例">代码示例</h3>
+<pre><code class="language-java">interface name{
+	返回类型 方法名();//省略了public abstract
+	数据类型 变量名;//省略了public static final
+	//public可以省略
+	public default 返回类型 方法名();//默认方法
+  public static 返回类型 方法名();//静态方法
+}
+</code></pre>
+<p><a name="hyX8m"></a></p>
+<h2 id="接口与抽象类的对比">接口与抽象类的对比</h2>
+<table>
+<thead>
+<tr>
+<th>No.</th>
+<th>区别点</th>
+<th>抽象类</th>
+<th>接口</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>定义</td>
+<td>包含抽象方法的类</td>
+<td>主要是抽象方法和全局常量的集合</td>
+</tr>
+<tr>
+<td>2</td>
+<td>组成</td>
+<td>构造方法、抽象方法、普通方法、常量、变量</td>
+<td>常量、抽象方法、(JDK8默认方法、静态方法)</td>
+</tr>
+<tr>
+<td>3</td>
+<td>使用</td>
+<td>子类继承抽象类extends</td>
+<td>子类实现接口implents</td>
+</tr>
+<tr>
+<td>4</td>
+<td>关系</td>
+<td>抽象类可以实现多个接口</td>
+<td>接口不能继承抽象类，但允许继承多个接口</td>
+</tr>
+<tr>
+<td>5</td>
+<td>常见设计模式</td>
+<td>模板方法</td>
+<td>简单工厂、工厂方法、代理模式</td>
+</tr>
+<tr>
+<td>6</td>
+<td>对象</td>
+<td>都通过对象的多态性产生实例化对象</td>
+<td></td>
+</tr>
+<tr>
+<td>7</td>
+<td>局限</td>
+<td>抽象类有单继承的局限</td>
+<td>接口没有此局限</td>
+</tr>
+<tr>
+<td>8</td>
+<td>实际</td>
+<td>作为一个模板</td>
+<td>是作为一个标准或是表示一种能力</td>
+</tr>
+<tr>
+<td>9</td>
+<td>选择</td>
+<td>如果抽象类和接口都可以使用的话，优先使用接口，因为避免单继承的局限</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="bpmAb"></a></p>
+<h2 id="package关键字">package关键字</h2>
+<ul>
+<li>ackage语句作为Java源文件的第一条语句，指明该文件中定义的类所在的包</li>
+<li>语法格式为<code>package 顶层包名.子包名</code></li>
+<li>包的作用：</li>
+</ul>
+<ol>
+<li>包帮助管理大型软件系统：将功能相近的类划分到同一个包中(比如MVC的设计模式)</li>
+<li>包可以包含类和子包，划分项目层次，便于管理</li>
+<li>解决类命名冲突问题</li>
+<li>控制访问权限</li>
+</ol>
+<ul>
+<li>MVC设计模式</li>
+</ul>
+<ol>
+<li>M：数据模型层 model
+<ul>
+<li>数据对象封装 model.bran\domain</li>
+<li>数据库操作类 model.dao</li>
+<li>数据库 model.db</li>
+</ul>
+</li>
+<li>V：视图模型层 view
+<ul>
+<li>相关工具类 view.utils</li>
+<li>自定义view view.ui</li>
+</ul>
+</li>
+<li>C：控制器层 control
+<ul>
+<li>应用界面相关 contrloler.activity</li>
+<li>存放fragment controller.fragment</li>
+<li>显示列表的适配器 controller.adapter</li>
+<li>服务相关的 controller.service</li>
+<li>抽取的基类 controller.base<br>
+<a name="QxUg0"></a></li>
+</ul>
+</li>
+</ol>
+<h2 id="import关键字">import关键字</h2>
+<ul>
+<li>为使用定义在不同包中的Java类，需用import语句来引入指定包层次瞎所需要的类或全部类。import语句告诉编译器到哪里去寻找类。<code>import 包名.类名</code></li>
+</ul>
+<blockquote>
+<p>注意<br />声明在包的声明与类的声明之间<br />如果导入多个，并列写出即可<br />可以使用<code>包名.*</code>的方式表示导入该包名下的所有结构<br />核心包不需要导入(java.lang.*)<br />如果使用的类或结构在当前包中则不需要导入<br />如果源文件中使用了不同包下的同名的类，则必须至少有一个类使用带包名的全类名<br />如果使用<code>包名.*</code>的方式表明可以调用该包下的所有结构(类或接口)但使用的如果是该包的子包中的结构则仍然需要显示的调用才可以<br /><code>import static 包名.类名</code> 导入指定类或接口中的静态属性或方法</p>
+</blockquote>
+<p><a name="d41d8cd9"></a></p>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://yeyuan1107.github.io/post/java-shu-zu/" class="post-title gt-a-link">
+                    Java数组
+                </a>
+            </div>
+        
+
+        
+
+        
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">温故而知新</div>
+    <div class="social-container">
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+    </div>
+    <div>
+        Theme <a href="https://github.com/imhanjie/gridea-theme-pure" target="_blank">Pure</a>, Powered by <a
+                href="https://gridea.dev" target="_blank">Gridea</a> | <a href="https://yeyuan1107.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+</div>
+
+<script>
+  hljs.highlightAll()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,760 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>Java集合 | YBLOG</title>
+
+<link rel="shortcut icon" href="https://yeyuan1107.github.io/favicon.ico?v=1657077232781">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://yeyuan1107.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages//dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+    
+        <script src="https://cdn.jsdelivr.net/npm/mermaid@9.1.1/dist/mermaid.min.js"></script>
+        <script>mermaid.initialize({startOnLoad:true});</script> 
+    
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            YBLOG
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1657077232781"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    Java集合
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2021-11-20 ·
+                    </time>
+                    
+                        <a href="https://yeyuan1107.github.io/tag/wZpx5Scef/" class="post-tags">
+                            # Java
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <p><a name="sABbV"></a></p>
+<h1 id="简介">简介</h1>
+<p>集合、数组都是对多个数据进行存储操作的结构，简称Java容器。此时的存储，主要指的是内存层面的存储，不涉及持久化的存储</p>
+<ol>
+<li>数组的特点
+<ul>
+<li>数组初始化以后，长度就固定了</li>
+<li>数组声明的类型，就决定了进行元素初始化时的类型</li>
+</ul>
+</li>
+<li>数组存在的弊端
+<ul>
+<li>数组初始化以后，长度就不可变了，不便于扩展</li>
+<li>数组中提供的属性和方法少，不便于进行添加、删除、插入等操作，且效率不高。无法同时直接获取存储元素的个数</li>
+<li>数组存储的数据是有序的、可以重复的。存储数据的特点单一，如果要求存储为无序的不可重复的，则无法满足</li>
+</ul>
+</li>
+<li>集合
+<ul>
+<li>集合可以存储数量不等的多个对象，还可用于保存具有映射关系的关联数组<br>
+<a name="nQ0Q9"></a></li>
+</ul>
+</li>
+</ol>
+<h2 id="集合框架概述">集合框架概述</h2>
+<p>Java集合可分为Collection和Map两种体系</p>
+<ol>
+<li>Collection接口：单列数据，定义了存取一组对象的方法的集合
+<ul>
+<li>List：元素有序、可重复的集合</li>
+<li>Set：元素无序、不可重复的集合</li>
+</ul>
+</li>
+<li>Map接口：双列数据，保存具有映射关系&quot;key-value对&quot;的集合</li>
+</ol>
+<p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1646145531762-608b796b-8ed9-4eb1-aedb-84a7a28a52d7-20220312141151518-20220312152223508.png" alt="image.png" loading="lazy"><br /><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1646145540429-1b9072e2-ef90-4c69-973e-7aafdb0feed6-20220312141151555-20220312152223531.png" alt="image.png" loading="lazy"><br>
+<a name="A6Epf"></a></p>
+<h1 id="collection接口">Collection接口</h1>
+<ul>
+<li>Collection是List、Set和Queue接口的父接口，该接口里定义的方法即可用于操作Set集合，也可用于操作List和Queue集合</li>
+<li>JDK不提供此接口的任何直接实现，而是提供更具体的子接口(如：Set和List)实现。</li>
+<li>Java5之前，Java集合会丢失容器中所有对象的数据类型，把所有对象都当成Object类型处理：从JDK5.0增加了泛型以后，Java集合可以记住容器中对象的数据类型<br>
+<a name="ldqCp"></a></li>
+</ul>
+<h2 id="collection接口方法">Collection接口方法</h2>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>简介</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>add(Object obj)</td>
+<td>将元素obj添加到集合中</td>
+</tr>
+<tr>
+<td>addAll(Collection coll)</td>
+<td>将coll集合中元素添加到当前集合中</td>
+</tr>
+<tr>
+<td>int size()</td>
+<td>获取添加的元素个数</td>
+</tr>
+<tr>
+<td>void clear()</td>
+<td>将集合清空</td>
+</tr>
+<tr>
+<td>boolean isEmpty()</td>
+<td>判断当前集合是否为空</td>
+</tr>
+<tr>
+<td>boolean contains(Object obj)</td>
+<td>判断当前集合是否包含obj，是通过元素的equals方法来判断是否是同一个对象</td>
+</tr>
+<tr>
+<td>boolean containsAll(Collection c)</td>
+<td>也是调用元素的equals方法来比较的。拿两个集合的元素挨个比较。判断c中的元素是否都存在于当前集合中</td>
+</tr>
+<tr>
+<td>boolean remove(Object obj)</td>
+<td>通过元素的equals方法判断是否是要删除的那个元素。只会删除找到的第一个元素</td>
+</tr>
+<tr>
+<td>boolean removeAll(Collection coll)</td>
+<td>取当前集合与coll的差集</td>
+</tr>
+<tr>
+<td>boolean retainAll(Collection c)</td>
+<td>把交集的结果存在当前集合中，不影响c</td>
+</tr>
+<tr>
+<td>boolean equals(Object obj)</td>
+<td>判断集合是否相同，有序无序具体情况分析</td>
+</tr>
+<tr>
+<td>Object[] toArray()</td>
+<td>转成对象数组</td>
+</tr>
+<tr>
+<td>int hashCode()</td>
+<td>获取当前集合哈希值</td>
+</tr>
+<tr>
+<td>iterator()</td>
+<td>返回Iterator的实例(迭代器对象)，用于集合遍历</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-java">//注意：
+//将数组转为集合，该方法返回的List集合，既不是ArrayList实例，也不是Vector实例，返回的是一个固定长度的List集合。
+Arrays.asList(T...a);
+//如果传入的参数位基本数据类型的数组则会讲整个数组识别为一个元素
+Arrays.asList(new int[]{xxx,xxx});
+//应当传入引用数据类型的数组，才会将其识别为多个元素
+Arrays.asList(new Integer[]{xxx,xxx});
+Arrays.asList(xxx,xxx;)
+</code></pre>
+<p><a name="JQalF"></a></p>
+<h1 id="iterator迭代器接口">Iterator迭代器接口</h1>
+<ul>
+<li>Iterator 对象称为迭代器（设计模式的一种），主要用于遍历 Collection 集合中的元素。</li>
+<li>GOF 给迭代器模式的定义为：提供一种方法访问一个容器 (container) 对象中各个元素，而又不需暴露该对象的内部细节。 迭代器模式，就是为容器而生。 类似于“公交车上的售票员”、“火车上的乘务员”。</li>
+<li>Collection 接口继承了 java.lang.Iterable 接口，该接口有一个 iterator() 方法，那么所有实现了 Collection 接口的集合类都有一个 iterator() 方法，用以返回一个实现了Iterator 接口的对象 。</li>
+<li>Iterator 仅用于遍历集合 Iterator 本身并不提供承装对象的能力。如果需要创建Iterator对象，则必须有一个被迭代的集合。</li>
+<li>集合对象每次调用 iterator() 方法都得到一个全新的迭代器对象 ，默认游标都在集合的第一个元素之前 。</li>
+</ul>
+<pre><code class="language-java">//hasNext()是否存在下一个元素
+while(iterator.hasNext()){
+	//next()返回下一个元素
+	sout(iterator.next());
+	//remove()删除iterator返回的最后一个元素，一个next()犯法后只能接一个remove()方法，否则会报IllegalStateException异常
+	iterator.remove();
+}
+</code></pre>
+<p><a name="OVoo9"></a></p>
+<h2 id="enumeration接口">Enumeration接口</h2>
+<p>Iterator迭代器的古老版本<br />hasNext() -&gt; hasMoreElements()<br />next() -&gt; nextElement()<br>
+<a name="iRRWQ"></a></p>
+<h1 id="foreach循环遍历集合元素">foreach循环遍历集合元素</h1>
+<ul>
+<li>JDK5.0提供了foreach循环迭代访问Collection和数组</li>
+<li>遍历操作不需要获取Collection和数组的长度，无需使用索引访问元素</li>
+<li>遍历集合的底层调用Iterator完成操作</li>
+<li>foreach还可以用来遍历数组</li>
+</ul>
+<pre><code class="language-java">//相当于把要遍历结构中的一个元素赋值给了自定义的元素名称，改变自定义元素名称的内容不会改变原来的集合内容
+for(要遍历的元素类型 遍历后自定义元素名称 : 要遍历的结构名称){
+	对遍历元素的操作;
+}
+</code></pre>
+<p><a name="NHG0z"></a></p>
+<h1 id="list接口">List接口</h1>
+<p><a name="cylET"></a></p>
+<h2 id="简介-2">简介</h2>
+<ul>
+<li>鉴于 Java 中数组用来存储数据的局限性，我们通常使用 List 替代数组</li>
+<li>List 集合类中元素有序、且可重复，集合中的每个元素都有其对应的顺序索引。</li>
+<li>List 容器中的元素都对应一个整数型的序号记载其在容器中的位置，可以根据序号存取容器中的元素。</li>
+<li>JDK API 中 List 接口的实现类常用的有： ArrayList 、 LinkedList 和 Vector 。
+<ul>
+<li>都实现了List接口，存储数据特点相同，存储有序的可重复的数据</li>
+<li>ArrayList作为List接口的主要实现类，线程不安全，效率高，底层使用Object[]存储</li>
+<li>Vector作为List接口的古老实现类，线程安全的，效率低，底层使用Object[]存储</li>
+<li>LinkedList底层使用双向链表存储对于频繁插入删除操作效率较ArrayList高<br>
+<a name="wqvP3"></a></li>
+</ul>
+</li>
+</ul>
+<h2 id="arraylist源码分析">ArrayList源码分析</h2>
+<p><a name="pMQpR"></a></p>
+<h3 id="jdk7中">JDK7中</h3>
+<pre><code class="language-java">//底层创建长度为10的Object数组elementData
+ArrayList list = new ArrayList();
+//elementData[0] = new Integer(123)
+//当此次添加导致elementData容量不够，则扩容，扩大到原来的1.5倍
+list.add(123);
+//开发中常使用new ArrayList(int capacity);在实例化时先定义容量大小
+</code></pre>
+<p><a name="rjjt6"></a></p>
+<h3 id="jdk8中">JDK8中</h3>
+<pre><code class="language-java">//底层创建长度为0的Object数组elementData
+ArrayList list = new ArrayList();
+//第一次添加元素时创建一个容量为10的数组
+//后续添加扩容操作与JDK7 相同
+list.add(123);
+//JDK7中创建类似于单例的饿汉式，而JDK8中类似懒汉式节省内存
+</code></pre>
+<p><a name="W8uzu"></a></p>
+<h2 id="linkedlist源码分析">LinkedList源码分析</h2>
+<pre><code class="language-java">//LinkedList内部没有声明数组，而是定义了Node类型的first和last，用于记录首末元素。
+//同时，定义内部类Node，作为LinkedList中保存数据的基本结构。
+//Node除了保存数据，还定义了两个变量：
+//prev变量记录前一个元素的位置，
+//next变量记录下一个元素的位置
+LinkedList list = new LinkedList();
+//将123封装到Node中之后添加到链表尾部
+list.add(123);
+</code></pre>
+<p><a name="ykr9t"></a></p>
+<h2 id="vector源码分析">Vector源码分析</h2>
+<p>与ArrayList类似，创建长度为10的数组，但是扩容为2倍(ArrayList为1.5倍)关系<br>
+<a name="quBlO"></a></p>
+<h2 id="list接口方法">List接口方法</h2>
+<p>List除了从Collection集合继承的方法外，List集合里添加了一些根据索引来操作集合元素的方法 。</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>void add(int index, Object ele)</td>
+<td>在index位置插入ele元素</td>
+</tr>
+<tr>
+<td>boolean addAll(int index, Collection eles)</td>
+<td>从 index 位置开始将 eles 中的所有元素添加进来</td>
+</tr>
+<tr>
+<td>Object get( int index)</td>
+<td>获取指定 index 位置的元素</td>
+</tr>
+<tr>
+<td>int indexOf (Object obj)</td>
+<td>返回 obj 在集合中首次出现的位置</td>
+</tr>
+<tr>
+<td>int lastIndexOf (Object obj)</td>
+<td>返回 obj 在当前集合中末次出现的位置</td>
+</tr>
+<tr>
+<td>Object remove( int index)</td>
+<td>移除指定 index 位置的元素，并返回此元素</td>
+</tr>
+<tr>
+<td>Object set( int index, Object ele)</td>
+<td>设置指定 index 位置的元素为 ele</td>
+</tr>
+<tr>
+<td>List subList(int fromIndex , int toIndex)</td>
+<td>返回从 fromIndex 到 toIndex位置的子集合左闭右开</td>
+</tr>
+</tbody>
+</table>
+<p><a name="DjCgq"></a></p>
+<h3 id="常用方法">常用方法</h3>
+<p>增：add(Object obj)<br />删：remove(int index)/remove(Object obj)<br />改：set(int index, Object obj)<br />查：get(int index)<br />插：add(int index, Object obj)<br />长度：size()<br />遍历：1. Iterator 2. foreach 3. 普通for循环<br>
+<a name="gZ0Ay"></a></p>
+<h3 id="linkedlist特有方法">LinkedList特有方法</h3>
+<p>void addFirst (Object obj)<br />void addLast (Object obj)<br />Object getFirst()<br />Object getLast()<br />Object removeFirst()<br />Object removeLast()<br>
+<a name="FCTPS"></a></p>
+<h3 id="vector特有方法">Vector特有方法</h3>
+<p>void addElement (Object obj)<br />void insertElementAt (Object obj,int index)<br />void setElementAt (Object obj,int index)<br />void removeElement (Object obj)<br />void removeAllElements()<br>
+<a name="uR7dE"></a></p>
+<h3 id="请问arraylistlinkedlistvector-的异同谈谈你的理解arraylist底层是什么扩容机制vector和arraylist的最大区别">请问ArrayList/LinkedList/Vector 的异同谈谈你的理解？ArrayList底层是什么？扩容机制？Vector和ArrayList的最大区别</h3>
+<ol>
+<li>ArrayList和LinkedList的异同<br />二者都线程不安全，相对线程安全的Vector ，执行效率高。此外，ArrayList 是实现了基于动态数组的数据结构， LinkedList 基于链表的数据结构。对于随机访问 get 和 set，ArrayList 觉得优于 LinkedList，因为 LinkedList 要移动指针。对于新增和删除操作add(特指插入)和remove，LinkedList比较占优势，因为 ArrayList 要移动数据。</li>
+<li>ArrayList 和 Vector 的区别<br />Vector和 ArrayList 几乎是完全相同的唯一的区别在于 Vector 是同步类 ( synchronized)，属于强同步类。因此开销就比 ArrayList 要大，访问要慢。正常情况下 大多数的 Java 程序员使用ArrayList 而不是 Vector, 因为同步完全可以由程序员自己来控制。 Vector 每次扩容请求其大小的 2 倍空间，而 ArrayList 是 1.5 倍。 <strong>Vector 还有一个子 类 Stack。</strong><br>
+<a name="iBKAi"></a></li>
+</ol>
+<h1 id="set接口">Set接口</h1>
+<ul>
+<li>Set接口是Collection的子接口，set接口没有提供额外的方法</li>
+<li>Set集合不允许包含下同的元素，如果试把两个相同的元素加入到同一个Set集合中，则添加操作失败</li>
+<li>Set判断两个对象是否相同不是使用==运算符，而是根据equals()方法</li>
+<li>Set接口中没有定义新的方法
+<ul>
+<li>HashSet：主要实现类，线程不安全，可以存储null</li>
+<li>LinkedHashSet：HashSet的子类，遍历其内部数据时可以按照添加顺序遍历</li>
+<li>TreeSet：可以按照添加元素的指定属性进行排序<br>
+<a name="uJdKK"></a></li>
+</ul>
+</li>
+</ul>
+<h2 id="特点">特点</h2>
+<ol>
+<li>无序性：不等于随机性(多次遍历的结果，顺序是相同的)，存储的数据在底层数组中并非按照数组索引顺序添加而是按照数据哈希值添加</li>
+<li>不可重复性：保证添加的元素按照equals()判断时不能返回true，即相同的元素职能添加一个<br>
+<a name="yoApp"></a></li>
+</ol>
+<h2 id="hashset">HashSet</h2>
+<ul>
+<li>HashSet 是 Set 接口的典型实现，大多数时候使用 Set 集合时都使用这个实现类。</li>
+<li>HashSet的底层为HashMap，每个entry中的key不同，但是value设定为同一个值</li>
+<li>HashSet 按 Hash 算法来存储集合中的元素，因此具有很好的存取、查找、删除性能 。</li>
+<li>HashSet 具有以下特点：
+<ol>
+<li>不能保证元素的排列顺序</li>
+<li>HashSet 不是线程安全的</li>
+<li>集合元素可以是 null</li>
+</ol>
+</li>
+<li>HashSet 集合判断两个元素相等的标准：两个对象通过 hashCode () 方法比较相等，并且两个对象的 equals() 方法返回值也相等 。</li>
+<li>对于存放在 Set 容器中的对象，对应的类一定要重写 equals() 和 hashCode(Object obj) 方法，以实现对象相等规则 。即：&quot;相等的对象必须具有相等的散列码&quot;。</li>
+<li>向 HashSet 中添加元素的过程：
+<ul>
+<li>当向 HashSet 集合中存入一个元素时 HashSet 会调用该对象的 hashCode() 方法来得到该对象的 hashCode 值 然后根据 hashCode 值通过某种散列函数决定该对象在 HashSet 底层数组中的存储位置。 （这个散列函数会与底层数组的长度相计算得到在数组中的下标 并且这种散列函数计算还尽可能保证能均匀存储元素，越是散列分布，该散列函数设计的越好）
+<ul>
+<li>如果两个元素的 hashCode() 值相等 会再继续调用 equals() 方法 如果 equals() 方法结果为 true添加失败如果为false 那么会保存该元素 但是该数组的位置已经有元素了那么会通过链表的方式继续链接。(JDK7中新元素放在数组中并作为头节点指向旧元素，JDK8中旧元素仍放在数组中作为头节点同时链表尾部指向新元素。七上八下)</li>
+<li>重写hashCode()方法的基本原则
+<ol>
+<li>在程序运行时，同一个对象多次调用hashCode()方法应该返回相同的值</li>
+<li>当两个对象的equals()方法比较返回true时，这连个对象的hashCode()方法的返回值也应当相等</li>
+<li>对象中用作equals()方法比较的Field，都应该用来计算hashCode值</li>
+<li>修改equals方法时一定要同时修改hashCode方法</li>
+<li><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1646146866343-c33a1fca-a5a3-42a9-b24a-ede56e46f489-20220312141151621-20220312152223579.png" alt="image.png" loading="lazy"></li>
+</ol>
+</li>
+</ul>
+</li>
+<li>如果两个元素的 equals() 方法返回 true ，但它们的 hashCode () 返回值不相等， hashSet 将会把它们存储在不同的位置，但依然可以添加成功。</li>
+<li>底层也是数组，初始容量为16，当如果使用率超过0.75，就会扩大容量为原来的两倍</li>
+<li>底层为HashMap<br>
+<a name="VYHN7"></a></li>
+</ul>
+</li>
+</ul>
+<h2 id="linkedhashset">LinkedHashSet</h2>
+<ul>
+<li>LinkedHashSet时HashSet的子类</li>
+<li>LinkedHashSet根据元素的hashCode值来决定元素的存储位置，但它同时使用双向链表维护元素的次序，这是的元素看起来是以插入顺序保存的</li>
+<li>LinkedHashSet插入性能略低于HashSet，但在迭代访问Set里的全部元素时有很好的性能</li>
+<li>LinkedHashSet不允许集合元素重复</li>
+</ul>
+<p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1646147024973-892a23a9-78db-414d-90ab-929d8944a2ec-20220312141151649-20220312152223615.png" alt="image.png" loading="lazy"><br>
+<a name="XHIi2"></a></p>
+<h2 id="treeset">TreeSet</h2>
+<ul>
+<li>TreeSet 是 SortedSet 接口的实现类， TreeSet 可以确保集合元素处于排序状态。</li>
+<li>TreeSet 底层使用红黑树结构存储数据</li>
+<li>新增的方法如下(了解)
+<ul>
+<li>Comparator comparator()</li>
+<li>Object first()</li>
+<li>Object last()</li>
+<li>Object lower(Object e)</li>
+<li>Object higher(Object e)</li>
+<li>SortedSet subSet (fromElement , toElement)</li>
+<li>SortedSet headSet (toElement)</li>
+<li>SortedSet tailSet (fromElement)</li>
+</ul>
+</li>
+<li>TreeSet 两种排序方法： 自然排序 和 定制排序 。默认情况下， TreeSet 采用自然排序。</li>
+<li>向TreeSet中添加的对象，要求是相同类的对象，且实现comparable接口</li>
+<li>自然排序中比较两个对象是否相同的标准为compareTo()返回值，不再是equals()</li>
+<li>定制排序TreeSet set = new TreeSet(new comparator(Object o1, Object o2){});</li>
+</ul>
+<p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1646147142703-7999e1bb-950e-46ce-a689-a7e4e20899ba-20220312141152131-20220312152223938.png" alt="image.png" loading="lazy"><br>
+<a name="qZNWY"></a></p>
+<h1 id="map接口">Map接口</h1>
+<ul>
+<li>Map 与 Collection 并列存在。用于保存具有映射关系的数据 key-value</li>
+<li>Map 中的key和value都可以是任何引用类型的数据</li>
+<li>Map 中的key用Set来存放， 不允许重复 ，即同一个Map对象所对应的类，须重写 hashCode()和 equals()方法，value用Collection存放，key-value对用Set存放</li>
+<li>常用 String 类作为 Map 的“键”</li>
+<li>key 和 value 之间存在单向一对一关系，即通过指定的 key 总能找到唯一的、确定的 value</li>
+<li>Map 接口的常用实现类： HashMap 、 TreeMap 、 LinkedHashMap 和Properties 。 其中， HashMap是Map接口使用频率最高的实现类</li>
+</ul>
+<blockquote>
+<p>HashMap：作为Map的主要实现类，线程不安全，效率高，可以存储null的key和value<br>
+Hashtable：古老的实现类，线程安全，效率低，不可以存储null的key和value<br>
+LinkedHashMap：可以按照添加顺序遍历，对于频繁的遍历操作，效率高于HashMap<br>
+TreeMap：按key-value排序实现排序遍历，此时考虑key的自然排序或定制排序，底层使用红黑树</p>
+</blockquote>
+<p><a name="z45WR"></a></p>
+<h2 id="常用方法-2">常用方法</h2>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Object put(Object key,Object value)</td>
+<td>将指定key-value添加到或修改当前 map 对象中，先封装为Entry再添加到Map中</td>
+</tr>
+<tr>
+<td>void putAll(Map m)</td>
+<td>将 m 中的所有 key-value 对存放到当前 map 中</td>
+</tr>
+<tr>
+<td>Object remove(Object key)</td>
+<td>移除指定 key 的 key-value 对，并返回 value</td>
+</tr>
+<tr>
+<td>void clear()</td>
+<td>清空当前 map 中的所有数据</td>
+</tr>
+<tr>
+<td>Object get(Object key)</td>
+<td>获取指定 key 对应的 value</td>
+</tr>
+<tr>
+<td>boolean containsKey(Object key)</td>
+<td>是否包含指定的 key</td>
+</tr>
+<tr>
+<td>boolean containsValue(Object value)</td>
+<td>是否包含指定的 value</td>
+</tr>
+<tr>
+<td>int size()</td>
+<td>返回 map 中 key-value 对的个数</td>
+</tr>
+<tr>
+<td>boolean isEmpty()</td>
+<td>判断当前 map 是否为空</td>
+</tr>
+<tr>
+<td>boolean equals(Object obj)</td>
+<td>判断当前 map 和参数对象 obj 是否相等</td>
+</tr>
+<tr>
+<td>Set keySet()</td>
+<td>返回所有 key 构成的 Set 集合</td>
+</tr>
+<tr>
+<td>Collection values()</td>
+<td>返回所有 value 构成的 Collection 集合</td>
+</tr>
+<tr>
+<td>Set entrySet()</td>
+<td>返回所有 key-value 对构成的 Set 集合</td>
+</tr>
+</tbody>
+</table>
+<p><a name="x122y"></a></p>
+<h2 id="hashmap">HashMap</h2>
+<ul>
+<li>HashMap 是 Map 接口使用频率最高的实现类。</li>
+<li>允许使用 null 键和 null 值，与HashSet一样，不保证映射的顺序。</li>
+<li>所有的 key 构成的集合是 Set: 无序的、不可重复的。所以，key所在的类要重写：equals() 和 hashCode()</li>
+<li>所有的 value 构成的集合是 Collection: 无序的、可以重复的。所以，value 所在的类要重写： equals()</li>
+<li>一 个 key-value 构成一 个 entry</li>
+<li>所有的 entry 构成的集合是 Set: 无序的、不可重复的</li>
+<li>HashMap 判断两个 key 相等的标准是：两个 key 通过 equals() 方法返回 true、hashCode 值也相等。</li>
+<li>HashMap 判断两个 value 相等的标准是：两个 value 通过 equals() 方法返回 true 。</li>
+<li>JDK7及之前：底层为数组+链表结构</li>
+<li>JDK8及以后：底层为数组+链表+红黑树实现</li>
+</ul>
+<p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1646231604781-a8a67170-617e-43e5-a8f9-111f2d0f3a7b-20220312141152416-20220312152224215.png" alt="image.png" loading="lazy"><br>
+<a name="VvdwD"></a></p>
+<h3 id="底层实现">底层实现</h3>
+<p><a name="r9CXj"></a></p>
+<h4 id="jdk7及之前">JDK7及之前</h4>
+<ul>
+<li>底层创建了默认长度为16的一维数组Entry[] table</li>
+<li>HashMap的内部存储结构其实是 数组和链表的结合。当实例化一个 HashMap时系统会创建一个长度为 Capacity 的 Entry 数组，这个长度在哈希表中被称为容量(capacity), 在这个数组中可以存放元素的位置我们称之为 桶 (bucket), 每个bucket 都有自己的索引，系统可以根据索引快速的查找 bucket 中的元素 。</li>
+<li>每个 bucket 中存储一个元素，即一个 Entry 对象，但每一个 Entry 对象可以带一个引用变量，用于指向下一个元素。因此，在一个桶中，就有可能生成一个 Entry 链 。而且，新添加的元素作为链表的 head 。</li>
+<li>添加元素的过程：
+<ul>
+<li>向HashMap 中添加 entry1 (key, value) 需要首先计算 entry1 中 key 的哈希值(根据key 所在类的 hashCode() 计算得到，此哈希值经过处理以后，得到在底层 Entry[] 数组中要存储的位置 i 。 如果，位置 i 上没有元素，则 entry 1 直接添加成功 。 如果，位置 i 上已经存在 entry 2（或还有链表存在的 entry3， entry4）则需要通过循环的方法，依次比较 entry1中 key 和 其他的 entry。 如果彼此 hash 值不同，则直接添加成功。 如果hash值相同，继续比较二者是否 equals 。 如果，返回值为 true则使用 entry 1 的 value去替换 equals 为 true 的 entry 的 value。 如果遍历一遍以后 发现 所有的 equals 返回都为 false, 则 entry 1 仍可添加成功 。 entry 1 指向原有的 entry 元素 。</li>
+</ul>
+</li>
+<li>扩容：当元素个数超过，数组大小*LoadFactor(一般为0.75)时，扩容为原来2倍，并重新计算元素位置，耗费资源，所以如果开始知道元素个数，可以对容量进行设定。<br>
+<a name="m89x9"></a></li>
+</ul>
+<h4 id="jdk8及之后">JDK8及之后</h4>
+<ul>
+<li>从Entry数组变为Node数组</li>
+<li>new hashMap()不会直接创建一个长度为16的数组，首次使用put时再创建默认长度的数组</li>
+<li>HashMap 的内部存储结构其实是数组+链表+树的结合。 当实例化一个HashMap 时，会初始化 initialCapacity 和 loadFactor，在 put 第一对映射关系时，系统会创建一个长度为 initialCapacity 的 Node 数组，这个长度在哈希表中被称为容量 (capacity) 在这个数组中可以存放元素的位置我们称之为桶 (bucket)，每个 bucket 都有自己的索引，系统可以根据索引快速的查找 bucket 中的元素</li>
+<li>每个 bucket 中存储一个元素，即一个 Node 对象，但每一个 Node 对象可以带一个引用变量 next 用于指向下一个元素。因此，在一个桶中，就有可能生成一个 Node 链。 也可能是一个一个 TreeNode 对象，每一个 TreeNode 对象可以有两个叶子结点 left 和 right 因此 在一个桶中 就有可能生成一个TreeNode 树。 而新添加的元素作为链表的 last 或树的叶子结点 。<strong>(七上八下)</strong></li>
+<li>当HashMap 中的元素个数超过数组大小(数组总大小 length, 不是数组中个数)size<em>loadFactor 时，就会进行数组扩容 loadFactor 的默认值DEFAULT_LOAD_FACTOR 为 0.75 这是一个折中的取值 。 也就是说，默认情况下数组大小 DEFAULT_INITIAL_CAPACITY 为 16 那么当 HashMap 中元素个数超过16</em>0.75=12这个值就是代码中的 threshold 值也叫做临界值的时候，就把数组的大小扩展为 2*16=32，即扩大一倍。然后重新计算每个元素在数组中的位置，而这是一个非常消耗性能的操作 所以如果我们已经预知HashMap 中元素的个数 那么预设元素的个数能够有效的提高 HashMap 的性能</li>
+<li>当HashMap 中的其中一个链的对象个数如果达到了 8 个，此时如果 capacity 没有达到 64 ，那么 HashMap 会先扩容解决，如果已经达到了 64 ，那么这个链会变成树，结点类型由 Node 变成 TreeNode 类型。当然，如果当映射关系被移除后，下次 resize 方法时判断树的结点个数低于 6 个，也会把 树再转为链表。</li>
+</ul>
+<p><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1646232078411-cb886c30-d19b-443a-8b34-48747e92aaa3-20220312141152511-20220312152224468.png" alt="image.png" loading="lazy"><br>
+<a name="lFcFt"></a></p>
+<h2 id="linkedhashmap">LinkedHashMap</h2>
+<ul>
+<li>LinkedHashMap 是 HashMap 的 子类</li>
+<li>在 HashMap 存储结构的基础上，使用了一对双向链表来记录添加元素的顺序</li>
+<li>与 LinkedHashSet 类似 LinkedHashMap 可以维护 Map 的迭代。顺序：迭代顺序与 Key-Value 对的插入顺序一致<br>
+<a name="WajWx"></a></li>
+</ul>
+<h2 id="treemap">TreeMap</h2>
+<ul>
+<li>TreeMap 存储 Key-Value对时， 需要根据 key-value 对进行排序。</li>
+<li>TreeMap 可以保证所有的 Key-Value 对处于 有序 状态 。</li>
+<li>TreeSet 底层使用红黑树结构存储数据</li>
+<li>TreeMap 的 Key 的排序：
+<ul>
+<li>自然排序 TreeMap 的所有的 Key 必须实现 Comparable 接口，而且所有的 Key 应该是同一个类的对象，否则将会抛出 ClasssCastException</li>
+<li>定制排序 ：创建 TreeMap 时，传入一个 Comparator 对象，该对象负责对TreeMap 中的所有 key 进行排序。此时不需要 Map 的 Key 实现Comparable 接口</li>
+</ul>
+</li>
+<li>TreeMap 判断 两个 key 相等的标准 ：两个 key 通过 compareTo() 方法或者 compare() 方法返回 0 。<br>
+<a name="joUhF"></a></li>
+</ul>
+<h2 id="hashtable">Hashtable</h2>
+<ul>
+<li>Hashtable 是个古老的 Map 实现类， JDK1.0 就提供了。不同于 HashMap，Hashtable 是线程安全的。</li>
+<li>Hashtable 实现原理和 HashMap 相同，功能相同。底层都使用哈希表结构，查询速度快，很多情况下可以互用 。</li>
+<li>与 HashMap 不同， Hashtable 不允许使用 null 作为 key 和 value</li>
+<li>与 HashMap 一样， Hashtable 也不能保证其中 Key Value 对的顺序</li>
+<li>Hashtable 判断两个 key 相等、两个 value 相等的标准 与 HashMap 一致。<br>
+<a name="BrdLv"></a></li>
+</ul>
+<h3 id="properties">Properties</h3>
+<p>Properties 类是 Hashtable 的子类，该对象用于处理属性文件</p>
+<ul>
+<li>由于属性文件里的 key 、 value 都是字符串类型，所以 Properties 里的 key和 value 都是字符串类型</li>
+<li>存取数据时，建议使用 setProperty (String key,String value) 方法和getProperty (String key)方法</li>
+</ul>
+<pre><code class="language-java">Properties pros = new Properties();
+pros.load(new FileInputStream(&quot;jdbc.properties));
+String user = pros.getProperty(&quot;user&quot;);
+System.out.println(user);
+</code></pre>
+<p><a name="KSg9q"></a></p>
+<h1 id="collections工具类">Collections工具类</h1>
+<ul>
+<li>Collections 是一个操作 Set 、 List 和 Map 等集合的工具类</li>
+<li>Collections 中提供了一系列静态的方法对集合元素进行排序、查询和修改等操作，还提供了对集合对象设置不可变、对集合对象实现同步控制等方法。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>方法（均为 static 方法）</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>reverse(List)</td>
+<td>反转 List 中元素的顺序</td>
+</tr>
+<tr>
+<td>shuffle(List)</td>
+<td>对 List 集合元素进行随机排序</td>
+</tr>
+<tr>
+<td>sort(List)</td>
+<td>根据元素的自然顺序对指定 List 集合元素按升序排序</td>
+</tr>
+<tr>
+<td>sort(List, Comparator)</td>
+<td>根据指定的 Comparator 产生的顺序对 List 集合元素进行排序</td>
+</tr>
+<tr>
+<td>swap(List, int i, int j)</td>
+<td>将指定 list 集合中的 i 处元素和 j 处元素进行交换</td>
+</tr>
+<tr>
+<td>Object max(Collection)</td>
+<td>根据元素的自然顺序，返回给定集合中的最大元素</td>
+</tr>
+<tr>
+<td>Object max(Collection Comparator)</td>
+<td>根据 Comparator 指定的顺序，返回给定集合中的最大元素</td>
+</tr>
+<tr>
+<td>Object min(Collection)</td>
+<td>根据元素的自然顺序，返回给定集合中的最小元素</td>
+</tr>
+<tr>
+<td>Object min(Collection Comparator)</td>
+<td>根据 Comparator 指定的顺序，返回给定集合中的最小元素</td>
+</tr>
+<tr>
+<td>int frequency(Collection Object)</td>
+<td>返回指定集合中指定元素的出现次数</td>
+</tr>
+<tr>
+<td>void copy(List dest,List src )</td>
+<td>将 src 中的内容复制到 dest 中，要求dest.size()大于等于src.size()</td>
+</tr>
+<tr>
+<td>boolean replaceAll (List list, Object oldVal, Object newVal)</td>
+<td>使用新值替换List对象的所有旧值</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>copy中如果dest小于src的解决办法<br>
+List dest = Arrays.asList(new Object[src.size()]);<br>
+copy(dest, src);</p>
+</blockquote>
+<p>Collection类中提供了同步方法，该方法可以讲指定集合包装为线程同步的集合，从而解决线程安全问题<br /><img src="http://yuanye1107.oss-cn-shanghai.aliyuncs.com/img/1646232507333-bcb07c7d-6ad0-443d-91bf-873b4bc9001a-20220312141152538-20220312152224510.png" alt="image.png" loading="lazy"></p>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://yeyuan1107.github.io/post/java-chang-yong-lei/" class="post-title gt-a-link">
+                    Java常用类
+                </a>
+            </div>
+        
+
+        
+
+        
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">温故而知新</div>
+    <div class="social-container">
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+    </div>
+    <div>
+        Theme <a href="https://github.com/imhanjie/gridea-theme-pure" target="_blank">Pure</a>, Powered by <a
+                href="https://gridea.dev" target="_blank">Gridea</a> | <a href="https://yeyuan1107.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+</div>
+
+<script>
+  hljs.highlightAll()
+</script>
+
+    </div>
+</div>
+</body>
+</html>
